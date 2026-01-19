@@ -1,0 +1,23 @@
+from frappe import _
+from typing import List, Protocol
+from mawhub.app.job.dto.job_applicant import JobApplicantBulkUpdateRequest,JobApplicantUpdateRequest
+from mawhub.app.job.repo.job_repo import JobRepoInterface
+
+
+class JobApplicantUsecaseInterface(Protocol):
+	def job_applicant_update(self, payload: JobApplicantUpdateRequest)->str: ...
+	def job_applicant_bulk_update(self, payload: JobApplicantBulkUpdateRequest)->List[str]: ...
+
+class JobApplicantUsecase:
+    repo: JobRepoInterface
+    def __init__(
+        self,
+        repo: JobRepoInterface,
+    ):
+        self.repo = repo
+
+    def job_applicant_update(self, payload: JobApplicantUpdateRequest)->str:
+        return self.repo.job_applicant.job_applicant_update(payload)
+
+    def job_applicant_bulk_update(self, payload: JobApplicantBulkUpdateRequest)->List[str]:
+        return self.repo.job_applicant.job_applicant_bulk_update(payload)

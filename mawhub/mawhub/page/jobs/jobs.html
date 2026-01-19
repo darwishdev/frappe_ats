@@ -1,0 +1,186 @@
+<div class="jd-page">
+	<!-- Header -->
+	<div class="jd-header">
+		<div>
+			<div class="jd-title-row">
+				<h2 class="jd-title" id="jd-job-title">Job Title</h2>
+				<a class="btn btn-default btn-xs" id="jd-edit-job">Edit</a>
+			</div>
+			<div class="jd-subtitle" id="jd-job-subtitle"></div>
+		</div>
+
+		<div class="jd-header-actions">
+			<button class="btn btn-primary" id="jd-add-candidate">Add candidates</button>
+		</div>
+	</div>
+
+	<!-- Pipeline tabs -->
+	<div class="jd-pipeline" id="jd-pipeline"></div>
+
+	<!-- Body -->
+	<div class="jd-body">
+		<!-- Left: list -->
+		<div class="jd-left">
+			<div class="jd-left-top">
+				<input
+					class="form-control"
+					id="jd-search"
+					placeholder="Search by name, skills, tags..."
+				/>
+			</div>
+			<div class="jd-candidate-list" id="jd-candidate-list"></div>
+		</div>
+
+		<!-- Right: details -->
+		<div class="jd-right">
+			<div class="jd-detail-card" id="jd-detail-card">
+				<div class="text-muted">Select a candidate from the list.</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<style>
+	.jd-page {
+		padding: 5rem;
+	}
+	.jd-header {
+		display: flex;
+		justify-content: space-between;
+		gap: 16px;
+		align-items: flex-start;
+		margin-bottom: 12px;
+	}
+	.jd-title-row {
+		display: flex;
+		gap: 10px;
+		align-items: center;
+	}
+	.jd-title {
+		margin: 0;
+		font-size: 28px;
+		font-weight: 800;
+	}
+	.jd-subtitle {
+		color: #ffffff;
+		margin-top: 6px;
+	}
+	.jd-pipeline {
+		display: flex;
+		gap: 10px;
+		align-items: center;
+		overflow: auto;
+		padding: 10px 0;
+		border-bottom: 1px solid var(--border-color, #eee);
+		margin-bottom: 12px;
+	}
+	.jd-step {
+		white-space: nowrap;
+		padding: 8px 10px;
+		border-radius: 8px;
+		border: 1px solid var(--border-color, #e6e6e6);
+		cursor: pointer;
+		background: #fff;
+		color: #111827;
+		font-weight: 600;
+		font-size: 13px;
+	}
+	.jd-step.active {
+		background: #111827;
+		color: #fff;
+		border-color: #111827;
+	}
+	.jd-step .count {
+		opacity: 0.9;
+		margin-left: 6px;
+		font-weight: 800;
+	}
+	.jd-body {
+		display: grid;
+		grid-template-columns: 360px 1fr;
+		gap: 14px;
+		min-height: 520px;
+	}
+	.jd-left,
+	.jd-right {
+		background: #ffffff66;
+		border: 1px solid var(--border-color, #e6e6e6);
+		border-radius: 10px;
+	}
+	.jd-left-top {
+		padding: 12px;
+		border-bottom: 1px solid var(--border-color, #eee);
+	}
+	.jd-candidate-list {
+		padding: 6px;
+		max-height: 680px;
+		overflow: auto;
+	}
+	.jd-item {
+		display: flex;
+		gap: 10px;
+		align-items: center;
+		padding: 10px;
+		border-radius: 8px;
+		cursor: pointer;
+	}
+	.jd-item:hover {
+		background: #f7f7f7;
+	}
+	.jd-item.active {
+		background: #fff7d6;
+	}
+	.jd-avatar {
+		width: 40px;
+		height: 40px;
+		border-radius: 50%;
+		background: #e5e7eb;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-weight: 800;
+		color: #374151;
+	}
+	.jd-item-name {
+		font-weight: 800;
+		color: black;
+	}
+	.jd-item-sub {
+		color: #6b7280;
+		font-size: 12px;
+		margin-top: 2px;
+	}
+	.jd-detail-card {
+		padding: 14px;
+	}
+	.jd-detail-head {
+		display: flex;
+		justify-content: space-between;
+		gap: 14px;
+		align-items: center;
+	}
+	.jd-detail-name {
+		font-size: 22px;
+		font-weight: 900;
+		margin: 0;
+		color: white;
+	}
+	.jd-badges {
+		display: flex;
+		gap: 8px;
+		flex-wrap: wrap;
+		margin-top: 8px;
+	}
+	.jd-badge {
+		font-size: 12px;
+		background: #f3f4f6;
+		border: 1px solid #e5e7eb;
+		border-radius: 999px;
+		padding: 4px 8px;
+		color: #111827;
+	}
+	.jd-detail-meta {
+		color: #ffffff;
+		margin-top: 6px;
+	}
+</style>

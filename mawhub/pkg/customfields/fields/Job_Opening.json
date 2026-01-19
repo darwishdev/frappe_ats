@@ -1,0 +1,12 @@
+[
+  {
+    "fieldname": "custom_pipeline",
+    "label": "Pipeline",
+    "fieldtype": "Link",
+    "insert_after": "designation",
+    "options": "Pipeline",
+    "in_list_view": 1,
+    "in_standard_filter": 1,
+    "reqd": 0
+  }
+]

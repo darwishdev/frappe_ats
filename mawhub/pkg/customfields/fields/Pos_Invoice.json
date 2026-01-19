@@ -1,0 +1,20 @@
+[
+  {
+    "fieldname": "old_folio",
+    "label": "Old Folio",
+    "fieldtype": "Link",
+    "options": "Folio",
+    "in_standard_filter": 1,
+    "reqd": 0,
+    "read_only_onload": 0
+  },
+  {
+    "fieldname": "folio",
+    "label": "Folio",
+    "fieldtype": "Link",
+    "options": "Folio",
+    "in_standard_filter": 1,
+    "reqd": 0,
+    "read_only_onload": 0
+  }
+]
