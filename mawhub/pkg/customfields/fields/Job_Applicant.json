@@ -1,0 +1,12 @@
+[
+  {
+    "fieldname": "custom_pipeline_step",
+    "label": "Pipeline Step",
+    "fieldtype": "Link",
+    "insert_after": "country",
+    "options": "Pipeline Step",
+    "in_list_view": 1,
+    "in_standard_filter": 1,
+    "reqd": 0
+  }
+]

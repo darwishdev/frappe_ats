@@ -4,6 +4,7 @@ import frappe
 from mawhub.sqltypes.tal_models import JobView
 class JobOpeningRepoInterface(Protocol):
 	def job_opening_list(self, user_name: str)->List[JobView]: ...
+	def job_opening_find(self, job: str)->JobView: ...
 
 
 class JobOpeningRepo:
@@ -23,7 +24,7 @@ class JobOpeningRepo:
 
     def job_opening_find(self,job:str)->JobView:
         raw_rows = frappe.db.sql("""
-        select * from tal_job_view where name = %s limit = 1 ;
+        select * from tal_job_view where name = %s limit 1 ;
         """,(job,),as_dict=True)
         if raw_rows is None:
             raise frappe.NotFound(f"no job with id : {job}")

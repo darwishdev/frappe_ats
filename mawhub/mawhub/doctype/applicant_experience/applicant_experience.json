@@ -1,0 +1,70 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-01-19 15:47:39.823662",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "company",
+  "column_break_dfwt",
+  "role",
+  "column_break_pduk",
+  "duration",
+  "section_break_anrn",
+  "responsibilities"
+ ],
+ "fields": [
+  {
+   "fieldname": "company",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Company",
+   "reqd": 1
+  },
+  {
+   "fieldname": "role",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Role"
+  },
+  {
+   "fieldname": "duration",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Duration"
+  },
+  {
+   "fieldname": "responsibilities",
+   "fieldtype": "Text Editor",
+   "label": "Responsibilities"
+  },
+  {
+   "fieldname": "column_break_dfwt",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_pduk",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_anrn",
+   "fieldtype": "Section Break"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2026-01-19 15:50:23.008465",
+ "modified_by": "Administrator",
+ "module": "Mawhub",
+ "name": "Applicant Experience",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}
