@@ -19,6 +19,9 @@ import {
 	setConfig,
 } from "frappe-ui"
 
+import Toast from "vue-toastification"
+import "vue-toastification/dist/index.css"
+
 import "./index.css"
 
 const globalComponents = {
@@ -39,6 +42,20 @@ setConfig("resourceFetcher", frappeRequest)
 app.use(router)
 app.use(resourcesPlugin)
 app.use(pageMetaPlugin)
+app.use(Toast, {
+	position: "top-right",
+	timeout: 3000,
+	closeOnClick: true,
+	pauseOnFocusLoss: true,
+	pauseOnHover: true,
+	draggable: true,
+	draggablePercent: 0.6,
+	showCloseButtonOnHover: false,
+	hideProgressBar: false,
+	closeButton: "button",
+	icon: true,
+	rtl: false,
+})
 
 const socket = initSocket()
 app.config.globalProperties.$socket = socket

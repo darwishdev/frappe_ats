@@ -98,6 +98,9 @@
           </div>
 
           <div class="jc-actions">
+            <button class="btn btn-default btn-sm" @click="copyJobLink(job)">
+              📋 Copy Link
+            </button>
             <button class="btn btn-default btn-sm" @click="findCandidates(job.name)">
               Find Candidates
             </button>
@@ -144,8 +147,10 @@
 import { createResource, TextInput, Select, Checkbox, Button } from "frappe-ui";
 import { ref, computed } from "vue";
 import { useRouter } from "vue-router";
+import { useToast } from "vue-toastification";
 
 const router = useRouter();
+const toast = useToast();
 
 // State
 const filters = ref({
@@ -206,6 +211,7 @@ function transformJobData(rawJobs) {
       work_mode: job.employment_type || "Full-time",
       is_published: isPublished,
       is_draft: isDraft,
+      route: job.route || "",
       stages: stages,
       candidates_total: totalCandidates,
       candidates_active: totalCandidates,
@@ -306,6 +312,18 @@ function formatDate(dateStr) {
 function openJob(jobName) {
   // Navigate to job details page
   router.push({ name: "JobDetails", params: { jobId: jobName } });
+}
+
+function copyJobLink(job) {
+  // const jobLink = `${window.location.origin}/jobs/mawhub/${jobName}`;
+  const jobLink = `http://localhost:8000/${job.route}`;
+  navigator.clipboard.writeText(jobLink)
+    .then(() => {
+      toast.success("Job link copied to clipboard!");
+    })
+    .catch(() => {
+      toast.error("Failed to copy link");
+    });
 }
 
 function findCandidates(jobName) {

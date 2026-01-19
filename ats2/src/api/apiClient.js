@@ -5,7 +5,17 @@
  * All API methods return Promises.
  */
 
+let _createResource = null;
+
 export const JobDetailsAPI = {
+  /**
+   * Initialize the API client with frappe-ui createResource function
+   * Call this in onMounted of your Vue component
+   * @param {Function} createResource - createResource function from frappe-ui
+   */
+  init: function(createResource) {
+    _createResource = createResource;
+  },
   /**
    * Fetch job details with all pipeline steps and candidates
    * @param {string} jobId - Job Opening ID
@@ -328,21 +338,19 @@ export const JobDetailsAPI = {
    * @returns {Promise<Object>} Bulk update result
    */
   bulkUpdateApplicants: function(payload) {
-    // TODO: Replace with real API call
-    // return frappe.call({
-    //   method: 'addicta.api.job_applicant_bulk_update',
-    //   args: {
-    //     payload: payload
-    //   }
-    // }).then(r => r.message);
-
-    // Mock implementation
-    return Promise.resolve({
-      success: true,
-      message: `Successfully updated ${payload.names.length} candidate(s)`,
-      updated_count: payload.names.length,
-      failed: []
+    if (!_createResource) {
+      throw new Error('JobDetailsAPI not initialized. Call JobDetailsAPI.init(createResource) first.');
+    }
+    
+    const resource = _createResource({
+      url: 'mawhub.job_applicant_bulk_update',
+      params: {
+        payload: payload
+      },
+      auto: true
     });
+    
+    return resource.promise;
   }
 };
 

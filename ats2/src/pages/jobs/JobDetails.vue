@@ -1,6 +1,19 @@
 <template>
   <div class="jd-page">
+    <!-- Loading state -->
+    <div v-if="jobDetailsResource.loading" class="jd-loading">
+      <div class="text-center py-8 text-gray-500">Loading job details...</div>
+    </div>
+
+    <!-- Error state -->
+    <div v-else-if="jobDetailsResource.error" class="jd-error">
+      <div class="text-center py-8 text-red-500">
+        Error loading job details: {{ jobDetailsResource.error }}
+      </div>
+    </div>
+
     <!-- Header -->
+    <div v-else class="jd-content">
     <div class="jd-header">
       <div>
         <div class="jd-title-row">
@@ -65,7 +78,7 @@
               @click.stop="toggleCandidateSelection(candidate.id)"
             />
             <div class="jd-avatar">
-              {{ candidate.name.charAt(0).toUpperCase() }}
+              {{ candidate.name?.charAt(0).toUpperCase() }}
             </div>
             <div>
               <div class="jd-item-name">{{ candidate.name }}</div>
@@ -90,7 +103,7 @@
             <div class="jd-detail-head">
               <div style="display: flex; align-items: center; gap: 12px">
                 <div class="jd-avatar" style="width: 48px; height: 48px; font-size: 20px">
-                  {{ activeCandidate.name.charAt(0).toUpperCase() }}
+                  {{ activeCandidate.name?.charAt(0).toUpperCase() }}
                 </div>
                 <div>
                   <h3 class="jd-detail-name">{{ activeCandidate.name }}</h3>
@@ -328,17 +341,51 @@
         <Button theme="primary" @click="bulkMoveCandidates">Move Candidates</Button>
       </template>
     </Dialog>
+    </div>
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { TextInput, Select, Button, Dialog } from "frappe-ui";
+import { TextInput, Select, Button, Dialog, createResource } from "frappe-ui";
+import { useToast } from "vue-toastification";
 import { JobDetailsAPI } from "../../api/apiClient.js";
+
+const toast = useToast();
 
 const route = useRoute();
 const router = useRouter();
+
+JobDetailsAPI.init(createResource);
+// Get job ID from route
+const jobId = computed(() => route.params.jobId || route.query.job || "HR-OPN-2026-0002");
+
+// Create resource for fetching job details
+const jobDetailsResource = createResource({
+  url: "mawhub.job_opening_find",
+  params: {
+    job: jobId.value,
+  },
+  auto: true,
+  onSuccess(data) {
+    if (data) {
+      const transformedData = transformJobData(data);
+      job.value = transformedData;
+      candidates.value = transformedData.candidates;
+      activeStep.value = "all";
+      activeCandidateId.value = candidates.value[0]?.id || null;
+
+      if (activeCandidate.value) {
+        targetStep.value = activeCandidate.value.stage;
+      }
+    }
+  },
+  onError(error) {
+    console.error("Error loading job details:", error);
+    toast.error(`Error loading job details: ${error.message || "Unknown error"}`);
+  },
+});
 
 // State
 const job = ref(null);
@@ -474,12 +521,18 @@ function transformJobData(rawJob) {
 
       if (step.candidates && Array.isArray(step.candidates)) {
         step.candidates.forEach((candidate) => {
+          // Skip candidates without valid ID or email
+          if (!candidate["applicant_id,"] && !candidate["applicant_email,"]) {
+            return;
+          }
+
+          const candidateId = candidate["applicant_id,"] || candidate["applicant_email,"];
           const existingIdx = allCandidates.findIndex(
-            (c) => c.id === candidate["applicant_email,"]
+            (c) => c.id === candidateId
           );
           if (existingIdx === -1) {
             allCandidates.push({
-              id: candidate["applicant_email,"],
+              id: candidateId,
               name: candidate["applicant_name,"],
               email: candidate["applicant_email,"],
               phone: candidate["applicant_phone,"] || "N/A",
@@ -591,7 +644,7 @@ function editJob() {
 
 async function addCandidate() {
   if (!newCandidate.value.name || !newCandidate.value.email) {
-    alert("Please fill in required fields");
+    toast.warning("Please fill in required fields");
     return;
   }
 
@@ -604,7 +657,7 @@ async function addCandidate() {
       source: newCandidate.value.source,
     });
 
-    alert("Candidate added successfully");
+    toast.success("Candidate added successfully");
     showAddCandidateDialog.value = false;
 
     // Reset form
@@ -617,9 +670,9 @@ async function addCandidate() {
     };
 
     // Reload data
-    await loadJobDetails();
+    reloadJobDetails();
   } catch (error) {
-    alert(`Error: ${error.message}`);
+    toast.error(error.message || "Failed to add candidate");
   }
 }
 
@@ -631,34 +684,32 @@ async function moveCandidateToStep() {
   if (!activeCandidate.value || !targetStep.value) return;
 
   if (targetStep.value === activeCandidate.value.stage) {
-    alert("Candidate is already in this stage");
+    toast.warning("Candidate is already in this stage");
     return;
   }
 
   const targetStepName =
     job.value.steps.find((s) => s.key === targetStep.value)?.label || targetStep.value;
 
+  const payload = {
+    names: [activeCandidate.value.id],
+    pipeline_step: targetStep.value,
+    status : activeCandidate.value.status
+  };
+
   try {
-    const response = await JobDetailsAPI.moveCandidateToStep(
-      activeCandidate.value.id,
-      job.value.name,
-      targetStep.value
-    );
+    const response = await JobDetailsAPI.bulkUpdateApplicants(payload);
 
-    if (response.success) {
-      alert(`${activeCandidate.value.name} moved to "${targetStepName}"`);
+    toast.success(`${activeCandidate.value.name} moved to "${targetStepName}"`);
 
-      // Update local state
-      const candidate = candidates.value.find((c) => c.id === activeCandidate.value.id);
-      if (candidate) {
-        candidate.stage = targetStep.value;
-        candidate.stage_name = targetStepName;
-      }
-    } else {
-      alert(`Error: ${response.message}`);
+    // Update local state
+    const candidate = candidates.value.find((c) => c.id === activeCandidate.value.id);
+    if (candidate) {
+      candidate.stage = targetStep.value;
+      candidate.stage_name = targetStepName;
     }
   } catch (error) {
-    alert(`Error: ${error.message}`);
+    toast.error(error.message || "Failed to move candidate");
   }
 }
 
@@ -670,12 +721,12 @@ async function assignInterview() {
     !interviewData.value.from_time ||
     !interviewData.value.to_time
   ) {
-    alert("Please fill in all required fields");
+    toast.warning("Please fill in all required fields");
     return;
   }
 
   if (interviewData.value.from_time >= interviewData.value.to_time) {
-    alert("End time must be after start time");
+    toast.warning("End time must be after start time");
     return;
   }
 
@@ -686,9 +737,7 @@ async function assignInterview() {
     job: job.value?.name,
   });
 
-  alert(
-    `Interview assigned to ${activeCandidate.value?.name} on ${interviewData.value.scheduled_on}`
-  );
+  toast.success(`Interview assigned to ${activeCandidate.value?.name} on ${interviewData.value.scheduled_on}`);
   showAssignInterviewDialog.value = false;
 
   // Reset form
@@ -705,7 +754,7 @@ async function assignInterview() {
 
 async function bulkMoveCandidates() {
   if (!bulkMoveData.value.target_step) {
-    alert("Please select a target step");
+    toast.warning("Please select a target step");
     return;
   }
 
@@ -724,8 +773,7 @@ async function bulkMoveCandidates() {
   try {
     const response = await JobDetailsAPI.bulkUpdateApplicants(payload);
 
-    if (response.success) {
-      alert(`${response.updated_count} candidate(s) moved to "${targetStepLabel}"`);
+      toast.success(`${selectedCandidates.value.length} candidate(s) moved to "${targetStepLabel}"`);
 
       // Update local state
       selectedCandidates.value.forEach((candidateId) => {
@@ -747,31 +795,15 @@ async function bulkMoveCandidates() {
         target_step: "",
         status: "",
       };
-    } else {
-      alert(`Error: ${response.message}`);
-    }
+    
   } catch (error) {
-    alert(`Error: ${error.message}`);
+    toast.error(error.message || "Failed to move candidates");
   }
 }
 
-async function loadJobDetails() {
-  try {
-    const jobId = route.params.jobId || route.query.job || "HR-OPN-2026-0002";
-    const rawJob = await JobDetailsAPI.fetchJobDetails(jobId);
-    const transformedData = transformJobData(rawJob);
-
-    job.value = transformedData;
-    candidates.value = transformedData.candidates;
-    activeStep.value = "all";
-    activeCandidateId.value = candidates.value[0]?.id || null;
-
-    if (activeCandidate.value) {
-      targetStep.value = activeCandidate.value.stage;
-    }
-  } catch (error) {
-    alert(`Error loading job details: ${error.message}`);
-  }
+// Reload job details
+function reloadJobDetails() {
+  jobDetailsResource.fetch();
 }
 
 // Watch for search query changes
@@ -781,10 +813,16 @@ watch(searchQuery, () => {
   }
 });
 
-// Load data on mount
-onMounted(() => {
-  loadJobDetails();
+// Watch for route changes
+watch(() => route.params.jobId, (newJobId) => {
+  if (newJobId) {
+    jobDetailsResource.update({
+      params: { job: newJobId }
+    });
+    jobDetailsResource.fetch();
+  }
 });
+
 </script>
 
 <style scoped>
@@ -970,7 +1008,7 @@ onMounted(() => {
 
 .jd-detail-meta {
   color: #6b7280;
-  margin-top: 6px;
+  margin-top: 2px;
   font-size: 14px;
 }
 

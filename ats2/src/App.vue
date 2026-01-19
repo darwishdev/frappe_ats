@@ -1,6 +1,7 @@
 <template>
   <div class="flex h-screen w-full">
     <Sidebar
+      v-if="route.name !== 'Login'"
       :header="{
         title: 'ATS System',
         subtitle: session.user || 'User',
@@ -53,7 +54,7 @@
       ]"
     />
     <div class="flex-1 overflow-auto">
-      <div class="p-4">
+      <div v-if="route.name !== 'Login'" class="p-4">
         <Breadcrumbs :items="breadcrumbItems" />
       </div>
       <router-view />
