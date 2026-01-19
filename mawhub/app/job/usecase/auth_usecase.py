@@ -2,8 +2,6 @@
 from frappe import _
 import frappe
 from frappe.auth import LoginManager
-from esolve_pos.app.pos.dto.pos_auth_dto import CashierLoginDTO
-from esolve_pos.app.pos.repo.pos_repo import POSRepo
 from typing import Protocol
 
 from mawhub.app.job.dto.auth import LoginResponse

@@ -16,7 +16,7 @@
           placeholder="••••••"
           label="Password"
         />
-        <Button :loading="session.login.loading" variant="solid"
+        <Button type="submit" :loading="session.login.loading" variant="solid"
           >Login</Button
         >
       </form>
