@@ -18,6 +18,9 @@
 
         <div class="flex flex-row space-x-2 mt-4">
             <Button @click="showDialog = true">Open Dialog</Button>
+            <Button @click="$router.push('/jobs-pipeline')" theme="gray" variant="solid">
+                View Jobs Pipeline
+            </Button>
             <Button @click="session.logout.submit()">Logout</Button>
         </div>
 

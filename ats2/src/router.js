@@ -6,7 +6,18 @@ const routes = [
 	{
 		path: "/",
 		name: "Home",
+		redirect: "/jobs-pipeline",
 		component: () => import("@/pages/Home.vue"),
+	},
+	{
+		path: "/jobs-pipeline",
+		name: "JobsPipeline",
+		component: () => import("@/pages/jobs/JobsList.vue"),
+	},
+	{
+		path: "/jobs/:jobId",
+		name: "JobDetails",
+		component: () => import("@/pages/jobs/JobDetails.vue"),
 	},
 	{
 		name: "Login",
