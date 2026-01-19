@@ -11,7 +11,7 @@
       </div>
 
       <div class="jd-header-actions">
-        <Button theme="gray" :variant="'solid'" @click="showAddCandidateDialog = true">Add candidates</Button>
+        <Button theme="gray" :variant="'solid'" class="w-40" @click="redirectToAddCandidates">Add candidates</Button>
       </div>
     </div>
 
@@ -586,8 +586,7 @@ function formatDate(dateStr) {
 }
 
 function editJob() {
-  console.log("Edit job:", job.value?.name);
-  // You can implement routing to edit page here
+  window.open(`http://localhost:8000/desk/job-opening/${job.value?.name}`, "_blank");
 }
 
 async function addCandidate() {
@@ -623,6 +622,10 @@ async function addCandidate() {
     alert(`Error: ${error.message}`);
   }
 }
+
+const redirectToAddCandidates = () => {
+  window.open(`http://localhost:8000/desk/job-applicant/new-job-applicant`, "_blank");
+};
 
 async function moveCandidateToStep() {
   if (!activeCandidate.value || !targetStep.value) return;

@@ -1,6 +1,12 @@
 <template>
   <div class="jc-page">
     <!-- Toolbar with search and filters -->
+
+    <!-- <div class="flex justify-end w-full my-4 px-1">
+      <Button theme="gray" variant="solid" size="md" class="w-48" @click="createNewJob">
+        + New Job
+      </Button>
+    </div> -->
     <div class="jc-toolbar">
       <div class="jc-search">
         <TextInput
@@ -12,6 +18,7 @@
           @input="debouncedApplyFilters"
         />
       </div>
+
 
       <div class="jc-filters">
         <Select class="w-48" placeholder="Select Department"
@@ -38,7 +45,27 @@
           label="Include draft jobs"
           @change="applyFilters"
         />
+<!-- 
+      <Button theme="gray" variant="solid" size="md" class="w-32" @click="createNewJob">
+        New Job
+      </Button> -->
+
       </div>
+    </div>
+
+    <div class="flex justify-end gap-3 items-center w-full my-4">
+      <Button
+      theme="gray"
+      size="md"
+      class="w-40"
+      :disabled="jobsResource.loading"
+      @click="reload"
+      >
+      {{ jobsResource.loading ? "Refreshing..." : "Refresh" }}
+      </Button>
+      <Button theme="gray" variant="solid" size="md" class="w-40" @click="createNewJob">
+        New Job
+      </Button>
     </div>
 
     <!-- Loading state -->
@@ -114,7 +141,7 @@
 </template>
 
 <script setup>
-import { createResource, TextInput, Select, Checkbox } from "frappe-ui";
+import { createResource, TextInput, Select, Checkbox, Button } from "frappe-ui";
 import { ref, computed } from "vue";
 import { useRouter } from "vue-router";
 
@@ -285,6 +312,11 @@ function findCandidates(jobName) {
   // Navigate to candidates list for this job
   console.log("Finding candidates for:", jobName);
   // Example: router.push(`/candidates?job=${jobName}`);
+}
+
+function createNewJob() {
+  // Redirect to ERPNext job opening form
+  window.open('http://localhost:8000/desk/job-opening/new-job-opening', '_blank');
 }
 
 // Reload function (can be called externally)
