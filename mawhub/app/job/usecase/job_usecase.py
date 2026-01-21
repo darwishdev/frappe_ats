@@ -29,7 +29,7 @@ class JobUseCase:
         job_repo: JobRepoInterface,
     ):
 
-        api_key="AIzaSyDKJ6pk9ZYXZYr0OBCD3Hv7KKGyeeq525Y"
+        api_key=""
         model_name = 'gemini-2.5-flash-lite'
         resume_agent = ResumeWorkflow(api_key=api_key,model_name=model_name , get_cache_fn=get_ai_cache ,set_cache_fn=set_ai_cache)
         self.resume_agent = resume_agent
