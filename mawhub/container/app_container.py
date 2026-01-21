@@ -9,8 +9,8 @@ class AppContainer:
     """
     job_usecase: JobUseCaseInterface
 
-    def __init__(self):
+    def __init__(self,gemini_api_key:str):
         job_repo = JobRepo()
-        job_usecase = JobUseCase(job_repo=job_repo)
+        job_usecase = JobUseCase(job_repo=job_repo,gemini_api_key=gemini_api_key)
         self.job_usecase = job_usecase
 

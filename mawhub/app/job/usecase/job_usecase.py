@@ -26,12 +26,11 @@ class JobUseCase:
     resume_agent: ResumeWorkflow
     def __init__(
         self,
+        gemini_api_key:str,
         job_repo: JobRepoInterface,
     ):
-
-        api_key=""
         model_name = 'gemini-2.5-flash-lite'
-        resume_agent = ResumeWorkflow(api_key=api_key,model_name=model_name , get_cache_fn=get_ai_cache ,set_cache_fn=set_ai_cache)
+        resume_agent = ResumeWorkflow(api_key=gemini_api_key,model_name=model_name , get_cache_fn=get_ai_cache ,set_cache_fn=set_ai_cache)
         self.resume_agent = resume_agent
         self.job_opening = JobOpeningUsecase(job_repo)
         self.job_applicant = JobApplicantUsecase(job_repo)
