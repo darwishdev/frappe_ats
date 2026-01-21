@@ -111,31 +111,25 @@
                     </div>
                 </div>
 
-                <!-- Right: details -->
-                <div class="jd-right">
-                    <div class="jd-detail-card">
-                        <div v-if="!activeCandidate" class="text-muted">
-                            Select a candidate from the list.
-                        </div>
-                        <div v-else>
-                            <div class="jd-detail-head">
-                                <div style="display: flex; align-items: center; gap: 12px">
-                                    <div
-                                        class="jd-avatar"
-                                        style="width: 48px; height: 48px; font-size: 20px"
-                                    >
-                                        {{ activeCandidate.name?.charAt(0).toUpperCase() }}
-                                    </div>
-                                    <div>
-                                        <h3 class="jd-detail-name">{{ activeCandidate.name }}</h3>
-                                        <div class="jd-detail-meta">
-                                            {{
-                                                activeCandidate.designation ||
-                                                activeCandidate.email
-                                            }}
-                                        </div>
-                                    </div>
-                                </div>
+      <!-- Middle: details -->
+      <div class="jd-middle">
+        <div class="jd-detail-card">
+          <div v-if="!activeCandidate" class="text-muted">
+            Select a candidate from the list.
+          </div>
+          <div v-else>
+            <div class="jd-detail-head">
+              <div style="display: flex; align-items: center; gap: 12px">
+                <div class="jd-avatar" style="width: 48px; height: 48px; font-size: 20px">
+                  {{ activeCandidate.name?.charAt(0).toUpperCase() }}
+                </div>
+                <div>
+                  <h3 class="jd-detail-name">{{ activeCandidate.name }}</h3>
+                  <div class="jd-detail-meta">
+                    {{ activeCandidate.designation || activeCandidate.email }}
+                  </div>
+                </div>
+              </div>
 
                                 <div
                                     style="
@@ -161,70 +155,90 @@
                                 </div>
                             </div>
 
-                            <div>
-                                <div class="jd-badges">
-                                    <span class="jd-badge">📧 {{ activeCandidate.email }}</span>
-                                    <span class="jd-badge">☎ {{ activeCandidate.phone }}</span>
-                                    <span class="jd-badge">🌍 {{ activeCandidate.country }}</span>
-                                </div>
-                                <div class="jd-badges" style="margin-top: 8px">
-                                    <span class="jd-badge"
-                                        >Status: {{ activeCandidate.status }}</span
-                                    >
-                                    <span class="jd-badge"
-                                        >Source: {{ activeCandidate.source }}</span
-                                    >
-                                    <span class="jd-badge"
-                                        >Rating: {{ getRatingStars(activeCandidate.rating) }}</span
-                                    >
-                                </div>
-                                <div class="jd-badges" style="margin-top: 8px">
-                                    <span class="jd-badge"
-                                        >Current Stage: {{ activeCandidate.stage_name }}</span
-                                    >
-                                    <span class="jd-badge"
-                                        >Applied:
-                                        {{ formatDate(activeCandidate.created_at) }}</span
-                                    >
-                                </div>
-                                <div
-                                    v-if="activeCandidate.cover_letter"
-                                    style="
-                                        margin-top: 12px;
-                                        padding: 10px;
-                                        background: #f9fafb;
-                                        border-radius: 6px;
-                                    "
-                                >
-                                    <strong>Cover Letter:</strong>
-                                    <p style="margin: 4px 0 0 0; color: #6b7280">
-                                        {{ activeCandidate.cover_letter }}
-                                    </p>
-                                </div>
-                                <div v-if="activeCandidate.resume_link" style="margin-top: 8px">
-                                    <Button
-                                        size="sm"
-                                        @click="window.open(activeCandidate.resume_link, '_blank')"
-                                    >
-                                        📄 View Resume
-                                    </Button>
-                                </div>
-                                <div
-                                    style="
-                                        margin-top: 16px;
-                                        padding-top: 16px;
-                                        border-top: 1px solid var(--border-color, #e6e6e6);
-                                    "
-                                >
-                                    <Button size="sm" @click="showAssignInterviewDialog = true">
-                                        📅 Assign Interview
-                                    </Button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <div>
+              <div class="jd-badges">
+                <span class="jd-badge">📧 {{ activeCandidate.email }}</span>
+                <span class="jd-badge">☎ {{ activeCandidate.phone }}</span>
+                <span class="jd-badge">🌍 {{ activeCandidate.country }}</span>
+              </div>
+              <div class="jd-badges" style="margin-top: 8px">
+                <span class="jd-badge">Status: {{ activeCandidate.status }}</span>
+                <span class="jd-badge">Source: {{ activeCandidate.source }}</span>
+                <span class="jd-badge">Rating: {{ getRatingStars(activeCandidate.rating) }}</span>
+              </div>
+              <div class="jd-badges" style="margin-top: 8px">
+                <span class="jd-badge">Current Stage: {{ activeCandidate.stage_name }}</span>
+                <span class="jd-badge">Applied: {{ formatDate(activeCandidate.created_at) }}</span>
+              </div>
+              <div
+                v-if="activeCandidate.cover_letter"
+                style="
+                  margin-top: 12px;
+                  padding: 10px;
+                  background: #f9fafb;
+                  border-radius: 6px;
+                "
+              >
+                <strong>Cover Letter:</strong>
+                <p style="margin: 4px 0 0 0; color: #6b7280">
+                  {{ activeCandidate.cover_letter }}
+                </p>
+              </div>
+              <div v-if="activeCandidate.resume_link" style="margin-top: 8px">
+                <Button
+                  size="sm"
+                  @click="window.open(activeCandidate.resume_link, '_blank')"
+                >
+                  📄 View Resume
+                </Button>
+              </div>
             </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: action panel -->
+      <div class="jd-actions-panel !w-[12rem]">
+        <div v-if="!activeCandidate" class="text-muted">
+          Select a candidate
+        </div>
+        <div v-else class="jd-actions-content">
+          <!-- <h4 class="jd-actions-title">Actions</h4> -->
+          <div class="jd-actions-buttons !w-[10rem]">
+            <Button
+              size="md"
+              theme="gray"
+              :variant="'solid'"
+              class="jd-action-btn !w-[10rem]"
+              @click="viewApplicantProfile"
+            >
+              <!-- <span class="jd-action-icon">👤</span> -->
+              <span>View Profile</span>
+            </Button>
+            <Button
+              size="md"
+              theme="gray"
+              :variant="'solid'"
+              class="jd-action-btn !w-[10rem]"
+              @click="showAssignInterviewDialog = true"
+            >
+              <!-- <span class="jd-action-icon">📅</span> -->
+              <span>Assign Interview</span>
+            </Button>
+            <Button
+              size="md"
+              theme="gray"
+              :variant="'solid'"
+              class="jd-action-btn !w-[10rem]"
+              @click="sendEmail"
+            >
+              <!-- <span class="jd-action-icon">✉️</span> -->
+              <span>Send Email</span>
+            </Button>
+          </div>
+        </div>
+      </div>
+    </div>
 
             <!-- Add Candidate Dialog -->
             <Dialog
@@ -355,62 +369,173 @@
                             />
                         </div>
 
-                        <div>
-                            <label class="block text-sm font-medium mb-1">Interview Summary</label>
-                            <textarea
-                                v-model="interviewData.interview_summary"
-                                class="form-control"
-                                rows="3"
-                                placeholder="Optional notes or summary"
-                            ></textarea>
-                        </div>
-                    </div>
-                </template>
-                <template #actions>
-                    <Button @click="showAssignInterviewDialog = false">Cancel</Button>
-                    <Button theme="gray" :variant="'solid'" @click="assignInterview"
-                        >Assign Interview</Button
-                    >
-                </template>
-            </Dialog>
-
-            <!-- Bulk Move Dialog -->
-            <Dialog
-                v-model="showBulkMoveDialog"
-                :options="{ title: 'Bulk Move Candidates', size: 'md' }"
-            >
-                <template #body-content>
-                    <div class="space-y-4">
-                        <div>
-                            <label class="block text-sm font-medium mb-1">Move to Step *</label>
-                            <Select
-                                v-model="bulkMoveData.target_step"
-                                :options="stepOptions"
-                                placeholder="Select target step"
-                            />
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium mb-1"
-                                >Update Status (Optional)</label
-                            >
-                            <Select
-                                v-model="bulkMoveData.status"
-                                :options="statusOptions"
-                                placeholder="Select status"
-                            />
-                        </div>
-                        <p class="text-muted text-sm">
-                            Moving {{ selectedCandidates.size }} candidate(s)
-                        </p>
-                    </div>
-                </template>
-                <template #actions>
-                    <Button @click="showBulkMoveDialog = false">Cancel</Button>
-                    <Button theme="primary" @click="bulkMoveCandidates">Move Candidates</Button>
-                </template>
-            </Dialog>
+          <div>
+            <label class="block text-sm font-medium mb-1">Interview Summary</label>
+            <textarea
+              v-model="interviewData.interview_summary"
+              class="form-control"
+              rows="3"
+              placeholder="Optional notes or summary"
+            ></textarea>
+          </div>
         </div>
+      </template>
+      <template #actions>
+        <div class="flex justify-between w-full">
+          <Button @click="showAssignInterviewDialog = false">Cancel</Button>
+          <Button theme="gray" :variant="'solid'" @click="assignInterview">Assign Interview</Button>
+        </div>
+      </template>
+    </Dialog>
+
+    <!-- Bulk Move Dialog -->
+    <Dialog v-model="showBulkMoveDialog" :options="{ title: 'Bulk Move Candidates', size: 'md' }">
+      <template #body-content>
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium mb-1">Move to Step *</label>
+            <Select
+              v-model="bulkMoveData.target_step"
+              :options="stepOptions"
+              placeholder="Select target step"
+            />
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-1">Update Status (Optional)</label>
+            <Select
+              v-model="bulkMoveData.status"
+              :options="statusOptions"
+              placeholder="Select status"
+            />
+          </div>
+          <p class="text-muted text-sm">Moving {{ selectedCandidates.size }} candidate(s)</p>
+        </div>
+      </template>
+      <template #actions>
+        <Button @click="showBulkMoveDialog = false">Cancel</Button>
+        <Button theme="primary" @click="bulkMoveCandidates">Move Candidates</Button>
+      </template>
+    </Dialog>
+
+    <!-- Profile View Dialog -->
+    <Dialog v-model="showProfileDialog" :options="{ title: `${activeCandidate?.name || 'Applicant'} Profile`, size: '4xl' }">
+      <template #body-content>
+        <div v-if="loadingProfile" class="profile-loading">
+          <div class="text-center py-8 text-gray-500">Loading profile...</div>
+        </div>
+        <div v-else-if="applicantProfile" class="profile-container">
+          <!-- Header Section -->
+          <div class="profile-header">
+            <div class="profile-avatar-large">
+              {{ activeCandidate?.name?.charAt(0).toUpperCase() }}
+            </div>
+            <div class="profile-header-info">
+              <h2 class="profile-name">{{ applicantProfile.job_applicant || activeCandidate?.name }}</h2>
+              <div class="profile-contact-links">
+                <a
+                  v-for="link in applicantProfile.links"
+                  :key="link.url"
+                  :href="link.url"
+                  target="_blank"
+                  class="profile-link"
+                >
+                  {{ link.label }}
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Summary Section -->
+          <div v-if="applicantProfile.summary" class="profile-section">
+            <h3 class="profile-section-title">Summary</h3>
+            <p class="profile-summary-text">{{ applicantProfile.summary }}</p>
+          </div>
+
+          <!-- Experience Section -->
+          <div v-if="applicantProfile.experience?.length" class="profile-section">
+            <h3 class="profile-section-title">Experience</h3>
+            <div class="profile-timeline">
+              <div
+                v-for="(exp, idx) in applicantProfile.experience"
+                :key="idx"
+                class="profile-timeline-item"
+              >
+                <div class="profile-timeline-dot"></div>
+                <div class="profile-timeline-content">
+                  <div class="profile-exp-header">
+                    <div>
+                      <h4 class="profile-exp-role">{{ exp.role }}</h4>
+                      <div class="profile-exp-company">{{ exp.company }}</div>
+                    </div>
+                    <div class="profile-exp-duration">
+                      {{ formatProfileDate(exp.from_date) }} - {{ formatProfileDate(exp.to_date) }}
+                    </div>
+                  </div>
+                  <p class="profile-exp-description" v-if="exp.description">{{ exp.description }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Education Section -->
+          <div v-if="applicantProfile.education?.length" class="profile-section">
+            <h3 class="profile-section-title">Education</h3>
+            <div class="profile-education-list">
+              <div
+                v-for="(edu, idx) in applicantProfile.education"
+                :key="idx"
+                class="profile-education-item"
+              >
+                <div class="profile-edu-icon">🎓</div>
+                <div>
+                  <h4 class="profile-edu-degree">{{ edu.degree }}</h4>
+                  <div class="profile-edu-institution">{{ edu.institution }}</div>
+                  <div class="profile-edu-duration">
+                    {{ formatProfileDate(edu.from_date) }} - {{ formatProfileDate(edu.to_date) }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Projects Section -->
+          <div v-if="applicantProfile.projects?.length" class="profile-section">
+            <h3 class="profile-section-title">Projects</h3>
+            <div class="profile-projects-grid">
+              <div
+                v-for="(project, idx) in applicantProfile.projects"
+                :key="idx"
+                class="profile-project-card"
+              >
+                <div class="profile-project-header">
+                  <h4 class="profile-project-title">{{ project.title }}</h4>
+                  <a
+                    v-if="project.link"
+                    :href="project.link"
+                    target="_blank"
+                    class="profile-project-link"
+                  >
+                    🔗
+                  </a>
+                </div>
+                <p class="profile-project-description">{{ project.description }}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Skills Section -->
+          <div v-if="applicantProfile.skills" class="profile-section">
+            <h3 class="profile-section-title">Skills</h3>
+            <p class="profile-skills-text">{{ applicantProfile.skills }}</p>
+          </div>
+        </div>
+      </template>
+      <template #actions>
+        <Button @click="showProfileDialog = false">Close</Button>
+      </template>
+    </Dialog>
     </div>
+  </div>
 </template>
 
 <script setup>
@@ -468,6 +593,11 @@ const targetStep = ref("");
 const showAddCandidateDialog = ref(false);
 const showAssignInterviewDialog = ref(false);
 const showBulkMoveDialog = ref(false);
+const showProfileDialog = ref(false);
+
+// Profile data
+const applicantProfile = ref(null);
+const loadingProfile = ref(false);
 
 // Form data
 const newCandidate = ref({
@@ -797,28 +927,36 @@ async function assignInterview() {
         return;
     }
 
-    // Mock implementation - log the data
-    console.log("Assigning interview:", {
-        ...interviewData.value,
-        candidate: activeCandidate.value?.email,
-        job: job.value?.name,
-    });
+  const payload = {
+    job_applicant: activeCandidate.value.id,
+    interview_round: interviewData.value.interview_round,
+    status: interviewData.value.status,
+    scheduled_on: interviewData.value.scheduled_on,
+    from_time: interviewData.value.from_time,
+    to_time: interviewData.value.to_time,
+    expected_average_rating: interviewData.value.expected_average_rating || 0,
+    interview_summary: interviewData.value.interview_summary || "",
+  };
 
-    toast.success(
-        `Interview assigned to ${activeCandidate.value?.name} on ${interviewData.value.scheduled_on}`,
-    );
+  try {
+    await JobDetailsAPI.createOrUpdateInterview(payload);
+
+    toast.success(`Interview assigned to ${activeCandidate.value?.name} on ${interviewData.value.scheduled_on}`);
     showAssignInterviewDialog.value = false;
 
     // Reset form
     interviewData.value = {
-        interview_round: "HR Screening",
-        status: "Scheduled",
-        scheduled_on: "",
-        from_time: "",
-        to_time: "",
-        expected_average_rating: 0,
-        interview_summary: "",
+      interview_round: "HR Screening",
+      status: "Scheduled",
+      scheduled_on: "",
+      from_time: "",
+      to_time: "",
+      expected_average_rating: 0,
+      interview_summary: "",
     };
+  } catch (error) {
+    toast.error(error.message || "Failed to assign interview");
+  }
 }
 
 async function bulkMoveCandidates() {
@@ -874,6 +1012,44 @@ async function bulkMoveCandidates() {
 // Reload job details
 function reloadJobDetails() {
     jobDetailsResource.fetch();
+}
+
+// Action panel methods
+function viewApplicantProfile() {
+  if (!activeCandidate.value) return;
+  
+  loadingProfile.value = true;
+  showProfileDialog.value = true;
+  
+  // Call the API to get detailed profile
+  JobDetailsAPI.jobApplicantFind(activeCandidate.value.id)
+    .then((profile) => {
+      applicantProfile.value = profile;
+      loadingProfile.value = false;
+    })
+    .catch((error) => {
+      toast.error('Failed to load profile');
+      console.error(error);
+      loadingProfile.value = false;
+      showProfileDialog.value = false;
+    });
+}
+
+function formatProfileDate(dateStr) {
+  if (!dateStr) return 'Present';
+  try {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short' });
+  } catch {
+    return dateStr;
+  }
+}
+
+function sendEmail() {
+  if (!activeCandidate.value) return;
+  
+  // TODO: Implement email functionality
+  toast.info(`Email feature for ${activeCandidate.value.email} coming soon`);
 }
 
 // Watch for search query changes
@@ -962,17 +1138,50 @@ watch(
 }
 
 .jd-body {
-    display: grid;
-    grid-template-columns: 360px 1fr;
-    gap: 14px;
-    min-height: 520px;
+  display: grid;
+  grid-template-columns: 350px 1fr 190px;
+  gap: 14px;
+  min-height: 520px;
 }
 
 .jd-left,
-.jd-right {
-    background: #ffffff66;
-    border: 1px solid var(--border-color, #e6e6e6);
-    border-radius: 10px;
+.jd-middle,
+.jd-actions-panel {
+  background: #ffffff66;
+  border: 1px solid var(--border-color, #e6e6e6);
+  border-radius: 10px;
+}
+
+.jd-actions-panel {
+  display: flex;
+  flex-direction: column;
+}
+
+.jd-actions-content {
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.jd-actions-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #111827;
+  margin: 0 0 16px 0;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border-color, #e6e6e6);
+}
+
+.jd-actions-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.jd-action-icon {
+  font-size: 18px;
+  line-height: 1;
 }
 
 .jd-left-top {
@@ -1149,5 +1358,278 @@ label {
 
 .mb-1 {
     margin-bottom: 0.25rem;
+}
+
+/* Profile Dialog Styles */
+.profile-container {
+  max-height: 70vh;
+  overflow-y: auto;
+  padding: 8px;
+}
+
+.profile-loading {
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 24px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 12px;
+  margin-bottom: 24px;
+  color: white;
+}
+
+.profile-avatar-large {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  font-weight: 800;
+  color: white;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+}
+
+.profile-header-info {
+  flex: 1;
+}
+
+.profile-name {
+  font-size: 28px;
+  font-weight: 800;
+  margin: 0 0 8px 0;
+  color: white;
+}
+
+.profile-contact-links {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.profile-link {
+  color: rgba(255, 255, 255, 0.9);
+  text-decoration: none;
+  font-size: 14px;
+  padding: 4px 12px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  transition: all 0.2s;
+}
+
+.profile-link:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: translateY(-1px);
+}
+
+.profile-section {
+  margin-bottom: 32px;
+}
+
+.profile-section-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #111827;
+  margin: 0 0 16px 0;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.profile-summary-text {
+  font-size: 15px;
+  line-height: 1.7;
+  color: #374151;
+  margin: 0;
+}
+
+.profile-timeline {
+  position: relative;
+  padding-left: 32px;
+}
+
+.profile-timeline::before {
+  content: '';
+  position: absolute;
+  left: 8px;
+  top: 8px;
+  bottom: 8px;
+  width: 2px;
+  background: #e5e7eb;
+}
+
+.profile-timeline-item {
+  position: relative;
+  margin-bottom: 24px;
+}
+
+.profile-timeline-dot {
+  position: absolute;
+  left: -28px;
+  top: 6px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #667eea;
+  border: 3px solid white;
+  box-shadow: 0 0 0 2px #667eea;
+}
+
+.profile-timeline-content {
+  background: #f9fafb;
+  border-radius: 8px;
+  padding: 16px;
+  border: 1px solid #e5e7eb;
+}
+
+.profile-exp-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.profile-exp-role {
+  font-size: 18px;
+  font-weight: 700;
+  color: #111827;
+  margin: 0 0 4px 0;
+}
+
+.profile-exp-company {
+  font-size: 15px;
+  font-weight: 600;
+  color: #667eea;
+}
+
+.profile-exp-duration {
+  font-size: 13px;
+  color: #6b7280;
+  white-space: nowrap;
+  background: white;
+  padding: 4px 12px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+}
+
+.profile-exp-description {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #4b5563;
+  margin: 0;
+  white-space: pre-line;
+}
+
+.profile-education-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.profile-education-item {
+  display: flex;
+  gap: 16px;
+  padding: 16px;
+  background: #f9fafb;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+.profile-edu-icon {
+  font-size: 32px;
+  line-height: 1;
+}
+
+.profile-edu-degree {
+  font-size: 16px;
+  font-weight: 700;
+  color: #111827;
+  margin: 0 0 4px 0;
+}
+
+.profile-edu-institution {
+  font-size: 15px;
+  font-weight: 600;
+  color: #667eea;
+  margin-bottom: 4px;
+}
+
+.profile-edu-duration {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.profile-projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.profile-project-card {
+  padding: 16px;
+  background: #f9fafb;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  transition: all 0.2s;
+}
+
+.profile-project-card:hover {
+  border-color: #667eea;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
+  transform: translateY(-2px);
+}
+
+.profile-project-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.profile-project-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+}
+
+.profile-project-link {
+  font-size: 18px;
+  text-decoration: none;
+  opacity: 0.6;
+  transition: opacity 0.2s;
+}
+
+.profile-project-link:hover {
+  opacity: 1;
+}
+
+.profile-project-description {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #4b5563;
+  margin: 0;
+}
+
+.profile-skills-text {
+  font-size: 14px;
+  line-height: 1.7;
+  color: #374151;
+  margin: 0;
+  background: #f9fafb;
+  padding: 16px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
 }
 </style>
