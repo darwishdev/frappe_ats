@@ -17,22 +17,8 @@ def applicant_resume_parse(path: str):
     except Exception as e:
         frappe.throw(f"Failed to read PDF: {str(e)}")
 
-    def sse_generator():
-        workflow = app_container.job_usecase.resume_agent
-        try:
-            # Iterate properly over the workflow
-            yield f"data: Proccessing\n\n"
-            if resume_text == "":
-                raise frappe.ValidationError("cant parse the resume text")
-            for update in workflow.run(resume_text , model_overrides={
-                "labeler": "gemini-2.0-flash",
-            }):
-                yield f"data: {json.dumps(update)}\n\n"
-        except Exception as e:
-            yield f"data: {json.dumps({'status': 'error', 'message': str(e)})}\n\n"
 
-    # PASS THE GENERATOR DIRECTLY HERE
-    response = Response(sse_generator(), mimetype="text/event-stream")
+    response = Response(app_container.job_usecase.applicant_resume.sse_generator(resume_text), mimetype="text/event-stream")
 
     # Required headers for SSE
     response.headers.add("Cache-Control", "no-cache")

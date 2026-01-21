@@ -37,6 +37,7 @@ import { session } from "../data/session";
 
 const ping = createResource({
     url: "mawhub.job_opening_list",
+    method: "get",
     auto: true,
 });
 

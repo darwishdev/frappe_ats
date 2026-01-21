@@ -1,4 +1,5 @@
-from frappe import _
+import json
+from frappe import Any, _
 from typing import List, Protocol, cast
 
 from frappe.model.document import Document
@@ -10,6 +11,7 @@ from mawhub.pkg.pdfconvertor.pdfconvertor import extract_text_from_pdf
 
 class ApplicantResumeUsecaseInterface(Protocol):
 	def applicant_resume_create_update(self, payload: ApplicantResumeDTO)->Document: ...
+	def sse_generator(self, resume_text: str): ...
 	def applicant_resume_parse(
         self,
         path:str
@@ -33,6 +35,18 @@ class ApplicantResumeUsecase:
     def applicant_resume_create_update(self, payload: ApplicantResumeDTO)->Document:
         return self.repo.applicant_resume.applicant_resume_create_update(payload)
 
+
+    def sse_generator(self , resume_text: str):
+        workflow = self.resume_agent
+        try:
+            # Iterate properly over the workflow
+            yield f"data: Proccessing\n\n"
+            if resume_text == "":
+                raise ValueError("cant parse the resume text")
+            for update in workflow.run(resume_text):
+                yield f"data: {json.dumps(update)}\n\n"
+        except Exception as e:
+            yield f"data: {json.dumps({'status': 'error', 'message': str(e)})}\n\n"
     def applicant_resume_parse(
         self,
         path:str
