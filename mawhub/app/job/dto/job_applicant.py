@@ -10,3 +10,4 @@ class JobApplicantBulkUpdateRequest(TypedDict):
     names: List[str]
     status: str
     pipeline_step: str
+

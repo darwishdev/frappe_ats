@@ -6,7 +6,6 @@ app_email = "a.darwish.dev@gmail.com"
 app_license = "mit"
 after_install = "mawhub.pkg.installer.installer.after_install"
 after_migrate = "mawhub.pkg.installer.installer.after_migrate"
-app_include_python = "bootstrap"
 
 cli_commands = {
     "sqlgen": "mawhub.commands.sqlgen.sqlgen",

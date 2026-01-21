@@ -1,4 +1,5 @@
 from typing import Protocol
+from mawhub.app.job.repo.applicant_resume_repo import ApplicantResumeRepo, ApplicantResumeRepoInterface
 from mawhub.app.job.repo.auth_repo import AuthRepo, AuthRepoInterface
 from mawhub.app.job.repo.interview_repo import InterviewRepo, InterviewRepoInterface
 from mawhub.app.job.repo.job_applicant_repo import JobApplicantRepo, JobApplicantRepoInterface
@@ -8,21 +9,20 @@ class JobRepoInterface(Protocol):
     job_applicant: JobApplicantRepoInterface
     interview: InterviewRepoInterface
     auth: AuthRepoInterface
+    applicant_resume : ApplicantResumeRepoInterface
 
 class JobRepo:
     job_opening: JobOpeningRepoInterface
     job_applicant: JobApplicantRepoInterface
     interview: InterviewRepoInterface
     auth: AuthRepoInterface
+    applicant_resume : ApplicantResumeRepoInterface
     def __init__(
         self,
     ):
-        job_opening = JobOpeningRepo()
-        job_applicant = JobApplicantRepo()
-        interview = InterviewRepo()
-        auth = AuthRepo()
-        self.job_opening = job_opening
-        self.auth = auth
-        self.interview = interview
-        self.job_applicant = job_applicant
+        self.job_opening = JobOpeningRepo()
+        self.job_applicant = JobApplicantRepo()
+        self.interview = InterviewRepo()
+        self.auth = AuthRepo()
+        self.applicant_resume = ApplicantResumeRepo()
 

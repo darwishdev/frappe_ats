@@ -1,6 +1,9 @@
 import subprocess, shlex, frappe
 import frappe
 from pathlib import Path
+from typing import Dict, Iterable
+import frappe
+from frappe.model.document import Document
 import pymysql.cursors
 def exec_sql_file(sql_path: Path) -> None:
     """Execute a SQL file using mysql CLI (supports DELIMITER)."""
@@ -45,3 +48,6 @@ def run_sql(callback):
 # ------------------------------------------------------------
 # DB → Python type mapping
 # ------------------------------------------------------------
+
+
+

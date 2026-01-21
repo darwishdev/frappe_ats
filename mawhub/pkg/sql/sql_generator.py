@@ -151,7 +151,7 @@ def table_to_dto_name(prefix: str, table_name: str) -> str:
     if not table_name.startswith(prefix):
         raise ValueError(f"Table does not start with '{prefix}': {table_name}")
 
-    name = table_name.removeprefix(prefix)
+    name = table_name.removeprefix(prefix).replace(' ' , '_')
     parts = name.split("_")
 
     return "".join(p.capitalize() for p in parts if p)

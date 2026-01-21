@@ -1,7 +1,7 @@
-from typing import List, Protocol, TypedDict
+from typing import List, Protocol
 import frappe
 
-from mawhub.app.job.dto.job_applicant import JobApplicantBulkUpdateRequest, JobApplicantUpdateRequest
+from mawhub.app.job.dto.job_applicant import  JobApplicantBulkUpdateRequest, JobApplicantUpdateRequest
 
 
 class JobApplicantRepoInterface(Protocol):
@@ -18,6 +18,7 @@ class JobApplicantRepo:
         doc.save(ignore_permissions=True)
         frappe.db.commit()
         return payload.get('name')
+
 
     def job_applicant_bulk_update(self, payload: JobApplicantBulkUpdateRequest)->List[str]:
         sql_stmt = """

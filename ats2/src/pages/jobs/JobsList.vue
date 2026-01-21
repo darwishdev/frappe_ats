@@ -1,146 +1,147 @@
 <template>
-  <div class="jc-page">
-    <!-- Toolbar with search and filters -->
+    <div class="jc-page">
+        <!-- Toolbar with search and filters -->
 
-    <!-- <div class="flex justify-end w-full my-4 px-1">
+        <!-- <div class="flex justify-end w-full my-4 px-1">
       <Button theme="gray" variant="solid" size="md" class="w-48" @click="createNewJob">
         + New Job
       </Button>
     </div> -->
-    <div class="jc-toolbar">
-      <div class="jc-search">
-        <TextInput
-          v-model="filters.search"
-          type="text"
-          size="sm"
-          variant="subtle"
-          placeholder="Start typing to search jobs..."
-          @input="debouncedApplyFilters"
-        />
-      </div>
+        <div class="jc-toolbar">
+            <div class="jc-search">
+                <TextInput
+                    v-model="filters.search"
+                    type="text"
+                    size="sm"
+                    variant="subtle"
+                    placeholder="Start typing to search jobs..."
+                    @input="debouncedApplyFilters"
+                />
+            </div>
 
+            <div class="jc-filters">
+                <Select
+                    class="w-48"
+                    placeholder="Select Department"
+                    v-model="filters.department"
+                    :options="departmentOptions"
+                    @change="applyFilters"
+                />
 
-      <div class="jc-filters">
-        <Select class="w-48" placeholder="Select Department"
-          v-model="filters.department"
-          :options="departmentOptions" 
-          @change="applyFilters"
-        />
+                <Select
+                    class="w-48"
+                    placeholder="Select Location"
+                    v-model="filters.location"
+                    :options="locationOptions"
+                    @change="applyFilters"
+                />
 
-        <Select class="w-48" placeholder="Select Location"
-          v-model="filters.location"
-          :options="locationOptions"
-          @change="applyFilters"
-        />
+                <Select
+                    class="w-48"
+                    placeholder="Select Group"
+                    v-model="filters.group"
+                    :options="groupOptions"
+                    @change="applyFilters"
+                />
 
-        <Select class="w-48" placeholder="Select Group"
-          v-model="filters.group"
-          :options="groupOptions"
-          @change="applyFilters"
-        />
-
-        <Checkbox
-          size="sm"
-          v-model="filters.includeDrafts"
-          label="Include draft jobs"
-          @change="applyFilters"
-        />
-<!-- 
+                <Checkbox
+                    size="sm"
+                    v-model="filters.includeDrafts"
+                    label="Include draft jobs"
+                    @change="applyFilters"
+                />
+                <!--
       <Button theme="gray" variant="solid" size="md" class="w-32" @click="createNewJob">
         New Job
       </Button> -->
-
-      </div>
-    </div>
-
-    <div class="flex justify-end gap-3 items-center w-full my-4">
-      <Button
-      theme="gray"
-      size="md"
-      class="w-40"
-      :disabled="jobsResource.loading"
-      @click="reload"
-      >
-      {{ jobsResource.loading ? "Refreshing..." : "Refresh" }}
-      </Button>
-      <Button theme="gray" variant="solid" size="md" class="w-40" @click="createNewJob">
-        New Job
-      </Button>
-    </div>
-
-    <!-- Loading state -->
-    <div v-if="jobsResource.loading" class="text-center py-8 text-gray-500">
-      Loading jobs...
-    </div>
-
-    <!-- Error state -->
-    <div v-else-if="jobsResource.error" class="text-center py-8 text-red-500">
-      Error loading jobs: {{ jobsResource.error }}
-    </div>
-
-    <!-- Jobs list -->
-    <div v-else-if="filteredJobs.length > 0" class="jc-list">
-      <div
-        v-for="job in filteredJobs"
-        :key="job.name"
-        class="jc-card"
-        :data-job="job.name"
-      >
-        <!-- Card Header -->
-        <div class="jc-card-head">
-          <div>
-            <div class="jc-title" @click="openJob(job.name)">
-              {{ job.title }}
             </div>
-            <div class="jc-subtitle">
-              {{ job.department }} · {{ job.work_mode }} · {{ job.location }}
+        </div>
+
+        <div class="flex justify-end gap-3 items-center w-full my-4">
+            <Button
+                theme="gray"
+                size="md"
+                class="w-40"
+                :disabled="jobsResource.loading"
+                @click="reload"
+            >
+                {{ jobsResource.loading ? "Refreshing..." : "Refresh" }}
+            </Button>
+            <Button theme="gray" variant="solid" size="md" class="w-40" @click="createNewJob">
+                New Job
+            </Button>
+        </div>
+
+        <!-- Loading state -->
+        <div v-if="jobsResource.loading" class="text-center py-8 text-gray-500">
+            Loading jobs...
+        </div>
+
+        <!-- Error state -->
+        <div v-else-if="jobsResource.error" class="text-center py-8 text-red-500">
+            Error loading jobs: {{ jobsResource.error }}
+        </div>
+
+        <!-- Jobs list -->
+        <div v-else-if="filteredJobs.length > 0" class="jc-list">
+            <div v-for="job in filteredJobs" :key="job.name" class="jc-card" :data-job="job.name">
+                <!-- Card Header -->
+                <div class="jc-card-head">
+                    <div>
+                        <div class="jc-title" @click="openJob(job.name)">
+                            {{ job.title }}
+                        </div>
+                        <div class="jc-subtitle">
+                            {{ job.department }} · {{ job.work_mode }} · {{ job.location }}
+                        </div>
+                    </div>
+
+                    <div class="jc-actions">
+                        <button class="btn btn-default btn-sm" @click="copyJobLink(job)">
+                            📋 Copy Link
+                        </button>
+                        <button class="btn btn-default btn-sm" @click="findCandidates(job.name)">
+                            Find Candidates
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Pipeline stages -->
+                <div v-if="job.stages.length > 0" class="jc-pipeline">
+                    <div
+                        v-for="stage in job.stages.slice(0, 12)"
+                        :key="`${job.name}-${stage.id}`"
+                        class="jc-stage"
+                        :title="stage.label"
+                    >
+                        <div class="jc-stage-count">{{ formatCount(stage.count) }}</div>
+                        <div class="jc-stage-label">{{ stage.label }}</div>
+                    </div>
+                </div>
+
+                <!-- Card Footer -->
+                <div class="jc-card-foot">
+                    <div v-if="!job.is_published" class="jc-warn">
+                        <span style="font-size: 16px">✕</span>
+                        <span
+                            >This job is not published on your careers page or on any job
+                            boards</span
+                        >
+                    </div>
+                    <div v-else></div>
+
+                    <div>
+                        Candidates: {{ job.candidates_total }} total ·
+                        {{ job.candidates_active }} active in pipeline · Last candidate on
+                        {{ formatDate(job.last_candidate_on) }}
+                    </div>
+                </div>
             </div>
-          </div>
-
-          <div class="jc-actions">
-            <button class="btn btn-default btn-sm" @click="copyJobLink(job)">
-              📋 Copy Link
-            </button>
-            <button class="btn btn-default btn-sm" @click="findCandidates(job.name)">
-              Find Candidates
-            </button>
-          </div>
         </div>
 
-        <!-- Pipeline stages -->
-        <div v-if="job.stages.length > 0" class="jc-pipeline">
-          <div
-            v-for="stage in job.stages.slice(0, 12)"
-            :key="`${job.name}-${stage.id}`"
-            class="jc-stage"
-            :title="stage.label"
-          >
-            <div class="jc-stage-count">{{ formatCount(stage.count) }}</div>
-            <div class="jc-stage-label">{{ stage.label }}</div>
-          </div>
-        </div>
-
-        <!-- Card Footer -->
-        <div class="jc-card-foot">
-          <div v-if="!job.is_published" class="jc-warn">
-            <span style="font-size: 16px">✕</span>
-            <span>This job is not published on your careers page or on any job boards</span>
-          </div>
-          <div v-else></div>
-
-          <div>
-            Candidates: {{ job.candidates_total }} total · {{ job.candidates_active }} active in
-            pipeline · Last candidate on {{ formatDate(job.last_candidate_on) }}
-          </div>
-        </div>
-      </div>
+        <!-- Empty state -->
+        <div v-else class="jc-empty">No jobs found.</div>
     </div>
-
-    <!-- Empty state -->
-    <div v-else class="jc-empty">
-      No jobs found.
-    </div>
-  </div>
 </template>
 
 <script setup>
@@ -154,11 +155,11 @@ const toast = useToast();
 
 // State
 const filters = ref({
-  search: "",
-  department: "",
-  location: "",
-  group: "",
-  includeDrafts: true,
+    search: "",
+    department: "",
+    location: "",
+    group: "",
+    includeDrafts: true,
 });
 
 const allJobs = ref([]);
@@ -166,180 +167,182 @@ const filteredJobs = ref([]);
 
 // Fetch jobs from API
 const jobsResource = createResource({
-  url: "mawhub.job_opening_list",
-  auto: true,
-  onSuccess(data) {
-    allJobs.value = transformJobData(data || []);
-    applyFilters();
-  },
+    url: "mawhub.job_opening_list",
+    auto: true,
+    onSuccess(data) {
+        allJobs.value = transformJobData(data || []);
+        applyFilters();
+    },
 });
 
 // Transform API response to UI format
 function transformJobData(rawJobs) {
-  return rawJobs.map((job) => {
-    // Get unique steps and aggregate candidate counts
-    const stepsMap = new Map();
+    return rawJobs.map((job) => {
+        // Get unique steps and aggregate candidate counts
+        const stepsMap = new Map();
 
-    if (job.steps && Array.isArray(job.steps)) {
-      job.steps.forEach((step) => {
-        const key = `${step.step_id}-${step.step_name}`;
-        if (!stepsMap.has(key)) {
-          stepsMap.set(key, {
-            id: step.step_id,
-            label: step.step_name,
-            count: 0,
-          });
+        if (job.steps && Array.isArray(job.steps)) {
+            job.steps.forEach((step) => {
+                const key = `${step.step_id}-${step.step_name}`;
+                if (!stepsMap.has(key)) {
+                    stepsMap.set(key, {
+                        id: step.step_id,
+                        label: step.step_name,
+                        count: 0,
+                    });
+                }
+                stepsMap.get(key).count += step.candidate_count || 0;
+            });
         }
-        stepsMap.get(key).count += step.candidate_count || 0;
-      });
-    }
 
-    const stages = Array.from(stepsMap.values()).sort((a, b) => a.id - b.id);
+        const stages = Array.from(stepsMap.values()).sort((a, b) => a.id - b.id);
 
-    // Calculate total candidates
-    const totalCandidates = parseInt(job.candidate_count) || 0;
+        // Calculate total candidates
+        const totalCandidates = parseInt(job.candidate_count) || 0;
 
-    // Determine publish status
-    const isPublished = job.publish === 1;
-    const isDraft = job.docstatus === 0;
+        // Determine publish status
+        const isPublished = job.publish === 1;
+        const isDraft = job.docstatus === 0;
 
-    return {
-      name: job.name,
-      title: job.designation || "Untitled Position",
-      department: job.department || "Not Specified",
-      location: job.location || "Not Specified",
-      work_mode: job.employment_type || "Full-time",
-      is_published: isPublished,
-      is_draft: isDraft,
-      route: job.route || "",
-      stages: stages,
-      candidates_total: totalCandidates,
-      candidates_active: totalCandidates,
-      last_candidate_on: job.posted_on,
-      group: job.department || null,
-    };
-  });
+        return {
+            name: job.name,
+            title: job.designation || "Untitled Position",
+            department: job.department || "Not Specified",
+            location: job.location || "Not Specified",
+            work_mode: job.employment_type || "Full-time",
+            is_published: isPublished,
+            is_draft: isDraft,
+            route: job.route || "",
+            stages: stages,
+            candidates_total: totalCandidates,
+            candidates_active: totalCandidates,
+            last_candidate_on: job.posted_on,
+            group: job.department || null,
+        };
+    });
 }
 
 // Computed properties for filter options
 const departments = computed(() => {
-  return [...new Set(allJobs.value.map((j) => j.department).filter(Boolean))].sort();
+    return [...new Set(allJobs.value.map((j) => j.department).filter(Boolean))].sort();
 });
 
 const locations = computed(() => {
-  return [...new Set(allJobs.value.map((j) => j.location).filter(Boolean))].sort();
+    return [...new Set(allJobs.value.map((j) => j.location).filter(Boolean))].sort();
 });
 
 const groups = computed(() => {
-  return [...new Set(allJobs.value.map((j) => j.group).filter(Boolean))].sort();
+    return [...new Set(allJobs.value.map((j) => j.group).filter(Boolean))].sort();
 });
 
 // Format options for Select components
 const departmentOptions = computed(() => [
-  { label: "All departments", value: "" },
-  ...departments.value.map(dept => ({ label: dept, value: dept }))
+    { label: "All departments", value: "" },
+    ...departments.value.map((dept) => ({ label: dept, value: dept })),
 ]);
 
 const locationOptions = computed(() => [
-  { label: "All locations", value: "" },
-  ...locations.value.map(loc => ({ label: loc, value: loc }))
+    { label: "All locations", value: "" },
+    ...locations.value.map((loc) => ({ label: loc, value: loc })),
 ]);
 
 const groupOptions = computed(() => [
-  { label: "No group applied", value: "" },
-  ...groups.value.map(grp => ({ label: grp, value: grp }))
+    { label: "No group applied", value: "" },
+    ...groups.value.map((grp) => ({ label: grp, value: grp })),
 ]);
 
 // Apply filters
 function applyFilters() {
-  const f = filters.value;
+    const f = filters.value;
 
-  filteredJobs.value = allJobs.value.filter((j) => {
-    // Filter drafts
-    if (!f.includeDrafts && j.is_draft) return false;
+    filteredJobs.value = allJobs.value.filter((j) => {
+        // Filter drafts
+        if (!f.includeDrafts && j.is_draft) return false;
 
-    // Filter by department
-    if (f.department && j.department !== f.department) return false;
+        // Filter by department
+        if (f.department && j.department !== f.department) return false;
 
-    // Filter by location
-    if (f.location && j.location !== f.location) return false;
+        // Filter by location
+        if (f.location && j.location !== f.location) return false;
 
-    // Filter by group
-    if (f.group && j.group !== f.group) return false;
+        // Filter by group
+        if (f.group && j.group !== f.group) return false;
 
-    // Filter by search query
-    if (f.search) {
-      const query = f.search.toLowerCase();
-      const searchText = `${j.title} ${j.department} ${j.location} ${j.work_mode}`.toLowerCase();
-      if (!searchText.includes(query)) return false;
-    }
+        // Filter by search query
+        if (f.search) {
+            const query = f.search.toLowerCase();
+            const searchText =
+                `${j.title} ${j.department} ${j.location} ${j.work_mode}`.toLowerCase();
+            if (!searchText.includes(query)) return false;
+        }
 
-    return true;
-  });
+        return true;
+    });
 }
 
 // Debounced filter for search input
 let debounceTimeout = null;
 function debouncedApplyFilters() {
-  clearTimeout(debounceTimeout);
-  debounceTimeout = setTimeout(applyFilters, 200);
+    clearTimeout(debounceTimeout);
+    debounceTimeout = setTimeout(applyFilters, 200);
 }
 
 // Format count for display
 function formatCount(count) {
-  if (count >= 1000) {
-    return `${(count / 1000).toFixed(1)}k`;
-  }
-  return count.toString();
+    if (count >= 1000) {
+        return `${(count / 1000).toFixed(1)}k`;
+    }
+    return count.toString();
 }
 
 // Format date for display
 function formatDate(dateStr) {
-  if (!dateStr) return "N/A";
-  try {
-    const date = new Date(dateStr);
-    return date.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
-  } catch {
-    return dateStr;
-  }
+    if (!dateStr) return "N/A";
+    try {
+        const date = new Date(dateStr);
+        return date.toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+        });
+    } catch {
+        return dateStr;
+    }
 }
 
 // Action handlers
 function openJob(jobName) {
-  // Navigate to job details page
-  router.push({ name: "JobDetails", params: { jobId: jobName } });
+    // Navigate to job details page
+    router.push({ name: "JobDetails", params: { jobId: jobName } });
 }
 
 function copyJobLink(job) {
-  // const jobLink = `${window.location.origin}/jobs/mawhub/${jobName}`;
-  const jobLink = `http://localhost:8000/${job.route}`;
-  navigator.clipboard.writeText(jobLink)
-    .then(() => {
-      toast.success("Job link copied to clipboard!");
-    })
-    .catch(() => {
-      toast.error("Failed to copy link");
-    });
+    // const jobLink = `${window.location.origin}/jobs/mawhub/${jobName}`;
+    const jobLink = `http://localhost:8001/${job.route}`;
+    navigator.clipboard
+        .writeText(jobLink)
+        .then(() => {
+            toast.success("Job link copied to clipboard!");
+        })
+        .catch(() => {
+            toast.error("Failed to copy link");
+        });
 }
 
 function findCandidates(jobName) {
-  // Navigate to candidates list for this job
-  console.log("Finding candidates for:", jobName);
-  // Example: router.push(`/candidates?job=${jobName}`);
+    // Navigate to candidates list for this job
+    console.log("Finding candidates for:", jobName);
+    // Example: router.push(`/candidates?job=${jobName}`);
 }
 
 function createNewJob() {
-  // Redirect to ERPNext job opening form
-  window.open('http://localhost:8000/desk/job-opening/new-job-opening', '_blank');
+    // Redirect to ERPNext job opening form
+    window.open("http://localhost:8001/desk/job-opening/new-job-opening", "_blank");
 }
 
 // Reload function (can be called externally)
 function reload() {
-  jobsResource.fetch();
+    jobsResource.fetch();
 }
 
 // Expose reload function
@@ -348,179 +351,179 @@ defineExpose({ reload });
 
 <style>
 .jc-page {
-  padding: 3rem;
+    padding: 3rem;
 }
 
 .jc-toolbar {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  margin-bottom: 16px;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
 }
 
 .jc-search {
-  min-width: 480px;
+    min-width: 480px;
 }
 
 .jc-filters {
-  display: flex;
-  gap: 10px;
-  align-items: center;
+    display: flex;
+    gap: 10px;
+    align-items: center;
 }
 .jc-filters label {
     width: 120px !important;
 }
 
 .jc-list {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
 }
 
 .jc-card {
-  background: var(--card-bg, #fff);
-  border: 1px solid var(--border-color, #e6e6e6);
-  border-radius: 10px;
-  padding: 16px;
+    background: var(--card-bg, #fff);
+    border: 1px solid var(--border-color, #e6e6e6);
+    border-radius: 10px;
+    padding: 16px;
 }
 
 .jc-card-head {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
 }
 
 .jc-title {
-  font-size: 18px;
-  font-weight: 700;
-  margin: 0;
-  cursor: pointer;
+    font-size: 18px;
+    font-weight: 700;
+    margin: 0;
+    cursor: pointer;
 }
 
 .jc-title:hover {
-  color: #0066cc;
+    color: #0066cc;
 }
 
 .jc-subtitle {
-  color: #6b7280;
-  margin-top: 4px;
-  font-size: 13px;
+    color: #6b7280;
+    margin-top: 4px;
+    font-size: 13px;
 }
 
 .jc-actions {
-  display: flex;
-  gap: 10px;
-  align-items: center;
+    display: flex;
+    gap: 10px;
+    align-items: center;
 }
 
 .jc-pipeline {
-  display: grid;
-  grid-template-columns: repeat(12, minmax(70px, 1fr));
-  gap: 10px;
-  margin-top: 14px;
-  padding-top: 14px;
-  border-top: 1px solid var(--border-color, #eee);
-  overflow-x: auto;
+    display: grid;
+    grid-template-columns: repeat(12, minmax(70px, 1fr));
+    gap: 10px;
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid var(--border-color, #eee);
+    overflow-x: auto;
 }
 
 .jc-stage {
-  text-align: center;
-  border-right: 1px solid #f0f0f0;
-  padding-right: 10px;
+    text-align: center;
+    border-right: 1px solid #f0f0f0;
+    padding-right: 10px;
 }
 
 .jc-stage:last-child {
-  border-right: none;
+    border-right: none;
 }
 
 .jc-stage-count {
-  font-size: 18px;
-  font-weight: 700;
+    font-size: 18px;
+    font-weight: 700;
 }
 
 .jc-stage-label {
-  font-size: 12px;
-  color: #6b7280;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+    font-size: 12px;
+    color: #6b7280;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .jc-card-foot {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  align-items: center;
-  margin-top: 12px;
-  color: #6b7280;
-  font-size: 13px;
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    align-items: center;
+    margin-top: 12px;
+    color: #6b7280;
+    font-size: 13px;
 }
 
 .jc-warn {
-  color: #b42318;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
+    color: #b42318;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .jc-empty {
-  padding: 18px;
-  color: #6b7280;
-  text-align: center;
+    padding: 18px;
+    color: #6b7280;
+    text-align: center;
 }
 
 /* Form controls styling */
 .form-control {
-  padding: 8px 12px;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  font-size: 14px;
-  outline: none;
-  transition: border-color 0.2s;
+    padding: 8px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
 }
 
 .form-control:focus {
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
 /* Button styling */
 .btn {
-  padding: 8px 16px;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  border: 1px solid transparent;
-  transition: all 0.2s;
-  white-space: nowrap;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: all 0.2s;
+    white-space: nowrap;
 }
 
 .btn-default {
-  background: white;
-  border-color: #d1d5db;
-  color: #374151;
+    background: white;
+    border-color: #d1d5db;
+    color: #374151;
 }
 
 .btn-default:hover {
-  background: #f9fafb;
-  border-color: #9ca3af;
+    background: #f9fafb;
+    border-color: #9ca3af;
 }
 
 .btn-primary {
-  background: #3b82f6;
-  color: white;
+    background: #3b82f6;
+    color: white;
 }
 
 .btn-primary:hover {
-  background: #2563eb;
+    background: #2563eb;
 }
 
 .btn-sm {
-  padding: 6px 12px;
-  font-size: 13px;
+    padding: 6px 12px;
+    font-size: 13px;
 }
 </style>

@@ -1,6 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
+ "autoname": "field:job_applicant",
  "creation": "2026-01-19 15:43:15.345081",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -22,7 +23,8 @@
    "in_list_view": 1,
    "label": "Job Applicant",
    "options": "Job Applicant",
-   "reqd": 1
+   "reqd": 1,
+   "unique": 1
   },
   {
    "fieldname": "skills",
@@ -72,10 +74,11 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-01-19 16:02:01.094729",
- "modified_by": "Administrator",
+ "modified": "2026-01-21 14:10:44.428104",
+ "modified_by": "ahmed@mawhub.io",
  "module": "Mawhub",
  "name": "Applicant Resume",
+ "naming_rule": "By fieldname",
  "owner": "Administrator",
  "permissions": [
   {

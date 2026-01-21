@@ -1,8 +1,6 @@
-from typing import List
 import frappe
 from frappe import _
 
-from mawhub.app.job.dto.job_opening import JobOpeningDTO
 from mawhub.bootstrap import app_container
 from mawhub.sqltypes.table_models import Interview
 
