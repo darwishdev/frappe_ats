@@ -298,6 +298,59 @@ export const JobDetailsAPI = {
     });
     
     return resource.promise;
+  },
+
+  /**
+   * Parse resume and create job applicant
+   * @param {Object} resumeData - Resume parsing data
+   * @param {string} resumeData.file_url - Uploaded resume file URL
+   * @param {string} resumeData.file_name - Resume file name
+   * @param {string} resumeData.job_opening - Job Opening ID
+   * @returns {Promise<Object>} Parsed resume data and created applicant
+   */
+  parseResume: function(resumeData) {
+    if (!_createResource) {
+      throw new Error('JobDetailsAPI not initialized. Call JobDetailsAPI.init(createResource) first.');
+    }
+    
+    const resource = _createResource({
+      url: 'mawhub.applicant_resume_parse',
+      params: {
+        payload: resumeData
+      },
+      auto: true
+    });
+    
+    return resource.promise;
+  },
+
+  /**
+   * Send email to job applicant
+   * @param {Object} emailData - Email data
+   * @param {string} emailData.recipient - Recipient email address
+   * @param {string} emailData.subject - Email subject
+   * @param {string} emailData.message - Email message/body
+   * @param {string} emailData.cc - CC emails (comma separated)
+   * @param {string} emailData.bcc - BCC emails (comma separated)
+   * @param {boolean} emailData.send_me_a_copy - Send copy to sender
+   * @param {string} emailData.job_applicant - Job applicant ID
+   * @param {string} emailData.job_opening - Job opening ID
+   * @returns {Promise<Object>} Email send result
+   */
+  sendEmail: function(emailData) {
+    if (!_createResource) {
+      throw new Error('JobDetailsAPI not initialized. Call JobDetailsAPI.init(createResource) first.');
+    }
+    
+    const resource = _createResource({
+      url: 'mawhub.send_applicant_email',
+      params: {
+        payload: emailData
+      },
+      auto: true
+    });
+    
+    return resource.promise;
   }
 };
 

@@ -26,6 +26,22 @@
                 </div>
 
                 <div class="jd-header-actions">
+                    <input
+                        ref="resumeFileInput"
+                        type="file"
+                        accept=".pdf,.doc,.docx"
+                        style="display: none"
+                        @change="handleResumeUpload"
+                    />
+                    <Button
+                        theme="gray"
+                        :variant="'solid'"
+                        class="w-40"
+                        :loading="isUploading"
+                        @click="triggerResumeUpload"
+                    >
+                        {{ isUploading ? `Uploading... ${uploadProgress}%` : 'Upload Resume' }}
+                    </Button>
                     <Button
                         theme="gray"
                         :variant="'solid'"
@@ -130,30 +146,29 @@
                   </div>
                 </div>
               </div>
-
-                                <div
-                                    style="
-                                        display: flex;
-                                        flex-direction: column;
-                                        gap: 8px;
-                                        min-width: 200px;
-                                    "
-                                >
-                                    <Select
-                                        v-model="targetStep"
-                                        :options="stepOptions"
-                                        placeholder="Select step"
-                                    />
-                                    <Button
-                                        size="sm"
-                                        theme="gray"
-                                        :variant="'solid'"
-                                        @click="moveCandidateToStep"
-                                    >
-                                        Move to selected step
-                                    </Button>
-                                </div>
-                            </div>
+                <div
+                    style="
+                        display: flex;
+                        flex-direction: column;
+                        gap: 8px;
+                        min-width: 200px;
+                    "
+                >
+                    <Select
+                        v-model="targetStep"
+                        :options="stepOptions"
+                        placeholder="Select step"
+                    />
+                    <Button
+                        size="sm"
+                        theme="gray"
+                        :variant="'solid'"
+                        @click="moveCandidateToStep"
+                    >
+                        Move to selected step
+                    </Button>
+                </div>
+            </div>
 
             <div>
               <div class="jd-badges">
@@ -240,300 +255,40 @@
       </div>
     </div>
 
-            <!-- Add Candidate Dialog -->
-            <Dialog
+            <!-- Dialog Components -->
+            <AddCandidateDialog
                 v-model="showAddCandidateDialog"
-                :options="{ title: 'Add Candidate', size: 'lg' }"
-            >
-                <template #body-content>
-                    <div class="space-y-4">
-                        <div>
-                            <label class="block text-sm font-medium mb-1">Name *</label>
-                            <TextInput
-                                v-model="newCandidate.name"
-                                type="text"
-                                placeholder="Enter candidate name"
-                            />
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium mb-1">Email *</label>
-                            <TextInput
-                                v-model="newCandidate.email"
-                                type="email"
-                                placeholder="Enter email address"
-                            />
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium mb-1">Phone</label>
-                            <TextInput
-                                v-model="newCandidate.phone"
-                                type="text"
-                                placeholder="Enter phone number"
-                            />
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium mb-1">Country</label>
-                            <TextInput
-                                v-model="newCandidate.country"
-                                type="text"
-                                placeholder="Enter country"
-                            />
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium mb-1">Source</label>
-                            <Select
-                                v-model="newCandidate.source"
-                                :options="sourceOptions"
-                                placeholder="Select source"
-                            />
-                        </div>
-                    </div>
-                </template>
-                <template #actions>
-                    <Button @click="showAddCandidateDialog = false">Cancel</Button>
-                    <Button theme="gray" :variant="'solid'" @click="addCandidate"
-                        >Add Candidate</Button
-                    >
-                </template>
-            </Dialog>
+                :on-submit="handleAddCandidate"
+            />
 
-            <!-- Assign Interview Dialog -->
-            <Dialog
+            <AssignInterviewDialog
                 v-model="showAssignInterviewDialog"
-                :options="{
-                    title: `Assign Interview to ${activeCandidate?.name || ''}`,
-                    size: 'xl',
-                }"
-            >
-                <template #body-content>
-                    <div class="space-y-4">
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-sm font-medium mb-1"
-                                    >Interview Round *</label
-                                >
-                                <Select
-                                    v-model="interviewData.interview_round"
-                                    :options="interviewRoundOptions"
-                                    placeholder="Select round"
-                                />
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium mb-1">Status *</label>
-                                <Select
-                                    v-model="interviewData.status"
-                                    :options="interviewStatusOptions"
-                                    placeholder="Select status"
-                                />
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-3 gap-4">
-                            <div>
-                                <label class="block text-sm font-medium mb-1"
-                                    >Scheduled Date *</label
-                                >
-                                <input
-                                    v-model="interviewData.scheduled_on"
-                                    type="date"
-                                    class="form-control"
-                                />
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium mb-1">From Time *</label>
-                                <input
-                                    v-model="interviewData.from_time"
-                                    type="time"
-                                    class="form-control"
-                                />
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium mb-1">To Time *</label>
-                                <input
-                                    v-model="interviewData.to_time"
-                                    type="time"
-                                    class="form-control"
-                                />
-                            </div>
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-medium mb-1">Expected Rating</label>
-                            <TextInput
-                                v-model.number="interviewData.expected_average_rating"
-                                type="number"
-                                placeholder="0-5"
-                                min="0"
-                                max="5"
-                                step="0.1"
-                            />
-                        </div>
-
-          <div>
-            <label class="block text-sm font-medium mb-1">Interview Summary</label>
-            <textarea
-              v-model="interviewData.interview_summary"
-              class="form-control"
-              rows="3"
-              placeholder="Optional notes or summary"
-            ></textarea>
-          </div>
-        </div>
-      </template>
-      <template #actions>
-        <div class="flex justify-between w-full">
-          <Button @click="showAssignInterviewDialog = false">Cancel</Button>
-          <Button theme="gray" :variant="'solid'" @click="assignInterview">Assign Interview</Button>
-        </div>
-      </template>
-    </Dialog>
-
-    <!-- Bulk Move Dialog -->
-    <Dialog v-model="showBulkMoveDialog" :options="{ title: 'Bulk Move Candidates', size: 'md' }">
-      <template #body-content>
-        <div class="space-y-4">
-          <div>
-            <label class="block text-sm font-medium mb-1">Move to Step *</label>
-            <Select
-              v-model="bulkMoveData.target_step"
-              :options="stepOptions"
-              placeholder="Select target step"
+                :candidate-id="activeCandidate?.id"
+                :candidate-name="activeCandidate?.name"
+                :on-submit="handleAssignInterview"
             />
-          </div>
-          <div>
-            <label class="block text-sm font-medium mb-1">Update Status (Optional)</label>
-            <Select
-              v-model="bulkMoveData.status"
-              :options="statusOptions"
-              placeholder="Select status"
+
+            <BulkMoveDialog
+                v-model="showBulkMoveDialog"
+                :step-options="stepOptions"
+                :candidate-count="selectedCandidates.size"
+                :on-submit="handleBulkMove"
             />
-          </div>
-          <p class="text-muted text-sm">Moving {{ selectedCandidates.size }} candidate(s)</p>
-        </div>
-      </template>
-      <template #actions>
-        <Button @click="showBulkMoveDialog = false">Cancel</Button>
-        <Button theme="primary" @click="bulkMoveCandidates">Move Candidates</Button>
-      </template>
-    </Dialog>
 
-    <!-- Profile View Dialog -->
-    <Dialog v-model="showProfileDialog" :options="{ title: `${activeCandidate?.name || 'Applicant'} Profile`, size: '4xl' }">
-      <template #body-content>
-        <div v-if="loadingProfile" class="profile-loading">
-          <div class="text-center py-8 text-gray-500">Loading profile...</div>
-        </div>
-        <div v-else-if="applicantProfile" class="profile-container">
-          <!-- Header Section -->
-          <div class="profile-header">
-            <div class="profile-avatar-large">
-              {{ activeCandidate?.name?.charAt(0).toUpperCase() }}
-            </div>
-            <div class="profile-header-info">
-              <h2 class="profile-name">{{ applicantProfile.job_applicant || activeCandidate?.name }}</h2>
-              <div class="profile-contact-links">
-                <a
-                  v-for="link in applicantProfile.links"
-                  :key="link.url"
-                  :href="link.url"
-                  target="_blank"
-                  class="profile-link"
-                >
-                  {{ link.label }}
-                </a>
-              </div>
-            </div>
-          </div>
+            <ApplicantProfileDialog
+                v-model="showProfileDialog"
+                :applicant-id="activeCandidate?.id"
+                :candidate-name="activeCandidate?.name"
+                :on-fetch-profile="fetchApplicantProfile"
+            />
 
-          <!-- Summary Section -->
-          <div v-if="applicantProfile.summary" class="profile-section">
-            <h3 class="profile-section-title">Summary</h3>
-            <p class="profile-summary-text">{{ applicantProfile.summary }}</p>
-          </div>
-
-          <!-- Experience Section -->
-          <div v-if="applicantProfile.experience?.length" class="profile-section">
-            <h3 class="profile-section-title">Experience</h3>
-            <div class="profile-timeline">
-              <div
-                v-for="(exp, idx) in applicantProfile.experience"
-                :key="idx"
-                class="profile-timeline-item"
-              >
-                <div class="profile-timeline-dot"></div>
-                <div class="profile-timeline-content">
-                  <div class="profile-exp-header">
-                    <div>
-                      <h4 class="profile-exp-role">{{ exp.role }}</h4>
-                      <div class="profile-exp-company">{{ exp.company }}</div>
-                    </div>
-                    <div class="profile-exp-duration">
-                      {{ formatProfileDate(exp.from_date) }} - {{ formatProfileDate(exp.to_date) }}
-                    </div>
-                  </div>
-                  <p class="profile-exp-description" v-if="exp.description">{{ exp.description }}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Education Section -->
-          <div v-if="applicantProfile.education?.length" class="profile-section">
-            <h3 class="profile-section-title">Education</h3>
-            <div class="profile-education-list">
-              <div
-                v-for="(edu, idx) in applicantProfile.education"
-                :key="idx"
-                class="profile-education-item"
-              >
-                <div class="profile-edu-icon">🎓</div>
-                <div>
-                  <h4 class="profile-edu-degree">{{ edu.degree }}</h4>
-                  <div class="profile-edu-institution">{{ edu.institution }}</div>
-                  <div class="profile-edu-duration">
-                    {{ formatProfileDate(edu.from_date) }} - {{ formatProfileDate(edu.to_date) }}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Projects Section -->
-          <div v-if="applicantProfile.projects?.length" class="profile-section">
-            <h3 class="profile-section-title">Projects</h3>
-            <div class="profile-projects-grid">
-              <div
-                v-for="(project, idx) in applicantProfile.projects"
-                :key="idx"
-                class="profile-project-card"
-              >
-                <div class="profile-project-header">
-                  <h4 class="profile-project-title">{{ project.title }}</h4>
-                  <a
-                    v-if="project.link"
-                    :href="project.link"
-                    target="_blank"
-                    class="profile-project-link"
-                  >
-                    🔗
-                  </a>
-                </div>
-                <p class="profile-project-description">{{ project.description }}</p>
-              </div>
-            </div>
-          </div>
-
-          <!-- Skills Section -->
-          <div v-if="applicantProfile.skills" class="profile-section">
-            <h3 class="profile-section-title">Skills</h3>
-            <p class="profile-skills-text">{{ applicantProfile.skills }}</p>
-          </div>
-        </div>
-      </template>
-      <template #actions>
-        <Button @click="showProfileDialog = false">Close</Button>
-      </template>
-    </Dialog>
+            <SendEmailDialog
+                v-model="showSendEmailDialog"
+                :candidate-email="activeCandidate?.email"
+                :candidate-name="activeCandidate?.name"
+                :job-title="job?.title"
+                :on-submit="handleSendEmail"
+            />
     </div>
   </div>
 </template>
@@ -541,9 +296,14 @@
 <script setup>
 import { ref, computed, onMounted, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { TextInput, Select, Button, Dialog, createResource } from "frappe-ui";
+import { TextInput, Select, Button, createResource } from "frappe-ui";
 import { useToast } from "vue-toastification";
 import { JobDetailsAPI } from "../../api/apiClient.js";
+import AddCandidateDialog from "../../components/jobs/AddCandidateDialog.vue";
+import AssignInterviewDialog from "../../components/jobs/AssignInterviewDialog.vue";
+import BulkMoveDialog from "../../components/jobs/BulkMoveDialog.vue";
+import ApplicantProfileDialog from "../../components/jobs/ApplicantProfileDialog.vue";
+import SendEmailDialog from "../../components/jobs/SendEmailDialog.vue";
 
 const toast = useToast();
 
@@ -594,69 +354,12 @@ const showAddCandidateDialog = ref(false);
 const showAssignInterviewDialog = ref(false);
 const showBulkMoveDialog = ref(false);
 const showProfileDialog = ref(false);
+const showSendEmailDialog = ref(false);
 
-// Profile data
-const applicantProfile = ref(null);
-const loadingProfile = ref(false);
-
-// Form data
-const newCandidate = ref({
-    name: "",
-    email: "",
-    phone: "",
-    country: "",
-    source: "Campaign",
-});
-
-const interviewData = ref({
-    interview_round: "HR Screening",
-    status: "Scheduled",
-    scheduled_on: "",
-    from_time: "",
-    to_time: "",
-    expected_average_rating: 0,
-    interview_summary: "",
-});
-
-const bulkMoveData = ref({
-    target_step: "",
-    status: "",
-});
-
-// Options for dropdowns
-const sourceOptions = [
-    { label: "Campaign", value: "Campaign" },
-    { label: "LinkedIn", value: "LinkedIn" },
-    { label: "Referral", value: "Referral" },
-    { label: "Direct", value: "Direct" },
-    { label: "Other", value: "Other" },
-];
-
-const interviewRoundOptions = [
-    { label: "HR Screening", value: "HR Screening" },
-    { label: "Technical Screening", value: "Technical Screening" },
-    { label: "Technical Interview", value: "Technical Interview" },
-    { label: "Manager Round", value: "Manager Round" },
-    { label: "Final Round", value: "Final Round" },
-    { label: "Cultural Fit", value: "Cultural Fit" },
-];
-
-const interviewStatusOptions = [
-    { label: "Pending", value: "Pending" },
-    { label: "Scheduled", value: "Scheduled" },
-    { label: "Completed", value: "Completed" },
-    { label: "Cleared", value: "Cleared" },
-    { label: "Rejected", value: "Rejected" },
-    { label: "Cancelled", value: "Cancelled" },
-];
-
-const statusOptions = [
-    { label: "No Change", value: "" },
-    { label: "Open", value: "Open" },
-    { label: "Hold", value: "Hold" },
-    { label: "Rejected", value: "Rejected" },
-    { label: "Hired", value: "Hired" },
-];
+// Resume upload state
+const resumeFileInput = ref(null);
+const isUploading = ref(false);
+const uploadProgress = ref(0);
 
 // Computed properties
 const stepOptions = computed(() => {
@@ -839,43 +542,126 @@ function editJob() {
     window.open(`http://localhost:8001/desk/job-opening/${job.value?.name}`, "_blank");
 }
 
-async function addCandidate() {
-    if (!newCandidate.value.name || !newCandidate.value.email) {
+// Handler functions for dialog components
+async function handleAddCandidate(formData) {
+    if (!formData.name || !formData.email) {
         toast.warning("Please fill in required fields");
-        return;
+        throw new Error("Required fields missing");
     }
 
     try {
         await JobDetailsAPI.addCandidate(job.value.name, {
-            candidate_name: newCandidate.value.name,
-            candidate_email: newCandidate.value.email,
-            phone: newCandidate.value.phone,
-            country: newCandidate.value.country,
-            source: newCandidate.value.source,
+            candidate_name: formData.name,
+            candidate_email: formData.email,
+            phone: formData.phone,
+            country: formData.country,
+            source: formData.source,
         });
 
         toast.success("Candidate added successfully");
-        showAddCandidateDialog.value = false;
-
-        // Reset form
-        newCandidate.value = {
-            name: "",
-            email: "",
-            phone: "",
-            country: "",
-            source: "Campaign",
-        };
-
-        // Reload data
         reloadJobDetails();
     } catch (error) {
         toast.error(error.message || "Failed to add candidate");
+        throw error;
     }
 }
 
 const redirectToAddCandidates = () => {
     window.open(`http://localhost:8001/desk/job-applicant/new-job-applicant`, "_blank");
 };
+
+// Resume upload functions
+function triggerResumeUpload() {
+    if (resumeFileInput.value) {
+        resumeFileInput.value.click();
+    }
+}
+
+async function handleResumeUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    // Validate file type
+    const validTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+    if (!validTypes.includes(file.type)) {
+        toast.error('Please upload a PDF or Word document');
+        return;
+    }
+
+    // Validate file size (max 10MB)
+    const maxSize = 10 * 1024 * 1024; // 10MB
+    if (file.size > maxSize) {
+        toast.error('File size must be less than 10MB');
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('is_private', 1);
+    formData.append('folder', 'Home/Resumes');
+
+    try {
+        isUploading.value = true;
+        uploadProgress.value = 0;
+
+        const response = await fetch('/api/method/upload_file', {
+            method: 'POST',
+            headers: {
+                'X-Frappe-CSRF-Token': window.frappe?.csrf_token || '',
+            },
+            body: formData
+        });
+
+        if (!response.ok) {
+            throw new Error('Upload failed');
+        }
+
+        const result = await response.json();
+        
+        if (result.message && result.message.file_url) {
+            uploadProgress.value = 100;
+            toast.success('Resume uploaded successfully');
+            console.log('File Uploaded:', result.message.file_url);
+            
+            // Parse the resume
+            await parseResume(result.message.file_url, result.message.name);
+        } else {
+            throw new Error('Invalid response from server');
+        }
+    } catch (error) {
+        console.error('Upload failed:', error);
+        toast.error(`Upload failed: ${error.message || 'Unknown error'}`);
+    } finally {
+        isUploading.value = false;
+        uploadProgress.value = 0;
+        // Reset file input
+        if (resumeFileInput.value) {
+            resumeFileInput.value.value = '';
+        }
+    }
+}
+
+async function parseResume(fileUrl, fileName) {
+    try {
+        toast.info('Parsing resume...');
+        
+        // Call the resume parsing API
+        const response = await JobDetailsAPI.parseResume({
+            file_url: fileUrl,
+            file_name: fileName,
+            job_opening: job.value.name
+        });
+        
+        if (response) {
+            toast.success('Resume parsed successfully! Candidate added.');
+            // Reload job details to show the new candidate
+            reloadJobDetails();
+        }
+    } catch (error) {
+        console.error('Resume parsing failed:', error);
+        toast.error(`Resume parsing failed: ${error.message || 'Unknown error'}`);
+    }
+}
 
 async function moveCandidateToStep() {
     if (!activeCandidate.value || !targetStep.value) return;
@@ -910,102 +696,84 @@ async function moveCandidateToStep() {
     }
 }
 
-async function assignInterview() {
+async function handleAssignInterview(formData) {
     if (
-        !interviewData.value.interview_round ||
-        !interviewData.value.status ||
-        !interviewData.value.scheduled_on ||
-        !interviewData.value.from_time ||
-        !interviewData.value.to_time
+        !formData.interview_round ||
+        !formData.status ||
+        !formData.scheduled_on ||
+        !formData.from_time ||
+        !formData.to_time
     ) {
         toast.warning("Please fill in all required fields");
-        return;
+        throw new Error("Required fields missing");
     }
 
-    if (interviewData.value.from_time >= interviewData.value.to_time) {
+    if (formData.from_time >= formData.to_time) {
         toast.warning("End time must be after start time");
-        return;
+        throw new Error("Invalid time range");
     }
 
   const payload = {
     job_applicant: activeCandidate.value.id,
-    interview_round: interviewData.value.interview_round,
-    status: interviewData.value.status,
-    scheduled_on: interviewData.value.scheduled_on,
-    from_time: interviewData.value.from_time,
-    to_time: interviewData.value.to_time,
-    expected_average_rating: interviewData.value.expected_average_rating || 0,
-    interview_summary: interviewData.value.interview_summary || "",
+    interview_round: formData.interview_round,
+    status: formData.status,
+    scheduled_on: formData.scheduled_on,
+    from_time: formData.from_time,
+    to_time: formData.to_time,
+    expected_average_rating: formData.expected_average_rating || 0,
+    interview_summary: formData.interview_summary || "",
   };
 
   try {
     await JobDetailsAPI.createOrUpdateInterview(payload);
-
-    toast.success(`Interview assigned to ${activeCandidate.value?.name} on ${interviewData.value.scheduled_on}`);
-    showAssignInterviewDialog.value = false;
-
-    // Reset form
-    interviewData.value = {
-      interview_round: "HR Screening",
-      status: "Scheduled",
-      scheduled_on: "",
-      from_time: "",
-      to_time: "",
-      expected_average_rating: 0,
-      interview_summary: "",
-    };
+    toast.success(`Interview assigned to ${activeCandidate.value?.name} on ${formData.scheduled_on}`);
   } catch (error) {
     toast.error(error.message || "Failed to assign interview");
+    throw error;
   }
 }
 
-async function bulkMoveCandidates() {
-    if (!bulkMoveData.value.target_step) {
+async function handleBulkMove(formData) {
+    if (!formData.target_step) {
         toast.warning("Please select a target step");
-        return;
+        throw new Error("Target step required");
     }
 
     const targetStepLabel =
-        job.value.steps.find((s) => s.key === bulkMoveData.value.target_step)?.label || "";
+        job.value.steps.find((s) => s.key === formData.target_step)?.label || "";
 
     const payload = {
         names: Array.from(selectedCandidates.value),
-        pipeline_step: bulkMoveData.value.target_step,
+        pipeline_step: formData.target_step,
     };
 
-    if (bulkMoveData.value.status) {
-        payload.status = bulkMoveData.value.status;
+    if (formData.status) {
+        payload.status = formData.status;
     }
 
     try {
         const response = await JobDetailsAPI.bulkUpdateApplicants(payload);
 
         toast.success(
-            `${selectedCandidates.value.length} candidate(s) moved to "${targetStepLabel}"`,
+            `${selectedCandidates.value.size} candidate(s) moved to "${targetStepLabel}"`,
         );
 
         // Update local state
         selectedCandidates.value.forEach((candidateId) => {
             const candidate = candidates.value.find((c) => c.id === candidateId);
             if (candidate) {
-                candidate.stage = bulkMoveData.value.target_step;
+                candidate.stage = formData.target_step;
                 candidate.stage_name = targetStepLabel;
-                if (bulkMoveData.value.status) {
-                    candidate.status = bulkMoveData.value.status;
+                if (formData.status) {
+                    candidate.status = formData.status;
                 }
             }
         });
 
         clearSelection();
-        showBulkMoveDialog.value = false;
-
-        // Reset form
-        bulkMoveData.value = {
-            target_step: "",
-            status: "",
-        };
     } catch (error) {
         toast.error(error.message || "Failed to move candidates");
+        throw error;
     }
 }
 
@@ -1017,39 +785,49 @@ function reloadJobDetails() {
 // Action panel methods
 function viewApplicantProfile() {
   if (!activeCandidate.value) return;
-  
-  loadingProfile.value = true;
   showProfileDialog.value = true;
-  
-  // Call the API to get detailed profile
-  JobDetailsAPI.jobApplicantFind(activeCandidate.value.id)
-    .then((profile) => {
-      applicantProfile.value = profile;
-      loadingProfile.value = false;
-    })
-    .catch((error) => {
-      toast.error('Failed to load profile');
-      console.error(error);
-      loadingProfile.value = false;
-      showProfileDialog.value = false;
-    });
 }
 
-function formatProfileDate(dateStr) {
-  if (!dateStr) return 'Present';
+async function fetchApplicantProfile(applicantId) {
   try {
-    const date = new Date(dateStr);
-    return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short' });
-  } catch {
-    return dateStr;
+    const profile = await JobDetailsAPI.jobApplicantFind(applicantId);
+    return profile;
+  } catch (error) {
+    toast.error('Failed to load profile');
+    console.error(error);
+    throw error;
   }
 }
 
 function sendEmail() {
   if (!activeCandidate.value) return;
-  
-  // TODO: Implement email functionality
-  toast.info(`Email feature for ${activeCandidate.value.email} coming soon`);
+  showSendEmailDialog.value = true;
+}
+
+async function handleSendEmail(formData) {
+  if (!formData.to || !formData.subject || !formData.message) {
+    toast.warning('Please fill in all required fields');
+    throw new Error('Required fields missing');
+  }
+
+  try {
+    // Call the email API
+    await JobDetailsAPI.sendEmail({
+      recipient: formData.to,
+      subject: formData.subject,
+      message: formData.message,
+      cc: formData.cc,
+      bcc: formData.bcc,
+      send_me_a_copy: formData.send_me_a_copy,
+      job_applicant: activeCandidate.value.id,
+      job_opening: job.value.name,
+    });
+
+    toast.success(`Email sent successfully to ${formData.to}`);
+  } catch (error) {
+    toast.error(error.message || 'Failed to send email');
+    throw error;
+  }
 }
 
 // Watch for search query changes
@@ -1084,6 +862,12 @@ watch(
     gap: 16px;
     align-items: flex-start;
     margin-bottom: 12px;
+}
+
+.jd-header-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
 }
 
 .jd-title-row {
@@ -1358,278 +1142,5 @@ label {
 
 .mb-1 {
     margin-bottom: 0.25rem;
-}
-
-/* Profile Dialog Styles */
-.profile-container {
-  max-height: 70vh;
-  overflow-y: auto;
-  padding: 8px;
-}
-
-.profile-loading {
-  min-height: 200px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.profile-header {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  padding: 24px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-radius: 12px;
-  margin-bottom: 24px;
-  color: white;
-}
-
-.profile-avatar-large {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(10px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 32px;
-  font-weight: 800;
-  color: white;
-  border: 3px solid rgba(255, 255, 255, 0.3);
-}
-
-.profile-header-info {
-  flex: 1;
-}
-
-.profile-name {
-  font-size: 28px;
-  font-weight: 800;
-  margin: 0 0 8px 0;
-  color: white;
-}
-
-.profile-contact-links {
-  display: flex;
-  gap: 16px;
-  flex-wrap: wrap;
-}
-
-.profile-link {
-  color: rgba(255, 255, 255, 0.9);
-  text-decoration: none;
-  font-size: 14px;
-  padding: 4px 12px;
-  background: rgba(255, 255, 255, 0.15);
-  border-radius: 20px;
-  transition: all 0.2s;
-}
-
-.profile-link:hover {
-  background: rgba(255, 255, 255, 0.25);
-  transform: translateY(-1px);
-}
-
-.profile-section {
-  margin-bottom: 32px;
-}
-
-.profile-section-title {
-  font-size: 20px;
-  font-weight: 700;
-  color: #111827;
-  margin: 0 0 16px 0;
-  padding-bottom: 8px;
-  border-bottom: 2px solid #e5e7eb;
-}
-
-.profile-summary-text {
-  font-size: 15px;
-  line-height: 1.7;
-  color: #374151;
-  margin: 0;
-}
-
-.profile-timeline {
-  position: relative;
-  padding-left: 32px;
-}
-
-.profile-timeline::before {
-  content: '';
-  position: absolute;
-  left: 8px;
-  top: 8px;
-  bottom: 8px;
-  width: 2px;
-  background: #e5e7eb;
-}
-
-.profile-timeline-item {
-  position: relative;
-  margin-bottom: 24px;
-}
-
-.profile-timeline-dot {
-  position: absolute;
-  left: -28px;
-  top: 6px;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background: #667eea;
-  border: 3px solid white;
-  box-shadow: 0 0 0 2px #667eea;
-}
-
-.profile-timeline-content {
-  background: #f9fafb;
-  border-radius: 8px;
-  padding: 16px;
-  border: 1px solid #e5e7eb;
-}
-
-.profile-exp-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 16px;
-  margin-bottom: 12px;
-}
-
-.profile-exp-role {
-  font-size: 18px;
-  font-weight: 700;
-  color: #111827;
-  margin: 0 0 4px 0;
-}
-
-.profile-exp-company {
-  font-size: 15px;
-  font-weight: 600;
-  color: #667eea;
-}
-
-.profile-exp-duration {
-  font-size: 13px;
-  color: #6b7280;
-  white-space: nowrap;
-  background: white;
-  padding: 4px 12px;
-  border-radius: 12px;
-  border: 1px solid #e5e7eb;
-}
-
-.profile-exp-description {
-  font-size: 14px;
-  line-height: 1.6;
-  color: #4b5563;
-  margin: 0;
-  white-space: pre-line;
-}
-
-.profile-education-list {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.profile-education-item {
-  display: flex;
-  gap: 16px;
-  padding: 16px;
-  background: #f9fafb;
-  border-radius: 8px;
-  border: 1px solid #e5e7eb;
-}
-
-.profile-edu-icon {
-  font-size: 32px;
-  line-height: 1;
-}
-
-.profile-edu-degree {
-  font-size: 16px;
-  font-weight: 700;
-  color: #111827;
-  margin: 0 0 4px 0;
-}
-
-.profile-edu-institution {
-  font-size: 15px;
-  font-weight: 600;
-  color: #667eea;
-  margin-bottom: 4px;
-}
-
-.profile-edu-duration {
-  font-size: 13px;
-  color: #6b7280;
-}
-
-.profile-projects-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 16px;
-}
-
-.profile-project-card {
-  padding: 16px;
-  background: #f9fafb;
-  border-radius: 8px;
-  border: 1px solid #e5e7eb;
-  transition: all 0.2s;
-}
-
-.profile-project-card:hover {
-  border-color: #667eea;
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
-  transform: translateY(-2px);
-}
-
-.profile-project-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 8px;
-}
-
-.profile-project-title {
-  font-size: 16px;
-  font-weight: 700;
-  color: #111827;
-  margin: 0;
-}
-
-.profile-project-link {
-  font-size: 18px;
-  text-decoration: none;
-  opacity: 0.6;
-  transition: opacity 0.2s;
-}
-
-.profile-project-link:hover {
-  opacity: 1;
-}
-
-.profile-project-description {
-  font-size: 14px;
-  line-height: 1.6;
-  color: #4b5563;
-  margin: 0;
-}
-
-.profile-skills-text {
-  font-size: 14px;
-  line-height: 1.7;
-  color: #374151;
-  margin: 0;
-  background: #f9fafb;
-  padding: 16px;
-  border-radius: 8px;
-  border: 1px solid #e5e7eb;
 }
 </style>
