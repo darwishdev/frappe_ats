@@ -18,7 +18,7 @@ def job_applicant_create_update(payload:JobApplicant)->Document:
 
 @frappe.whitelist(methods=["PUT","POST"])
 def job_applicant_create_with_resume(payload:JobApplicantCreateWithResume)->Document:
-    return app_container.job_usecase.job_applicant.job_applicant_create_with_resume(payload)
+    return app_container.job_usecase.applicant_resume.job_applicant_create_with_resume(payload)
 # @frappe.whitelist(methods=["POST"])
 # def applicant_resume_create_update(payload: ApplicantResumeCreateUpdateRequest):
 #     """

@@ -9,7 +9,7 @@ from werkzeug.wrappers import Response
 from mawhub.pkg.pdfconvertor.pdfconvertor import extract_text_from_pdf  # <--- Correct Import
 
 @frappe.whitelist(methods=["POST","GET"])
-def applicant_resume_parse(path: str):
+def applicant_resume_parse(path: str,job_opening_id: str, pipeline_step_id: str):
     # Ensure this runs before the stream starts
     resume_text = ""
     try:
@@ -18,7 +18,7 @@ def applicant_resume_parse(path: str):
         frappe.throw(f"Failed to read PDF: {str(e)}")
 
 
-    response = Response(app_container.job_usecase.applicant_resume.sse_generator(resume_text), mimetype="text/event-stream")
+    response = Response(app_container.job_usecase.applicant_resume.sse_generator(resume_text,job_opening_id,pipeline_step_id), mimetype="text/event-stream")
 
     # Required headers for SSE
     response.headers.add("Cache-Control", "no-cache")

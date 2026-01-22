@@ -35,7 +35,7 @@ class ApplicantLink(TypedDict, total=False):
 
 class ApplicantResumeDTO(TypedDict, total=False):
     job_applicant: str
-    personal_info: PersonalInfo
+    personal: PersonalInfo
     skills: NotRequired[str]
     summary: NotRequired[str]
     raw_resume_text: NotRequired[str]
