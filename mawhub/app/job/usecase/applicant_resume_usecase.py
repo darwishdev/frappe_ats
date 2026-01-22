@@ -39,8 +39,6 @@ class ApplicantResumeUsecase:
     def sse_generator(self , resume_text: str):
         workflow = self.resume_agent
         try:
-            # Iterate properly over the workflow
-            yield f"data: Proccessing\n\n"
             if resume_text == "":
                 raise ValueError("cant parse the resume text")
             for update in workflow.run(resume_text):

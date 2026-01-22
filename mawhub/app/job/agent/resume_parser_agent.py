@@ -159,12 +159,6 @@ class ResumeWorkflow:
             for future in as_completed(future_to_section):
                 section_name = future_to_section[future]
                 try:
-                    yield {
-                        "status": "section_processing",
-                        "section": section_name,
-                        "model_used": get_model(section_name),
-                        "data": "proccesing"
-                    }
                     section_data = future.result()
                     results[section_name] = section_data
                     yield {
