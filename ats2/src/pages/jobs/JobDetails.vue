@@ -598,7 +598,7 @@ async function handleResumeUpload(event) {
     const formData = new FormData();
     formData.append('file', file);
     formData.append('is_private', 1);
-    formData.append('folder', 'Home/Resumes');
+   // formData.append('folder', 'Home/Resumes');
 
     try {
         isUploading.value = true;
@@ -645,12 +645,26 @@ async function parseResume(fileUrl, fileName) {
     try {
         toast.info('Parsing resume...');
         
-        // Call the resume parsing API
-        const response = await JobDetailsAPI.parseResume({
-            file_url: fileUrl,
-            file_name: fileName,
-            job_opening: job.value.name
-        });
+        // Call the resume parsing API with progress callback
+        const response = await JobDetailsAPI.parseResume(
+            {
+                path: fileUrl,
+                file_name: fileName,
+                job_opening: job.value.name,
+                activeStep : activeStep.value
+            },
+            (progressData) => {
+                // Handle progress updates from the EventStream
+                console.log('Resume parsing step:', progressData);
+                
+                // You can show progress toasts or update UI here
+                if (progressData.status) {
+                    toast.info(progressData.status);
+                } else if (progressData.step) {
+                    toast.info(`Parsing ${progressData.step}...`);
+                }
+            }
+        );
         
         if (response) {
             toast.success('Resume parsed successfully! Candidate added.');
@@ -682,16 +696,18 @@ async function moveCandidateToStep() {
 
     try {
         const response = await JobDetailsAPI.bulkUpdateApplicants(payload);
-
         toast.success(`${activeCandidate.value.name} moved to "${targetStepName}"`);
-
+        
         // Update local state
         const candidate = candidates.value.find((c) => c.id === activeCandidate.value.id);
         if (candidate) {
             candidate.stage = targetStep.value;
             candidate.stage_name = targetStepName;
         }
+        changeStep(targetStep.value)
     } catch (error) {
+        console.log(error);
+
         toast.error(error.message || "Failed to move candidate");
     }
 }
@@ -769,10 +785,12 @@ async function handleBulkMove(formData) {
                 }
             }
         });
-
+        changeStep(formData.target_step)
         clearSelection();
     } catch (error) {
         toast.error(error.message || "Failed to move candidates");
+        console.log(error);
+        
         throw error;
     }
 }

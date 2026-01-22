@@ -301,27 +301,84 @@ export const JobDetailsAPI = {
   },
 
   /**
-   * Parse resume and create job applicant
+   * Parse resume and create job applicant (EventStream)
    * @param {Object} resumeData - Resume parsing data
    * @param {string} resumeData.file_url - Uploaded resume file URL
    * @param {string} resumeData.file_name - Resume file name
    * @param {string} resumeData.job_opening - Job Opening ID
-   * @returns {Promise<Object>} Parsed resume data and created applicant
+   * @param {Function} onProgress - Optional callback for progress updates (step, data)
+   * @returns {Promise<Object>} Final parsed resume data and created applicant
    */
-  parseResume: function(resumeData) {
-    if (!_createResource) {
-      throw new Error('JobDetailsAPI not initialized. Call JobDetailsAPI.init(createResource) first.');
-    }
-    
-    const resource = _createResource({
-      url: 'mawhub.applicant_resume_parse',
-      params: {
-        payload: resumeData
-      },
-      auto: true
+  parseResume: async function(resumeData, onProgress = null) {
+    return new Promise(async (resolve, reject) => {
+      // Build query parameters
+      const params = new URLSearchParams({
+        ...resumeData,
+        path: "../apps/mawhub/mawhub/api/sample_resume.pdf"
+      });
+      
+      // Construct the URL (adjust base URL as needed)
+      const url = `/api/method/mawhub.applicant_resume_parse?${params.toString()}`;
+      
+      // Create EventSource for SSE
+      const eventSource = new EventSource(url, { withCredentials: true });
+      let finalResult = null;
+      
+      eventSource.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data);
+          
+          // Call progress callback if provided
+          if (onProgress && typeof onProgress === 'function') {
+            onProgress(data);
+          }
+          
+          // Store the last message as the final result
+          finalResult = data;
+          
+          console.log('Resume parsing progress:', data);
+        } catch (error) {
+          console.error('Failed to parse SSE message:', error, event.data);
+        }
+      };
+      
+      eventSource.onerror = (error) => {
+        console.error('EventSource error:', error);
+        eventSource.close();
+        
+        // If we have a final result, consider it success
+        if (finalResult) {
+          resolve(finalResult);
+        } else {
+          reject(new Error('Resume parsing failed: Connection error'));
+        }
+      };
+      
+      // Handle completion (if server sends a specific event)
+      eventSource.addEventListener('complete', (event) => {
+        try {
+          const data = JSON.parse(event.data);
+          eventSource.close();
+          resolve(data);
+        } catch (error) {
+          eventSource.close();
+          reject(new Error('Failed to parse completion message'));
+        }
+      });
+      
+      // Fallback: close connection after timeout
+      setTimeout(() => {
+        if (eventSource.readyState !== EventSource.CLOSED) {
+          eventSource.close();
+          if (finalResult) {
+            resolve(finalResult);
+          } else {
+            reject(new Error('Resume parsing timed out'));
+          }
+        }
+      }, 90000); // 90 second timeout
+
     });
-    
-    return resource.promise;
   },
 
   /**

@@ -3,6 +3,7 @@
     <Sidebar
       v-if="route.name !== 'Login'"
       :header="{
+        logo: '/fav.jpeg',
         title: 'ATS System',
         subtitle: session.user || 'User',
         menuItems: [
@@ -53,7 +54,7 @@
         },
       ]"
     />
-    <div class="flex-1 overflow-auto">
+    <div class="flex-1 overflow-auto app-container" style="">
       <div v-if="route.name !== 'Login'" class="p-4">
         <Breadcrumbs :items="breadcrumbItems" />
       </div>
@@ -133,3 +134,9 @@ function showHelp() {
   alert("Help documentation coming soon!");
 }
 </script>
+<style>
+
+  .app-container{
+    background: linear-gradient(120deg, #7700bc0b, #7700bc07 60%, #ffffff05 82%) !important;
+  }
+</style>
