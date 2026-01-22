@@ -45,28 +45,25 @@ export const JobDetailsAPI = {
 },
 
   /**
-   * Add a new candidate to the job opening
-   * @param {string} jobId - Job Opening ID
-   * @param {Object} candidateData - Candidate information
-   * @returns {Promise<Object>} Created candidate details
+   * Create or update a job applicant
+   * @param {Object} applicantData - Job applicant information
+   * @returns {Promise<Object>} Created/updated applicant details
    */
-  addCandidate: function(jobId, candidateData) {
-  // TODO: Replace with real API call
-  // return frappe.call({
-  //   method: 'addicta.api.add_candidate',
-  //   args: {
-  //     job_id: jobId,
-  //     candidate: candidateData
-  //   }
-  // }).then(r => r.message);
-
-  // Mock implementation
-  return Promise.resolve({
-    success: true,
-    message: 'Candidate added successfully',
-    candidate_id: candidateData.email
-  });
-},
+  createOrUpdateApplicant: function(applicantData) {
+    if (!_createResource) {
+      throw new Error('JobDetailsAPI not initialized. Call JobDetailsAPI.init(createResource) first.');
+    }
+    
+    const resource = _createResource({
+      url: 'mawhub.job_applicant_create_update',
+      params: {
+        payload: applicantData
+      },
+      auto: true
+    });
+    
+    return resource.promise;
+  },
 
   /**
    * Update candidate rating
@@ -174,101 +171,20 @@ export const JobDetailsAPI = {
    * @returns {Promise<Object>} Job applicant details (ApplicantResumeDTO)
    */
   jobApplicantFind: function(applicantId) {
-    // TODO: Replace with real API call
-    // if (!_createResource) {
-    //   throw new Error('JobDetailsAPI not initialized. Call JobDetailsAPI.init(createResource) first.');
-    // }
-    // 
-    // const resource = _createResource({
-    //   url: 'mawhub.job_applicant_find',
-    //   params: {
-    //     applicant_id: applicantId
-    //   },
-    //   auto: true
-    // });
-    // 
-    // return resource.promise;
-
-    // Mock implementation
-    return Promise.resolve({
-      "job_applicant": "AHMED DARWISH",
-      "skills": "Languages & Tools: Go, TypeScript, Node.js, Vue 3, Flutter, Tailwind CSS, HTML/CSS. Databases: PostgreSQL, Supabase, MSSQL, NoSQL. Protocols & APIs: gRPC, REST, GraphQL. Platforms: Supabase (Auth, Storage, Edge Functions), Firebase, Redis. DevOps: Docker, CI/CD, GitHub Actions, DigitalOcean. Architecture: Multi-tenant SaaS, Microservices, CQRS, Clean Architecture",
-      "summary": "Versatile and results-driven platform architect with 7+ years of experience designing and building scalable backend systems, developer tooling, and BaaS-powered platforms. Specialized in cloud-native architectures, multi-tenant SaaS, and Supabase-backed systems. Contributor to the open-source community, particularly in Supabase (Auth and Storage Go clients) and PrimeVue, with a passion for creating maintainable ecosystems and developer-first tooling. Experienced in delivering robust backend services using Go, PostgreSQL, gRPC, and TypeScript.",
-      "education": [
-        {
-          "degree": "Bachelor of Science in Information Systems",
-          "institution": "Future Academy",
-          "from_date": "2014-09-01",
-          "to_date": "2018-06-01"
-        }
-      ],
-      "experience": [
-        {
-          "company": "ABC Hotels, Egypt",
-          "role": "Senior Platform Engineer",
-          "from_date": "2024-01-01",
-          "to_date": null,
-          "description": "● Architected and led the development of Yalabina, a multi-tenant hotel reservation platform used by over 20 hotel properties.\n● Designed the backend architecture using Go, gRPC, PostgreSQL, and Supabase Auth/Storage, with modular services and tenant isolation.\n● Built a full-stack platform with Vue 3 and Tailwind CSS, including content CMS, booking engine, pricing rules, and admin dashboards.\n● Automated provisioning of new hotel tenants through Devkit CLI, reducing setup time from 3 days to under 1 hour.\n● Integrated Salesforce and payment gateways (Stripe, Paymob), increasing booking conversion rates by 15%.\n● Delivered 99.99% uptime across staging and production using containerized deployments and CI/CD pipelines.\n● Created reusable mocks and test harnesses to support local and automated testing across gRPC endpoints."
-        },
-        {
-          "company": "Melon, Egypt",
-          "role": "Lead Full Stack Developer",
-          "from_date": "2021-01-01",
-          "to_date": "2023-12-31",
-          "description": "● Led a team of 5 engineers in the development of a restaurant management suite (POS, KDS, Waiter App, Digital Menu) deployed in over 30 venues.\n● Built real-time, offline-first sync system using WebRTC and Vue.js, ensuring data availability in disconnected branches.\n● Developed the full client suite:\n○ Web Admin Dashboard and POS with role-based access\n○ Flutter Android App with printer support\n○ Web-based Digital Menu for customer ordering\n○ KDS (Kitchen Display System) for kitchen operations\n● Created the open-source v-dashkit Vue component library for admin CRUD UIs, reducing dashboard development time by ~30%.\n● Deployed CI/CD pipelines with preview environments, GitHub Actions, and branch-based testing."
-        },
-        {
-          "company": "Business Pro, Remote (USA)",
-          "role": "Full Stack Developer",
-          "from_date": "2019-01-01",
-          "to_date": "2022-12-31",
-          "description": "● Developed Alshab Alriyadi, a platform connecting entrepreneurs and investors, with over 5,000 monthly active users.\n● Designed and implemented scalable microservices using Node.js and PostgreSQL, improving response times by 25%.\n● Added real-time chat and search features, increasing user engagement and match success rates by 30%.\n● Collaborated with remote product and design teams, reducing release cycles by 20%."
-        },
-        {
-          "company": "Elnozom, Egypt",
-          "role": "Web Developer",
-          "from_date": "2018-01-01",
-          "to_date": "2020-12-31",
-          "description": "● Modernized legacy ERP systems (15+ branches) by integrating web portals with MSSQL and migrating to cloud infrastructure.\n● Built PDA applications for field sales and inventory, increasing on-site data accuracy by 25%.\n● Designed a DNS automation system for seamless remote access to on-prem databases, reducing IT support overhead by 35%.\n● Reduced infrastructure cost by 15% through phased cloud migration and streamlined configuration."
-        }
-      ],
-      "projects": [
-        {
-          "title": "Devkit CLI",
-          "description": "Monorepo CLI tool for platform automation. Automates full-stack Supabase-based project scaffolding, including Auth, SQL, and Storage. Enables rapid bootstrapping of tenants with seeded users, files, and permissions. Core tool for onboarding and DevOps operations at ABC Hotels and internal tools. Fully scriptable and integrated into CI/CD pipelines.",
-          "link": "https://github.com/darwishdev/devkit-cli"
-        },
-        {
-          "title": "Devkit API",
-          "description": "Modular gRPC backend framework. Designed with Clean Architecture principles. Implements CQRS, Redis caching, request tracing, and multi-tenant isolation. Powers the core backend for Yalabina and other internal tools. Provides centralized access to Supabase services, audit logs, and session control.",
-          "link": "https://github.com/darwishdev/devkit-api"
-        },
-        {
-          "title": "SQLSeeder",
-          "description": "Declarative PostgreSQL data seeding tool. Allows seeding complex relational data from Excel and JSON into Supabase-hosted or standard PostgreSQL databases. Supports environment-specific branching, migration safety, and structured relationship resolution. Used across dev/staging/test environments and integrated with Devkit CLI for onboarding workflows. Open sourced for community use.",
-          "link": "https://github.com/darwishdev/sqlseeder"
-        },
-        {
-          "title": "Yalabina",
-          "description": "Hotel reservation and content platform (owned by ABC Hotels). Multi-tenant platform enabling booking, property management, and guest CMS operations across 20+ hotels. Built with Supabase (Auth, Storage, Functions), Go (API), and Vue 3 (UI). Integrated dynamic pricing, availability sync, and multi-user role management with real-time updates. Achieved a 40% reduction in operational overhead through full automation and unified infrastructure.",
-          "link": "https://yalabina.com"
-        }
-      ],
-      "links": [
-        {
-          "label": "GitHub",
-          "url": "https://github.com/darwishdev"
-        },
-        {
-          "label": "Email",
-          "url": "mailto:a.darwish.dev@gmail.com"
-        },
-        {
-          "label": "Phone",
-          "url": "tel:+201022052546"
-        }
-      ]
+    if (!_createResource) {
+      throw new Error('JobDetailsAPI not initialized. Call JobDetailsAPI.init(createResource) first.');
+    }
+    
+    const resource = _createResource({
+      url: 'mawhub.job_applicant_find',
+      method : 'GET',
+      params: {
+        name: applicantId
+      },
+      auto: true
     });
+    
+    return resource.promise;
   },
 
   /**

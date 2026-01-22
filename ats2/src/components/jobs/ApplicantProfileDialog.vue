@@ -2,7 +2,7 @@
   <Dialog 
     v-model="isOpen" 
     :options="{ 
-      title: `${applicantProfile?.job_applicant || candidateName || 'Applicant'} Profile`, 
+      title: `${applicantProfile?.applicant_name || applicantProfile?.job_applicant || candidateName || 'Applicant'} Profile`, 
       size: '4xl' 
     }"
   >
@@ -14,10 +14,10 @@
         <!-- Header Section -->
         <div class="profile-header">
           <div class="profile-avatar-large">
-            {{ applicantProfile?.personal.name?.charAt(0).toUpperCase()}}
+            {{ applicantProfile?.personal?.name?.charAt(0).toUpperCase() || applicantProfile.applicant_name?.charAt(0).toUpperCase()}}
           </div>
           <div class="profile-header-info">
-            <h2 class="profile-name">{{ applicantProfile?.personal?.name || applicantProfile.job_applicant || candidateName }}</h2>
+            <h2 class="profile-name">{{ applicantProfile?.personal?.name || applicantProfile.applicant_name || candidateName }}</h2>
             <div class="profile-contact-links">
               <a
                 v-for="link in applicantProfile.links"

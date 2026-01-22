@@ -45,6 +45,24 @@
             placeholder="Select source"
           />
         </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium mb-1">Expected Salary (Min)</label>
+            <TextInput
+              v-model="formData.lower_range"
+              type="number"
+              placeholder="Minimum salary"
+            />
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-1">Expected Salary (Max)</label>
+            <TextInput
+              v-model="formData.upper_range"
+              type="number"
+              placeholder="Maximum salary"
+            />
+          </div>
+        </div>
       </div>
     </template>
     <template #actions>
@@ -79,6 +97,8 @@ const formData = ref({
   phone: '',
   country: '',
   source: 'Campaign',
+  lower_range: '',
+  upper_range: '',
 });
 
 const sourceOptions = [
@@ -107,6 +127,8 @@ function resetForm() {
     phone: '',
     country: '',
     source: 'Campaign',
+    lower_range: '',
+    upper_range: '',
   };
 }
 
@@ -123,6 +145,18 @@ function close() {
 <style scoped>
 .space-y-4 > * + * {
   margin-top: 1rem;
+}
+
+.grid {
+  display: grid;
+}
+
+.grid-cols-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.gap-4 {
+  gap: 1rem;
 }
 
 label {

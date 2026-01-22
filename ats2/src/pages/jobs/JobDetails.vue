@@ -49,7 +49,7 @@
                         theme="gray"
                         :variant="'solid'"
                         class="w-40 p-5 p-5"
-                        @click="redirectToAddCandidates"
+                        @click="showAddCandidateDialog = true"
                     >
                         <UserPlus :size="16" class="button-icon" />
                         Add candidates
@@ -573,15 +573,28 @@ async function handleAddCandidate(formData) {
         throw new Error("Required fields missing");
     }
 
-    try {
-        await JobDetailsAPI.addCandidate(job.value.name, {
-            candidate_name: formData.name,
-            candidate_email: formData.email,
-            phone: formData.phone,
-            country: formData.country,
-            source: formData.source,
-        });
+    const payload = {
+        name: job.value.name,
+        applicant_name: formData.name,
+        email_id: formData.email,
+        docstatus: 1,
+    };
 
+    // Add salary range if provided
+    if (formData.lower_range) {
+        payload.lower_range = parseFloat(formData.lower_range);
+    }
+    if (formData.upper_range) {
+        payload.upper_range = parseFloat(formData.upper_range);
+    }
+
+    // Add name (job applicant ID) if updating existing applicant
+    if (formData.applicant_id) {
+        payload.name = formData.applicant_id;
+    }
+
+    try {
+        await JobDetailsAPI.createOrUpdateApplicant(payload);
         toast.success("Candidate added successfully");
         reloadJobDetails();
     } catch (error) {
@@ -589,10 +602,6 @@ async function handleAddCandidate(formData) {
         throw error;
     }
 }
-
-const redirectToAddCandidates = () => {
-    window.open(`http://localhost:8001/desk/job-applicant/new-job-applicant`, "_blank");
-};
 
 // Resume upload functions
 function triggerResumeUpload() {
@@ -868,7 +877,9 @@ function viewApplicantProfile() {
 async function fetchApplicantProfile(applicantId) {
   try {
     const profile = await JobDetailsAPI.jobApplicantFind(applicantId);
-    return profile;
+    console.log(profile);
+    
+    return profile.resume;
   } catch (error) {
     toast.error('Failed to load profile');
     console.error(error);
