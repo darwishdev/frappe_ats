@@ -16,6 +16,10 @@ def job_applicant_bulk_update(payload:JobApplicantBulkUpdateRequest)->List[str]:
 def job_applicant_create_update(payload:JobApplicant)->Document:
     return app_container.job_usecase.job_applicant.job_applicant_create_update(payload)
 
+@frappe.whitelist(methods=["GET"])
+def job_applicant_find(name:str)->dict:
+    return app_container.job_usecase.job_applicant.job_applicant_find(name)
+
 @frappe.whitelist(methods=["PUT","POST"])
 def job_applicant_create_with_resume(payload:JobApplicantCreateWithResume)->Document:
     return app_container.job_usecase.applicant_resume.job_applicant_create_with_resume(payload)

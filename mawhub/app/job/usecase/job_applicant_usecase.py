@@ -1,4 +1,4 @@
-from typing import List, Protocol
+from typing import Dict, List, Protocol
 
 from frappe.model.document import Document
 from mawhub.app.job.dto.applicant_resume import ApplicantResumeDTO
@@ -10,6 +10,8 @@ from mawhub.sqltypes.table_models import JobApplicant
 class JobApplicantUsecaseInterface(Protocol):
 	def job_applicant_create_update(self, payload: JobApplicant)->Document: ...
 	def job_applicant_bulk_update(self, payload: JobApplicantBulkUpdateRequest)->List[str]: ...
+	def job_applicant_find(self, name: str)->dict: ...
+
 
 class JobApplicantUsecase:
     repo: JobRepoInterface
@@ -22,6 +24,8 @@ class JobApplicantUsecase:
     def job_applicant_create_update(self, payload: JobApplicant)->Document:
         return self.repo.job_applicant.create_or_update(payload)
 
+    def job_applicant_find(self, name: str)->dict:
+        return self.repo.job_applicant.job_applicant_find(name)
 
 
     def job_applicant_bulk_update(self, payload: JobApplicantBulkUpdateRequest)->List[str]:

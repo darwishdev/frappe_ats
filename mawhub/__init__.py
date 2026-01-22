@@ -13,7 +13,8 @@ from mawhub.api.mawhub_applicant_resume_api import (
 from mawhub.api.mawhub_job_applicant_api import (
     job_applicant_create_update,
     job_applicant_bulk_update,
-    job_applicant_create_with_resume
+    job_applicant_create_with_resume,
+    job_applicant_find,
     # job_applicant_create,
     # applicant_resume_create_update
 )
@@ -26,6 +27,7 @@ __all__ = [
     "interview_create_update",
     "job_applicant_create_update",
     "job_applicant_create_with_resume",
+    "job_applicant_find",
 
     "applicant_resume_bulk_create",
     "applicant_resume_create_update",

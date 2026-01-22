@@ -8,6 +8,7 @@ from mawhub.sqltypes.table_models import JobApplicant
 
 class JobApplicantRepoInterface(AppRepoInterface[JobApplicant] , Protocol):
     def job_applicant_bulk_update(self, payload: JobApplicantBulkUpdateRequest)->List[str]: ...
+    def job_applicant_find(self, name: str)->dict: ...
 
 
 class JobApplicantRepo(AppRepo[JobApplicant]):
@@ -48,6 +49,14 @@ class JobApplicantRepo(AppRepo[JobApplicant]):
     #     return payload.get('name')
 
 
+
+    def job_applicant_find(self, name: str)->dict:
+        applicant_doc = frappe.get_doc("Job Applicant" , name)
+        resume_doc = frappe.get_doc("Applicant Resume" , name)
+        return {
+            "applicant" : applicant_doc.as_dict(),
+            "resume" : resume_doc.as_dict(),
+        }
     def job_applicant_bulk_update(self, payload: JobApplicantBulkUpdateRequest)->List[str]:
         sql_stmt = """
         UPDATE `tabJob Applicant` a
