@@ -314,7 +314,6 @@ export const JobDetailsAPI = {
       // Build query parameters
       const params = new URLSearchParams({
         ...resumeData,
-        path: "../apps/mawhub/mawhub/api/sample_resume.pdf"
       });
       
       // Construct the URL (adjust base URL as needed)
@@ -326,7 +325,9 @@ export const JobDetailsAPI = {
       
       eventSource.onmessage = (event) => {
         try {
+          if(!event.data) return;
           const data = JSON.parse(event.data);
+          console.log(data);
           
           // Call progress callback if provided
           if (onProgress && typeof onProgress === 'function') {
@@ -343,7 +344,7 @@ export const JobDetailsAPI = {
       };
       
       eventSource.onerror = (error) => {
-        console.error('EventSource error:', error);
+        // console.error('EventSource error:', error);
         eventSource.close();
         
         // If we have a final result, consider it success

@@ -6,18 +6,18 @@
       size: '4xl' 
     }"
   >
-    <template #body-content>
-      <div v-if="loading" class="profile-loading">
+  <template #body-content>
+      <div v-if="loading && !applicantProfile" class="profile-loading">
         <div class="text-center py-8 text-gray-500">Loading profile...</div>
       </div>
-      <div v-else-if="applicantProfile" class="profile-container">
+      <div v-else-if="applicantProfile || isLoading" class="profile-container">
         <!-- Header Section -->
         <div class="profile-header">
           <div class="profile-avatar-large">
-            {{ candidateName?.charAt(0).toUpperCase() }}
+            {{ applicantProfile?.personal.name?.charAt(0).toUpperCase()}}
           </div>
           <div class="profile-header-info">
-            <h2 class="profile-name">{{ applicantProfile.job_applicant || candidateName }}</h2>
+            <h2 class="profile-name">{{ applicantProfile?.personal?.name || applicantProfile.job_applicant || candidateName }}</h2>
             <div class="profile-contact-links">
               <a
                 v-for="link in applicantProfile.links"
@@ -32,16 +32,65 @@
           </div>
         </div>
 
+        <!-- Personal Information Section -->
+        <div class="profile-section">
+          <h3 class="profile-section-title">Personal Information</h3>
+          <div v-if="isLoading && !applicantProfile?.personal" class="profile-loading-state">
+            <div class="loading-spinner"></div>
+            <span class="loading-text">Parsing personal information...</span>
+          </div>
+          <div v-else-if="applicantProfile?.personal" class="profile-personal-grid">
+            <div v-if="applicantProfile.personal.name" class="profile-personal-item">
+              <span class="profile-personal-icon">👤</span>
+              <div>
+                <div class="profile-personal-label">Name</div>
+                <div class="profile-personal-value">{{ applicantProfile.personal.name }}</div>
+              </div>
+            </div>
+            <div v-if="applicantProfile.personal.email" class="profile-personal-item">
+              <span class="profile-personal-icon">📧</span>
+              <div>
+                <div class="profile-personal-label">Email</div>
+                <div class="profile-personal-value">{{ applicantProfile.personal.email }}</div>
+              </div>
+            </div>
+            <div v-if="applicantProfile.personal.phone" class="profile-personal-item">
+              <span class="profile-personal-icon">📱</span>
+              <div>
+                <div class="profile-personal-label">Phone</div>
+                <div class="profile-personal-value">{{ applicantProfile.personal.phone }}</div>
+              </div>
+            </div>
+            <div v-if="applicantProfile.personal.location" class="profile-personal-item">
+              <span class="profile-personal-icon">📍</span>
+              <div>
+                <div class="profile-personal-label">Location</div>
+                <div class="profile-personal-value">{{ applicantProfile.personal.location }}</div>
+              </div>
+            </div>
+          </div>
+          <p v-else class="profile-empty-state">No personal information available</p>
+        </div>
+
         <!-- Summary Section -->
-        <div v-if="applicantProfile.summary" class="profile-section">
+        <div class="profile-section">
           <h3 class="profile-section-title">Summary</h3>
-          <p class="profile-summary-text">{{ applicantProfile.summary }}</p>
+          <div v-if="isLoading && !applicantProfile?.summary" class="profile-loading-state">
+            <div class="loading-spinner"></div>
+            <span class="loading-text">Parsing summary...</span>
+          </div>
+          <p v-else-if="applicantProfile.summary" class="profile-summary-text">{{ applicantProfile.summary }}</p>
+          <p v-else class="profile-empty-state">No summary available</p>
         </div>
 
         <!-- Experience Section -->
-        <div v-if="applicantProfile.experience?.length" class="profile-section">
+        <div class="profile-section">
           <h3 class="profile-section-title">Experience</h3>
-          <div class="profile-timeline">
+          <div v-if="isLoading && (!applicantProfile?.experience || applicantProfile?.experience?.length === 0)" class="profile-loading-state">
+            <div class="loading-spinner"></div>
+            <span class="loading-text">Parsing experience...</span>
+          </div>
+          <div v-else-if="applicantProfile.experience?.length" class="profile-timeline">
             <div
               v-for="(exp, idx) in applicantProfile.experience"
               :key="idx"
@@ -62,12 +111,17 @@
               </div>
             </div>
           </div>
+          <p v-else class="profile-empty-state">No experience available</p>
         </div>
 
         <!-- Education Section -->
-        <div v-if="applicantProfile.education?.length" class="profile-section">
+        <div class="profile-section">
           <h3 class="profile-section-title">Education</h3>
-          <div class="profile-education-list">
+          <div v-if="isLoading && (!applicantProfile?.education || applicantProfile?.education?.length === 0)" class="profile-loading-state">
+            <div class="loading-spinner"></div>
+            <span class="loading-text">Parsing education...</span>
+          </div>
+          <div v-else-if="applicantProfile.education?.length" class="profile-education-list">
             <div
               v-for="(edu, idx) in applicantProfile.education"
               :key="idx"
@@ -83,12 +137,17 @@
               </div>
             </div>
           </div>
+          <p v-else class="profile-empty-state">No education available</p>
         </div>
 
         <!-- Projects Section -->
-        <div v-if="applicantProfile.projects?.length" class="profile-section">
+        <div class="profile-section">
           <h3 class="profile-section-title">Projects</h3>
-          <div class="profile-projects-grid">
+          <div v-if="isLoading && (!applicantProfile?.projects || applicantProfile?.projects?.length === 0)" class="profile-loading-state">
+            <div class="loading-spinner"></div>
+            <span class="loading-text">Parsing projects...</span>
+          </div>
+          <div v-else-if="applicantProfile.projects?.length" class="profile-projects-grid">
             <div
               v-for="(project, idx) in applicantProfile.projects"
               :key="idx"
@@ -108,12 +167,27 @@
               <p class="profile-project-description">{{ project.description }}</p>
             </div>
           </div>
+          <p v-else class="profile-empty-state">No projects available</p>
         </div>
 
         <!-- Skills Section -->
-        <div v-if="applicantProfile.skills" class="profile-section">
+        <div class="profile-section">
           <h3 class="profile-section-title">Skills</h3>
-          <p class="profile-skills-text">{{ applicantProfile.skills }}</p>
+          <div v-if="isLoading && (!applicantProfile?.skills || applicantProfile?.skills?.length === 0)" class="profile-loading-state">
+            <div class="loading-spinner"></div>
+            <span class="loading-text">Parsing skills...</span>
+          </div>
+          <div v-else-if="applicantProfile?.skills && Array.isArray(applicantProfile.skills) && applicantProfile.skills.length > 0" class="profile-skills-grid">
+            <span
+              v-for="(skill, idx) in applicantProfile.skills"
+              :key="idx"
+              class="profile-skill-badge"
+            >
+              {{ skill }}
+            </span>
+          </div>
+          <p v-else-if="applicantProfile?.skills && typeof applicantProfile.skills === 'string'" class="profile-skills-text">{{ applicantProfile.skills }}</p>
+          <p v-else class="profile-empty-state">No skills available</p>
         </div>
       </div>
     </template>
@@ -124,11 +198,15 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { Dialog, Button } from 'frappe-ui';
 
 const props = defineProps({
   modelValue: {
+    type: Boolean,
+    default: false
+  },
+  isLoading: {
     type: Boolean,
     default: false
   },
@@ -140,9 +218,13 @@ const props = defineProps({
     type: String,
     default: ''
   },
+  profile: {
+    type: Object,
+    default: null
+  },
   onFetchProfile: {
     type: Function,
-    required: true
+    default: null
   }
 });
 
@@ -150,30 +232,36 @@ const emit = defineEmits(['update:modelValue']);
 
 const isOpen = ref(props.modelValue);
 const loading = ref(false);
-const applicantProfile = ref(null);
+const fetchedProfile = ref(null);
+
+// Computed profile: use external profile if provided, otherwise use fetched profile
+const applicantProfile = computed(() => {
+  return props.profile || fetchedProfile.value;
+});
 
 watch(() => props.modelValue, (newVal) => {
   isOpen.value = newVal;
-  if (newVal && props.applicantId) {
+  if (newVal && !props.profile && props.applicantId && props.onFetchProfile) {
+    // Only fetch if no external profile is provided
     fetchProfile();
   }
 });
 
 watch(isOpen, (newVal) => {
   emit('update:modelValue', newVal);
-  if (!newVal) {
-    // Reset when closed
-    applicantProfile.value = null;
+  if (!newVal && !props.profile) {
+    // Reset fetched profile when closed (only if not using external profile)
+    fetchedProfile.value = null;
     loading.value = false;
   }
 });
 
 async function fetchProfile() {
-  if (!props.applicantId) return;
+  if (!props.applicantId || !props.onFetchProfile) return;
   
   loading.value = true;
   try {
-    applicantProfile.value = await props.onFetchProfile(props.applicantId);
+    fetchedProfile.value = await props.onFetchProfile(props.applicantId);
   } catch (error) {
     console.error('Failed to load profile:', error);
   } finally {
@@ -458,6 +546,42 @@ function close() {
   margin: 0;
 }
 
+.profile-personal-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+}
+
+.profile-personal-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: #f9fafb;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+.profile-personal-icon {
+  font-size: 24px;
+  line-height: 1;
+}
+
+.profile-personal-label {
+  font-size: 12px;
+  color: #6b7280;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.profile-personal-value {
+  font-size: 15px;
+  color: #111827;
+  font-weight: 600;
+}
+
 .profile-skills-text {
   font-size: 14px;
   line-height: 1.7;
@@ -467,5 +591,72 @@ function close() {
   padding: 16px;
   border-radius: 8px;
   border: 1px solid #e5e7eb;
+}
+
+.profile-skills-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.profile-skill-badge {
+  display: inline-block;
+  font-size: 13px;
+  font-weight: 500;
+  color: #374151;
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  padding: 6px 12px;
+  transition: all 0.2s;
+}
+
+.profile-skill-badge:hover {
+  background: #e5e7eb;
+  border-color: #d1d5db;
+  transform: translateY(-1px);
+}
+
+.profile-loading-state {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 24px;
+  background: #f9fafb;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  justify-content: center;
+}
+
+.loading-spinner {
+  width: 20px;
+  height: 20px;
+  border: 3px solid #e5e7eb;
+  border-top-color: #667eea;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-text {
+  font-size: 14px;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.profile-empty-state {
+  font-size: 14px;
+  color: #9ca3af;
+  text-align: center;
+  padding: 24px;
+  background: #f9fafb;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  margin: 0;
 }
 </style>

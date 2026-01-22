@@ -18,7 +18,10 @@
                 <div>
                     <div class="jd-title-row">
                         <h2 class="jd-title">{{ job?.title || "Job Details" }}</h2>
-                        <Button size="sm" @click="editJob">Edit</Button>
+                        <Button size="sm" @click="editJob">
+                            <Edit2 :size="16" class="button-icon" />
+                            Edit
+                        </Button>
                     </div>
                     <div class="jd-subtitle">
                         {{ job?.department }} · {{ job?.work_mode }} · {{ job?.location }}
@@ -35,20 +38,22 @@
                     />
                     <Button
                         theme="gray"
-                        :variant="'solid'"
-                        class="w-40"
+                        class="w-40 p-5"
                         :loading="isUploading"
                         @click="triggerResumeUpload"
                     >
+                        <Upload :size="16" class="button-icon" v-if="!isUploading" />
                         {{ isUploading ? `Uploading... ${uploadProgress}%` : 'Upload Resume' }}
                     </Button>
                     <Button
                         theme="gray"
                         :variant="'solid'"
-                        class="w-40"
+                        class="w-40 p-5 p-5"
                         @click="redirectToAddCandidates"
-                        >Add candidates</Button
                     >
+                        <UserPlus :size="16" class="button-icon" />
+                        Add candidates
+                    </Button>
                 </div>
             </div>
 
@@ -78,6 +83,8 @@
                         />
                         <div class="jd-bulk-toolbar">
                             <Button size="sm" @click="toggleSelectAll">
+                                <CheckSquare :size="16" class="button-icon" v-if="!allSelected" />
+                                <Square :size="16" class="button-icon" v-else />
                                 {{ allSelected ? "Deselect All" : "Select All" }}
                             </Button>
                             <div v-if="selectedCandidates.size > 0" class="jd-bulk-actions">
@@ -87,9 +94,13 @@
                                     :variant="'solid'"
                                     @click="showBulkMoveDialog = true"
                                 >
+                                    <MoveRight :size="16" class="button-icon" />
                                     Bulk Move
                                 </Button>
-                                <Button size="sm" @click="clearSelection">Clear</Button>
+                                <Button size="sm" @click="clearSelection">
+                                    <X :size="16" class="button-icon" />
+                                    Clear
+                                </Button>
                             </div>
                         </div>
                     </div>
@@ -165,6 +176,7 @@
                         :variant="'solid'"
                         @click="moveCandidateToStep"
                     >
+                        <MoveRight :size="16" class="button-icon" />
                         Move to selected step
                     </Button>
                 </div>
@@ -204,7 +216,8 @@
                   size="sm"
                   @click="window.open(activeCandidate.resume_link, '_blank')"
                 >
-                  📄 View Resume
+                  <FileText :size="16" class="button-icon" />
+                  View Resume
                 </Button>
               </div>
             </div>
@@ -224,31 +237,37 @@
               size="md"
               theme="gray"
               :variant="'solid'"
-              class="jd-action-btn !w-[10rem]"
+              class="p-8 !w-[10rem]"
               @click="viewApplicantProfile"
             >
-              <!-- <span class="jd-action-icon">👤</span> -->
-              <span>View Profile</span>
+                <div class="flex flex-col justify-center gap-1 items-center">
+                    <User :size="18" class="button-icon" />
+                    <span>View Profile</span>
+                </div>
             </Button>
             <Button
               size="md"
               theme="gray"
               :variant="'solid'"
-              class="jd-action-btn !w-[10rem]"
+              class="p-8 !w-[10rem]"
               @click="showAssignInterviewDialog = true"
             >
-              <!-- <span class="jd-action-icon">📅</span> -->
-              <span>Assign Interview</span>
+            <div class="flex flex-col justify-center gap-1 items-center">
+                <Calendar :size="18" class="button-icon" />
+                <span>Assign Interview</span>
+            </div>
             </Button>
             <Button
               size="md"
               theme="gray"
               :variant="'solid'"
-              class="jd-action-btn !w-[10rem]"
+              class="p-8 !w-[10rem]"
               @click="sendEmail"
             >
-              <!-- <span class="jd-action-icon">✉️</span> -->
-              <span>Send Email</span>
+                <div class="flex flex-col justify-center gap-1 items-center">
+                <Mail :size="18" class="button-icon" />
+                <span>Send Email</span>
+                </div>
             </Button>
           </div>
         </div>
@@ -279,6 +298,8 @@
                 v-model="showProfileDialog"
                 :applicant-id="activeCandidate?.id"
                 :candidate-name="activeCandidate?.name"
+                :profile="parsingProfile"
+                :is-loading="isParsingResume"
                 :on-fetch-profile="fetchApplicantProfile"
             />
 
@@ -299,6 +320,7 @@ import { useRoute, useRouter } from "vue-router";
 import { TextInput, Select, Button, createResource } from "frappe-ui";
 import { useToast } from "vue-toastification";
 import { JobDetailsAPI } from "../../api/apiClient.js";
+import { Edit2, Upload, UserPlus, CheckSquare, Square, MoveRight, X, User, Calendar, Mail, FileText } from 'lucide-vue-next';
 import AddCandidateDialog from "../../components/jobs/AddCandidateDialog.vue";
 import AssignInterviewDialog from "../../components/jobs/AssignInterviewDialog.vue";
 import BulkMoveDialog from "../../components/jobs/BulkMoveDialog.vue";
@@ -355,11 +377,13 @@ const showAssignInterviewDialog = ref(false);
 const showBulkMoveDialog = ref(false);
 const showProfileDialog = ref(false);
 const showSendEmailDialog = ref(false);
+const parsingProfile = ref(null);
 
 // Resume upload state
 const resumeFileInput = ref(null);
 const isUploading = ref(false);
 const uploadProgress = ref(0);
+const isParsingResume = ref(false);
 
 // Computed properties
 const stepOptions = computed(() => {
@@ -645,35 +669,66 @@ async function parseResume(fileUrl, fileName) {
     try {
         toast.info('Parsing resume...');
         
+        // Initialize empty profile for real-time updates
+        parsingProfile.value = {
+            job_applicant: 'Parsing...',
+            summary: null,
+            skills: null,
+            experience: [],
+            education: [],
+            projects: [],
+            links: [],
+            personal : {}
+        };
+        
+        // Set loading state to true
+        isParsingResume.value = true;
+        
+        // Open the profile dialog to show real-time parsing
+        showProfileDialog.value = true;
+        
         // Call the resume parsing API with progress callback
         const response = await JobDetailsAPI.parseResume(
             {
-                path: fileUrl,
+                path: `./${import.meta.env.VITE_SITE_NAME}${fileUrl}`,
                 file_name: fileName,
-                job_opening: job.value.name,
-                activeStep : activeStep.value
+                job_opening_id: job.value.name,
+                pipeline_step_id : activeStep.value == 'all' ? job.value?.pipeline_steps[0].key : activeStep.value
             },
             (progressData) => {
                 // Handle progress updates from the EventStream
                 console.log('Resume parsing step:', progressData);
                 
-                // You can show progress toasts or update UI here
-                if (progressData.status) {
-                    toast.info(progressData.status);
-                } else if (progressData.step) {
-                    toast.info(`Parsing ${progressData.step}...`);
+                // Update the parsing profile in real-time
+                if (progressData && progressData.data) {
+                    // Merge the new data with existing profile
+                    if(progressData.section){
+                        toast.info(`Parsed ${progressData.section} Section`);
+                        parsingProfile.value[progressData.section] = progressData.data;
+                    }
+                    else{
+                        parsingProfile.value = progressData.data;
+                    }
+                    console.log('parsingProfile:', parsingProfile.value);
                 }
             }
         );
         
         if (response) {
             toast.success('Resume parsed successfully! Candidate added.');
+            // Update with final complete profile
+            // parsingProfile.value = response;
             // Reload job details to show the new candidate
             reloadJobDetails();
         }
     } catch (error) {
         console.error('Resume parsing failed:', error);
         toast.error(`Resume parsing failed: ${error.message || 'Unknown error'}`);
+        showProfileDialog.value = false;
+        parsingProfile.value = null;
+    } finally {
+        // Set loading state to false when parsing ends
+        isParsingResume.value = false;
     }
 }
 
@@ -731,6 +786,8 @@ async function handleAssignInterview(formData) {
 
   const payload = {
     job_applicant: activeCandidate.value.id,
+    job_opening: job.value.name,
+    designation: job.value.title,
     interview_round: formData.interview_round,
     status: formData.status,
     scheduled_on: formData.scheduled_on,
@@ -738,6 +795,8 @@ async function handleAssignInterview(formData) {
     to_time: formData.to_time,
     expected_average_rating: formData.expected_average_rating || 0,
     interview_summary: formData.interview_summary || "",
+    resume_link: activeCandidate.value.resume_link || "",
+    reminded: 0,
   };
 
   try {
@@ -1160,5 +1219,11 @@ label {
 
 .mb-1 {
     margin-bottom: 0.25rem;
+}
+
+.button-icon {
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 6px;
 }
 </style>
