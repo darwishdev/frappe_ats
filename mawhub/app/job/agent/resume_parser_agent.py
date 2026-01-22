@@ -1,5 +1,5 @@
 import json
-from typing import Dict, Generator, List, Type, cast, Callable, Optional, Union
+from typing import Dict, Generator, Iterator, List, Literal, Type, TypedDict, cast, Callable, Optional, Union
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from frappe.utils import hashlib
 from pydantic import BaseModel, Field
@@ -9,7 +9,7 @@ from google.genai import types
 # Import your DTOs
 from mawhub.app.job.dto.applicant_resume import (
     ApplicantEducation, ApplicantExperience,
-    ApplicantProject, PersonalInfo
+    ApplicantProject, ApplicantResumeDTO, PersonalInfo
 )
 
 # --- 1. Wrapper Models (REQUIRED for Gemini Lists) ---
@@ -32,6 +32,12 @@ class ChunkedResume(BaseModel):
 class SkillList(BaseModel):
     items: List[str] = Field(description="A list of technical and soft skills extracted from the text")
 # --- 2. Workflow Logic ---
+class AgentSection(TypedDict):
+    name: str
+    content: str
+class AgentEvent(TypedDict):
+    event: Literal["update" , "final" , "error"]
+    data: ApplicantResumeDTO | AgentSection | str
 
 
 # ... (Wrapper Models: ExperienceList, ProjectList, EducationList, SkillList stay same)
@@ -99,7 +105,7 @@ class ResumeWorkflow:
 
         return res
 
-    def run(self, resume_text: str, model_overrides: Optional[Dict[str, str]] = None) -> Generator[dict, None, dict]:
+    def run(self, resume_text: str, model_overrides: Optional[Dict[str, str]] = None) ->Iterator[AgentEvent]:
         """
         model_overrides: Dict where key is step_id ('labeler', 'experience', etc.)
                          and value is the model name.
@@ -120,14 +126,12 @@ class ResumeWorkflow:
             cached = self.get_cache_fn(f"{text_hash}_{config_hash}", self.default_model)
             if cached:
                 final_res = json.loads(cached) if isinstance(cached, str) else cached
-                yield {"status": "cache_hit", "data": final_res}
+                yield {"event": "update", "data": final_res}
                 return final_res
 
         # 2. Step 1: Labeling
         labeler_model = get_model("labeler")
-        yield {"status": "labeling", "message": f"Analyzing structure using {labeler_model}..."}
         chunked_data = self.agent_meta_labeler(resume_text, labeler_model)
-
         mapping = {
             "personal": PersonalInfo,
             "summary": str,
@@ -147,9 +151,6 @@ class ResumeWorkflow:
                 tasks.append((clean_name, section.content, schema, section_model))
 
         results = {}
-        yield {"status": "extracting", "total_sections": len(tasks)}
-
-        # 3. Step 2: Parallel Extraction
         with ThreadPoolExecutor() as executor:
             future_to_section = {
                 executor.submit(self.extraction_worker, name, text, schema, m_id): name
@@ -160,19 +161,22 @@ class ResumeWorkflow:
                 section_name = future_to_section[future]
                 try:
                     section_data = future.result()
-                    results[section_name] = section_data
+                    if section_name == 'skills' and isinstance(section_data , list):
+                        results[section_name] = ','.join(cast(list,section_data))
+                    else:
+                        results[section_name] = section_data
+                    res_section : AgentSection = {
+                        "name" : section_name,
+                        "content": json.dumps(section_data),
+                    }
                     yield {
-                        "status": "section_complete",
-                        "section": section_name,
-                        "model_used": get_model(section_name),
-                        "data": section_data
+                        "event": "update",
+                        "data": res_section
                     }
                 except Exception as e:
-                    yield {"status": "error", "section": section_name, "error": str(e)}
+                    yield {"event": "error", "data": str(e)}
 
         # 4. Finalize
         if self.set_cache_fn:
             self.set_cache_fn(f"{text_hash}_{config_hash}", self.default_model, results)
-
-        yield {"status": "completed", "final_data": results}
-        return results
+        yield {"event" : "final" , "data" : cast(ApplicantResumeDTO , results)}
