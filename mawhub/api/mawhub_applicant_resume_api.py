@@ -8,7 +8,7 @@ from werkzeug.wrappers import Response
 
 from mawhub.pkg.pdfconvertor.pdfconvertor import extract_text_from_pdf  # <--- Correct Import
 
-@frappe.whitelist(methods=["POST"])
+@frappe.whitelist(methods=["POST","GET"])
 def applicant_resume_parse(path: str):
     # Ensure this runs before the stream starts
     resume_text = ""
@@ -26,12 +26,12 @@ def applicant_resume_parse(path: str):
 
     return response
 
-@frappe.whitelist(methods=["POST"])
+@frappe.whitelist(methods=["POST", "GET"])
 def applicant_resume_create_update(payload: ApplicantResumeDTO):
     return app_container.job_usecase.applicant_resume.applicant_resume_create_update(payload=payload)
 
-@frappe.whitelist(methods=["POST"])
+@frappe.whitelist(methods=["POST", "GET"])
 
-@frappe.whitelist(methods=["POST"])
+@frappe.whitelist(methods=["POST", "GET"])
 def applicant_resume_bulk_create(payload: List[ApplicantResumeDTO]):
     return app_container.job_usecase.applicant_resume.applicant_resume_bulk_create(payload=payload)
