@@ -1,6 +1,6 @@
 import json
 from frappe import Any, _
-from typing import List, Protocol, cast
+from typing import Generator, List, Protocol, cast
 
 from frappe.model.document import Document
 from mawhub.app.job.agent.resume_parser_agent import ResumeWorkflow
@@ -11,7 +11,7 @@ from mawhub.pkg.pdfconvertor.pdfconvertor import extract_text_from_pdf
 
 class ApplicantResumeUsecaseInterface(Protocol):
 	def applicant_resume_create_update(self, payload: ApplicantResumeDTO)->Document: ...
-	def sse_generator(self, resume_text: str): ...
+	def sse_generator(self, resume_text: str)->Generator[str, Any, None]: ...
 	def applicant_resume_parse(
         self,
         path:str

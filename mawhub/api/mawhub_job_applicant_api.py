@@ -1,7 +1,8 @@
 from typing import List
 import frappe
-from frappe import _
-from mawhub.app.job.dto.job_applicant import  JobApplicantBulkUpdateRequest, JobApplicantUpdateRequest
+from frappe import  _
+from frappe.model.document import Document
+from mawhub.app.job.dto.job_applicant import  JobApplicantBulkUpdateRequest, JobApplicantCreateWithResume
 from mawhub.bootstrap import app_container
 from typing import List
 
@@ -12,9 +13,12 @@ def job_applicant_bulk_update(payload:JobApplicantBulkUpdateRequest)->List[str]:
     return app_container.job_usecase.job_applicant.job_applicant_bulk_update(payload)
 
 @frappe.whitelist(methods=["PUT","POST"], allow_guest=True)
-def job_applicant_create_update(payload:JobApplicant)->str:
+def job_applicant_create_update(payload:JobApplicant)->Document:
     return app_container.job_usecase.job_applicant.job_applicant_create_update(payload)
 
+@frappe.whitelist(methods=["PUT","POST"])
+def job_applicant_create_with_resume(payload:JobApplicantCreateWithResume)->Document:
+    return app_container.job_usecase.job_applicant.job_applicant_create_with_resume(payload)
 # @frappe.whitelist(methods=["POST"])
 # def applicant_resume_create_update(payload: ApplicantResumeCreateUpdateRequest):
 #     """
