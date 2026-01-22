@@ -25,8 +25,27 @@ class InformationSchemaColumn(TypedDict):
     COLUMN_NAME: str
     DATA_TYPE: str
     IS_NULLABLE: Literal["YES", "NO"]
+    COLUMN_DEFAULT: str | None
 
+FRAPPE_SYSTEM_FIELDS = {
+    "creation",
+    "modified",
+    "modified_by",
+    "owner",
+    "docstatus",
+    "idx",
+    "_user_tags",
+    "_comments",
+    "_assign",
+    "_liked_by",
+}
 
+def is_not_required(col: InformationSchemaColumn) -> bool:
+    return (
+        col["IS_NULLABLE"] == "YES"
+        or col["COLUMN_DEFAULT"] == "NULL"
+        or  col["COLUMN_NAME"] in FRAPPE_SYSTEM_FIELDS
+    )
 def generate_typed_dict_for_table(
     table_name: str,
     *,
@@ -55,7 +74,8 @@ def generate_typed_dict_for_table(
         SELECT
             COLUMN_NAME,
             DATA_TYPE,
-            IS_NULLABLE
+            IS_NULLABLE,
+            COLUMN_DEFAULT
         FROM information_schema.COLUMNS
         WHERE TABLE_SCHEMA = DATABASE()
           AND TABLE_NAME = %s
@@ -103,10 +123,8 @@ def generate_typed_dict_for_table(
 
     for col in rows:
         db_type = col["DATA_TYPE"]
-        nullable = col["IS_NULLABLE"] == "YES"
-
         py_type = TYPE_MAP.get(db_type, "str")
-        if nullable:
+        if  is_not_required(col):
             py_type = f"NotRequired[{py_type}]"
 
         lines.append(f"    {col['COLUMN_NAME']}: {py_type}")
@@ -220,7 +238,8 @@ def sql_generate_by_prefix(
             SELECT
                 COLUMN_NAME,
                 DATA_TYPE,
-                IS_NULLABLE
+                IS_NULLABLE,
+                COLUMN_DEFAULT
             FROM information_schema.COLUMNS
             WHERE TABLE_SCHEMA = DATABASE()
               AND TABLE_NAME = %s
@@ -240,7 +259,7 @@ def sql_generate_by_prefix(
 
         for col in columns:
             py_type = TYPE_MAP.get(col["DATA_TYPE"], "str")
-            if col["IS_NULLABLE"] == "YES":
+            if is_not_required(col):
                 py_type = f"NotRequired[{py_type}]"
 
             lines.append(f"    {col['COLUMN_NAME']}: {py_type}")
@@ -297,7 +316,8 @@ def sql_generate_by_table_names(
             SELECT
                 COLUMN_NAME,
                 DATA_TYPE,
-                IS_NULLABLE
+                IS_NULLABLE,
+                COLUMN_DEFAULT
             FROM information_schema.COLUMNS
             WHERE TABLE_SCHEMA = DATABASE()
               AND TABLE_NAME = %s
@@ -317,7 +337,7 @@ def sql_generate_by_table_names(
 
         for col in columns:
             py_type = TYPE_MAP.get(col["DATA_TYPE"], "str")
-            if col["IS_NULLABLE"] == "YES":
+            if is_not_required(col):
                 py_type = f"NotRequired[{py_type}]"
 
             lines.append(f"    {col['COLUMN_NAME']}: {py_type}")

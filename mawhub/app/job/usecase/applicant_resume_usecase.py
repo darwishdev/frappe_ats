@@ -33,7 +33,7 @@ class ApplicantResumeUsecase:
         self.resume_agent = resume_agent
 
     def applicant_resume_create_update(self, payload: ApplicantResumeDTO)->Document:
-        return self.repo.applicant_resume.applicant_resume_create_update(payload)
+        return self.repo.applicant_resume.create_or_update(payload)
 
 
     def sse_generator(self , resume_text: str):
@@ -56,4 +56,4 @@ class ApplicantResumeUsecase:
         self,
         payload:List[ApplicantResumeDTO]
     )->List[Document]:
-        return self.repo.applicant_resume.applicant_resume_bulk_create(payload)
+        return self.repo.applicant_resume.bulk_create(payload)

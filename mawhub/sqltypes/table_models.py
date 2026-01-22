@@ -12,8 +12,8 @@ class JobApplicant(TypedDict):
     modified: NotRequired[datetime]
     modified_by: NotRequired[str]
     owner: NotRequired[str]
-    docstatus: int
-    idx: int
+    docstatus: NotRequired[int]
+    idx: NotRequired[int]
     applicant_name: NotRequired[str]
     email_id: NotRequired[str]
     phone_number: NotRequired[str]
@@ -44,8 +44,8 @@ class Interview(TypedDict):
     modified: NotRequired[datetime]
     modified_by: NotRequired[str]
     owner: NotRequired[str]
-    docstatus: int
-    idx: int
+    docstatus: NotRequired[int]
+    idx: NotRequired[int]
     interview_round: NotRequired[str]
     job_applicant: NotRequired[str]
     job_opening: NotRequired[str]
@@ -71,8 +71,8 @@ class InterviewFeedback(TypedDict):
     modified: NotRequired[datetime]
     modified_by: NotRequired[str]
     owner: NotRequired[str]
-    docstatus: int
-    idx: int
+    docstatus: NotRequired[int]
+    idx: NotRequired[int]
     interview: NotRequired[str]
     interview_round: NotRequired[str]
     job_applicant: NotRequired[str]

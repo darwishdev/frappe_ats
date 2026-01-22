@@ -5,13 +5,15 @@ from mawhub.app.job.dto.job_applicant import  JobApplicantBulkUpdateRequest, Job
 from mawhub.bootstrap import app_container
 from typing import List
 
+from mawhub.sqltypes.table_models import JobApplicant
+
 @frappe.whitelist(methods=["PUT","POST"], allow_guest=True)
 def job_applicant_bulk_update(payload:JobApplicantBulkUpdateRequest)->List[str]:
     return app_container.job_usecase.job_applicant.job_applicant_bulk_update(payload)
 
 @frappe.whitelist(methods=["PUT","POST"], allow_guest=True)
-def job_applicant_update(payload:JobApplicantUpdateRequest)->str:
-    return app_container.job_usecase.job_applicant.job_applicant_update(payload)
+def job_applicant_create_update(payload:JobApplicant)->str:
+    return app_container.job_usecase.job_applicant.job_applicant_create_update(payload)
 
 # @frappe.whitelist(methods=["POST"])
 # def applicant_resume_create_update(payload: ApplicantResumeCreateUpdateRequest):

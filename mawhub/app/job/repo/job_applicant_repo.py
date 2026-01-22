@@ -1,23 +1,51 @@
 from typing import List, Protocol
 import frappe
 
-from mawhub.app.job.dto.job_applicant import  JobApplicantBulkUpdateRequest, JobApplicantUpdateRequest
+from mawhub.app.job.dto.job_applicant import  JobApplicantBulkUpdateRequest
+from mawhub.pkg.baseclasses.app_repo import AppRepo, AppRepoInterface
+from mawhub.sqltypes.table_models import JobApplicant
 
 
-class JobApplicantRepoInterface(Protocol):
-	def job_applicant_update(self, payload: JobApplicantUpdateRequest)->str: ...
-	def job_applicant_bulk_update(self, payload: JobApplicantBulkUpdateRequest)->List[str]: ...
+class JobApplicantRepoInterface(AppRepoInterface[JobApplicant] , Protocol):
+    def job_applicant_bulk_update(self, payload: JobApplicantBulkUpdateRequest)->List[str]: ...
 
 
-
-class JobApplicantRepo:
-    def job_applicant_update(self, payload: JobApplicantUpdateRequest)->str:
-        doc = frappe.get_doc("Job Applicant",payload.get("name"))
-        doc.set('status' , payload.get('status'))
-        doc.set('custom_pipeline_step' , payload.get('pipeline_step'))
-        doc.save(ignore_permissions=True)
-        frappe.db.commit()
-        return payload.get('name')
+class JobApplicantRepo(AppRepo[JobApplicant]):
+    def __init__(self):
+        super().__init__(
+            doc_name="Job Applicant",
+            name_key="name",
+            scalar_fields=[
+                "applicant_name",
+                "email_id",
+                "phone_number",
+                "country",
+                "job_title",
+                "designation",
+                "status",
+                "source",
+                "source_name",
+                "employee_referral",
+                "applicant_rating",
+                "notes",
+                "cover_letter",
+                "resume_attachment",
+                "resume_link",
+                "currency",
+                "lower_range",
+                "upper_range",
+                "custom_pipeline_step",
+            ],
+            child_tables={
+            },
+        )
+    # def job_applicant_update(self, payload: JobApplicantUpdateRequest)->str:
+    #     doc = frappe.get_doc("Job Applicant",payload.get("name"))
+    #     doc.set('status' , payload.get('status'))
+    #     doc.set('custom_pipeline_step' , payload.get('pipeline_step'))
+    #     doc.save(ignore_permissions=True)
+    #     frappe.db.commit()
+    #     return payload.get('name')
 
 
     def job_applicant_bulk_update(self, payload: JobApplicantBulkUpdateRequest)->List[str]:
