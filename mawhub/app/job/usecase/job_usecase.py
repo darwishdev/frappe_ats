@@ -1,5 +1,6 @@
 from typing import Protocol
 
+from mawhub.app.job.agent.job_opening_parser import JobOpeningWorkflow
 from mawhub.app.job.agent.resume_parser_agent import ResumeWorkflow
 from mawhub.app.job.repo.job_repo import JobRepoInterface
 from mawhub.app.job.usecase.applicant_resume_usecase import ApplicantResumeUsecase, ApplicantResumeUsecaseInterface
@@ -24,6 +25,7 @@ class JobUseCase:
     auth: AuthUsecaseInterface
     applicant_resume: ApplicantResumeUsecaseInterface
     resume_agent: ResumeWorkflow
+    job_agent: JobOpeningWorkflow
     def __init__(
         self,
         gemini_api_key:str,
@@ -31,8 +33,10 @@ class JobUseCase:
     ):
         model_name = 'gemini-2.5-flash-lite'
         resume_agent = ResumeWorkflow(api_key=gemini_api_key,model_name=model_name , get_cache_fn=get_ai_cache ,set_cache_fn=set_ai_cache)
+        job_agent = JobOpeningWorkflow(api_key=gemini_api_key,model_name=model_name , get_cache_fn=get_ai_cache ,set_cache_fn=set_ai_cache)
         self.resume_agent = resume_agent
-        self.job_opening = JobOpeningUsecase(job_repo)
+        self.job_agent = job_agent
+        self.job_opening = JobOpeningUsecase(job_repo,job_agent)
         self.job_applicant = JobApplicantUsecase(job_repo)
         self.interview = InterviewUsecase(job_repo)
         self.auth = AuthUsecase(job_repo)

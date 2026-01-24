@@ -1,5 +1,5 @@
 import json
-from typing import Dict, Generator, Iterator, List, Literal, Type, TypedDict, cast, Callable, Optional, Union
+from typing import Dict,  Iterator, List, Literal, Type, TypedDict, cast, Callable, Optional
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from frappe.utils import hashlib
 from pydantic import BaseModel, Field
