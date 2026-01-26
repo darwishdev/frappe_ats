@@ -23,7 +23,6 @@ class ChunkedDocument(BaseModel):
     sections: List[ChunkSection]    # only headers
 
 class ParsedDocumentSection(BaseModel):
-    title: Optional[str] = None
     description: Optional[str] = None
     bullet_points: List[str] = []
 
@@ -142,7 +141,10 @@ Text:
 
         # Yield metadata immediately
         metadata_dict = {meta.key: meta.value for meta in doc_chunks.metadata}
-        yield {"event": "update", "data": {"metadata": metadata_dict}}
+        chunk_titles = []
+        for section in doc_chunks.sections:
+            chunk_titles.append(section.title)
+        yield {"event": "update", "data": {"metadata": metadata_dict , "titles" : chunk_titles}}
 
         # ----------------------------
         # Step 2: Parse sections in parallel
@@ -161,8 +163,11 @@ Text:
                 title = future_to_title[future]
                 try:
                     parsed_section = future.result()
-                    results[title] = parsed_section.model_dump()
-                    yield {"event": "update", "data": parsed_section.model_dump()}
+                    section = parsed_section.model_dump()
+                    results[title] = section
+                    data = {}
+                    data[title] = section
+                    yield {"event": "update", "data": data}
                 except Exception as e:
                     yield {"event": "error", "data": {"message": f"Parsing section '{title}' failed: {str(e)}"}}
 
