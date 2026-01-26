@@ -156,6 +156,7 @@
             v-model="showJobDialog"
             :parsed-data="parsedJobData"
             :is-loading="isParsing"
+            @create="handleJobCreate"
         />
     </div>
 </template>
@@ -455,11 +456,19 @@ async function parseJobDescription(fileUrl, fileName) {
                 // Handle progress updates from the EventStream
                 console.log('Job parsing step:', progressData);
 
+                if(progressData && progressData.event == 'error') {
+                    toast.error(`Job parsing error: ${progressData.data || 'Unknown error'}`);
+                    isParsing.value = false;
+                    showJobDialog.value = false;
+                    // parsedJobData.value = null;
+                    return
+                };
+                if(!progressData || !progressData.data) return;
                 if(!progressData || !progressData.data) return;
                 isParsing.value = false;
                 if(progressData.event == 'final'){
                     toast.success('Job description parsed successfully!');
-                    parsedJobData.value = progressData.data
+                    // parsedJobData.value = progressData.data
                     return;
                 }
                 // Update the parsed data in real-time
@@ -487,6 +496,12 @@ async function parseJobDescription(fileUrl, fileName) {
         // Set loading state to false when parsing ends
         // isParsing.value = false;
     }
+}
+
+// Handle job creation
+function handleJobCreate(parsedData) {
+    // Reload the jobs list after creating a new job
+    reload();
 }
 
 // Reload function (can be called externally)

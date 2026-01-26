@@ -16,8 +16,9 @@
                 <div v-else-if="Object.keys(parsedData).length > 0" class="jdd-sections">
                     <div v-for="(section, sectionKey) in parsedData" :key="sectionKey">
                         <!-- Special handling for job_opening_details -->
+                         <!-- {{ section }} -->
                         <div v-if="sectionKey === 'job_opening_details'" class="jdd-details-card">
-                            <h3 class="jdd-details-title">Job Opening Details</h3>
+                            <h3 class="jdd-details-title">Job Opening</h3>
                             
                             <div class="jdd-details-grid">
                                 <!-- Job Title -->
@@ -27,42 +28,42 @@
                                     </div>
                                     <div class="jdd-detail-content">
                                         <div class="jdd-detail-label">Job Title</div>
-                                        <div class="jdd-detail-value jdd-detail-highlight">{{ section.job_title }}</div>
+                                        <div class="jdd-detail-value">{{ section.job_title }}</div>
                                     </div>
                                 </div>
 
                                 <!-- Location -->
-                                <div v-if="section.location" class="jdd-detail-item">
+                                <div class="jdd-detail-item">
                                     <div class="jdd-detail-icon">
                                         <MapPin :size="24" />
                                     </div>
                                     <div class="jdd-detail-content">
                                         <div class="jdd-detail-label">Location</div>
-                                        <div class="jdd-detail-value">{{ section.location }}</div>
+                                        <div class="jdd-detail-value">{{ section.location || 'N/A' }}</div>
                                     </div>
                                 </div>
 
                                 <!-- Salary Range -->
-                                <div v-if="section.lower_range || section.upper_range" class="jdd-detail-item">
+                                <div class="jdd-detail-item">
                                     <div class="jdd-detail-icon">
                                         <Banknote :size="24" />
                                     </div>
                                     <div class="jdd-detail-content">
                                         <div class="jdd-detail-label">Salary Range</div>
                                         <div class="jdd-detail-value">
-                                            {{ formatSalaryRange(section.lower_range, section.upper_range, section.currency) }}
+                                            {{ formatSalaryRange(section.lower_range, section.upper_range, section.currency) || 'N/A' }}
                                         </div>
                                     </div>
                                 </div>
 
                                 <!-- Description -->
-                                <div v-if="section.description" class="jdd-detail-item jdd-detail-full">
+                                <div class="jdd-detail-item jdd-detail-full">
                                     <div class="jdd-detail-icon">
                                         <FileText :size="24" />
                                     </div>
                                     <div class="jdd-detail-content">
                                         <div class="jdd-detail-label">Description</div>
-                                        <div class="jdd-detail-value jdd-detail-description">{{ section.description }}</div>
+                                        <div class="jdd-detail-value jdd-detail-description">{{ section.description || 'N/A' }}</div>
                                     </div>
                                 </div>
                             </div>
@@ -99,10 +100,7 @@
         </template>
 
         <template #actions>
-            <div class="w-full flex justify-between">
-                <Button @click="close">
-                    Cancel
-                </Button>
+            <div class="w-full flex justify-end">
                 <Button 
                     variant="solid" 
                     @click="createJob" 
@@ -228,42 +226,62 @@ const formatSalaryRange = (lower, upper, currency = 'SAR') => {
 
 /* Special Job Details Card */
 .jdd-details-card {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-radius: 12px;
-    padding: 24px;
-    color: white;
-    box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+    position: relative;
+    background: #fdfefe;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 22px;
+    color: #0f172a;
+    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+    overflow: hidden;
+}
+
+.jdd-details-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(120deg, rgba(59, 130, 246, 0.12), #7700bc0b);
+    opacity: 0.7;
+    pointer-events: none;
 }
 
 .jdd-details-title {
-    font-size: 20px;
-    font-weight: 800;
-    margin: 0 0 20px 0;
-    color: white;
+    position: relative;
+    font-size: 18px;
+    margin: 0 0 16px 0;
+    color: #0f172a;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 12px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.8);
+    box-shadow: 0 6px 12px rgba(15, 23, 42, 0.05);
 }
 
 .jdd-details-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 16px;
 }
 
 .jdd-detail-item {
-    background: rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 10px;
-    padding: 16px;
+    position: relative;
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 14px 16px;
     display: flex;
     gap: 12px;
     align-items: flex-start;
-    transition: all 0.3s ease;
+    transition: box-shadow 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+    box-shadow: 0 4px 10px rgba(15, 23, 42, 0.04);
 }
 
 .jdd-detail-item:hover {
-    background: rgba(255, 255, 255, 0.25);
+    box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-color: #cbd5e1;
 }
 
 .jdd-detail-full {
@@ -275,6 +293,12 @@ const formatSalaryRange = (lower, upper, currency = 'SAR') => {
     display: flex;
     align-items: center;
     justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: linear-gradient(145deg, #e2e8f0, #f8fafc);
+    color: #0f172a;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
 }
 
 .jdd-detail-content {
@@ -287,19 +311,18 @@ const formatSalaryRange = (lower, upper, currency = 'SAR') => {
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    opacity: 0.9;
+    color: #52627a;
     margin-bottom: 6px;
 }
 
 .jdd-detail-value {
-    font-size: 16px;
-    font-weight: 600;
-    color: white;
+    font-size: 15.5px;
+    color: #0f172a;
     word-break: break-word;
 }
 
 .jdd-detail-highlight {
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 800;
 }
 
@@ -307,6 +330,7 @@ const formatSalaryRange = (lower, upper, currency = 'SAR') => {
     font-size: 14px;
     font-weight: 400;
     line-height: 1.6;
+    color: #1e293b;
     white-space: pre-wrap;
 }
 
