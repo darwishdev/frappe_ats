@@ -77,6 +77,10 @@ def job_opening_parse(path: str):
                             "designation_name": designation_name
                         })
                         new_desig.insert(ignore_permissions=True)
+
+                    currency = parsed_job.get("currency") or "SAR"
+                    if currency.lower() == 'null':
+                        currency = "SAR"
                     new_job = frappe.get_doc({
                         "doctype": "Job Opening",
                         "job_title": parsed_job.get("job_title"),
@@ -85,7 +89,7 @@ def job_opening_parse(path: str):
                         "lower_range": parsed_job.get("lower_range") or 0.0,
                         "custom_pipeline" : "Main",
                         "upper_range": parsed_job.get("upper_range") or 0.0,
-                        "currency": parsed_job.get("currency") or "SAR",
+                        "currency": currency,
                         "company": "Mawhub", # Hardcoded default for now
                         "status": "Open",
                         "planned_vacancies": 1,
