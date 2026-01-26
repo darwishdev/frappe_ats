@@ -430,6 +430,31 @@ export const JobDetailsAPI = {
     });
     
     return resource.promise;
+  },
+
+  /**
+   * Save email template for future use
+   * @param {Object} templateConfig - Template configuration
+   * @param {string} templateConfig.template_name - Template name
+   * @param {string} templateConfig.description - Template description
+   * @param {string} templateConfig.subject - Email subject template
+   * @param {string} templateConfig.message - Email message template
+   * @returns {Promise<Object>} Saved template details
+   */
+  saveEmailTemplate: function(templateConfig) {
+    if (!_createResource) {
+      throw new Error('JobDetailsAPI not initialized. Call JobDetailsAPI.init(createResource) first.');
+    }
+    
+    const resource = _createResource({
+      url: 'mawhub.save_email_template',
+      params: {
+        payload: templateConfig
+      },
+      auto: true
+    });
+    
+    return resource.promise;
   }
 };
 

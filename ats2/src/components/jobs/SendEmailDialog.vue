@@ -2,7 +2,7 @@
   <Dialog
     v-model="isOpen"
     :options="{
-      title: `Send Email to ${candidateName || ''}`,
+      title: `Send Email to ${candidateName.split(' ')[0] || ''}`,
       size: 'xl',
     }"
   >
@@ -106,10 +106,65 @@
       </div>
     </template>
     <template #actions>
-      <div class="flex justify-between w-full">
+      <div class="flex justify-between w-full gap-2">
         <Button @click="close">Cancel</Button>
-        <Button theme="gray" :variant="'solid'" @click="submit">Send Email</Button>
+        <div class="flex items-center gap-3">
+          <Button 
+            @click="saveAsTemplate"
+            :disabled="!formData.message || isSavingTemplate"
+            :loading="isSavingTemplate"
+          >
+            <div class="flex items-center gap-1">
+              <Save :size="15" class="mr-1" v-if="!isSavingTemplate" />
+              {{ isSavingTemplate ? 'Saving...' : 'Save as Template' }}
+            </div>
+          </Button>
+          <Button theme="gray" :variant="'solid'" @click="submit">Send Email</Button>
+        </div>
       </div>
+    </template>
+  </Dialog>
+
+  <!-- Template Name Dialog -->
+  <Dialog 
+    v-model="showTemplateNameDialog"
+    :options="{ 
+      title: 'Save Email Template', 
+      size: 'sm'
+    }"
+  >
+    <template #body-content>
+      <div class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium mb-2">Template Name *</label>
+          <TextInput
+            v-model="templateName"
+            type="text"
+            placeholder="e.g., Interview Confirmation, Rejection, Offer"
+            @keyup.enter="confirmSaveTemplate"
+          />
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-2">Description (Optional)</label>
+          <textarea
+            v-model="templateDescription"
+            class="form-control"
+            rows="3"
+            placeholder="Add notes about when to use this template..."
+          ></textarea>
+        </div>
+      </div>
+    </template>
+    <template #actions>
+      <Button @click="closeTemplateDialog">Cancel</Button>
+      <Button 
+        theme="gray" 
+        :variant="'solid'" 
+        @click="confirmSaveTemplate"
+        :disabled="!templateName || !templateName.trim()"
+      >
+        Save Template
+      </Button>
     </template>
   </Dialog>
 </template>
@@ -117,7 +172,7 @@
 <script setup>
 import { ref, watch } from 'vue';
 import { Dialog, Button, TextInput } from 'frappe-ui';
-import { Sparkles, Settings } from 'lucide-vue-next';
+import { Sparkles, Settings, Save } from 'lucide-vue-next';
 import { useToast } from 'vue-toastification';
 import { JobDetailsAPI } from '../../api/apiClient.js';
 
@@ -162,6 +217,11 @@ const formData = ref({
 const isGenerating = ref(false);
 const showPromptInput = ref(false);
 const customPrompt = ref('');
+
+const isSavingTemplate = ref(false);
+const showTemplateNameDialog = ref(false);
+const templateName = ref('');
+const templateDescription = ref('');
 
 watch(() => props.modelValue, (newVal) => {
   isOpen.value = newVal;
@@ -236,6 +296,53 @@ async function generateEmailContent() {
     isGenerating.value = false;
   }
 }
+
+function saveAsTemplate() {
+  if (!formData.value.message || !formData.value.message.trim()) {
+    toast.warning('Please write a message to save as template');
+    return;
+  }
+  
+  templateName.value = '';
+  templateDescription.value = '';
+  showTemplateNameDialog.value = true;
+}
+
+function closeTemplateDialog() {
+  showTemplateNameDialog.value = false;
+}
+
+async function confirmSaveTemplate() {
+  if (!templateName.value || !templateName.value.trim()) {
+    toast.warning('Please enter a template name');
+    return;
+  }
+
+  isSavingTemplate.value = true;
+  
+  try {
+    const payload = {
+      template_name: templateName.value,
+      description: templateDescription.value || '',
+      subject: formData.value.subject,
+      message: formData.value.message,
+    };
+
+    const response = await JobDetailsAPI.saveEmailTemplate(payload);
+    
+    if (response) {
+      toast.success(`Template "${templateName.value}" saved successfully!`);
+      closeTemplateDialog();
+    } else {
+      throw new Error('Invalid response from server');
+    }
+  } catch (error) {
+    console.error('Failed to save template:', error);
+    toast.error(`Failed to save template: ${error.message || 'Unknown error'}`);
+  } finally {
+    isSavingTemplate.value = false;
+  }
+}
 </script>
 
 <style scoped>
@@ -279,6 +386,10 @@ label {
 
 .mb-1 {
   margin-bottom: 0.25rem;
+}
+
+.mb-2 {
+  margin-bottom: 0.5rem;
 }
 
 .flex {
@@ -341,5 +452,9 @@ label {
 
 .mr-1 {
   margin-right: 0.25rem;
+}
+
+.mt-1 {
+  margin-top: 0.25rem;
 }
 </style>
