@@ -41,11 +41,17 @@ def job_opening_parse(path: str):
             # Run the workflow
             job_id = "1"
             context = {"meta_data": {}}
+            parsed_job = ""
             for event in workflow.run(document_text=document_text):
                 # Handle final event specially
                 event_type = event.get("event")
                 event_data = event.get("data", {})
 
+                if event_type == "final":
+                    final_sections_dto = parsed_document_from_agent_to_dto(event.get("data"),{},path,"job_opening",str(job_id))
+                    print("Final parsed sections:", final_sections_dto)
+                    event['data']['job_opening_details'] = parsed_job
+                    app_container.job_usecase.parsed_document.parsed_document_create_update(final_sections_dto)
                 yield f"data: {json.dumps(event)}\n\n"
                 # 1. Intercept the first 'update' that contains titles/metadata
                 if event_type == "update" and "titles" in event_data:
@@ -57,14 +63,14 @@ def job_opening_parse(path: str):
                     ai_job_data = app_container.job_usecase.job_agent.run(
                         chunked_doc=context["meta_data"]
                     )
-                    ai_txt = ai_job_data.model_dump()
+                    parsed_job = ai_job_data.model_dump()
                     new_event_data = {
                         "event" : "update",
-                        "job_opening_details" : ai_txt
+                        "job_opening_details" : parsed_job
                     }
                     new_event = {"event" : "update" , "data" : new_event_data}
 # --- DIRECT FRAPPE CREATION (Quick & Dirty) ---
-                    designation_name = ai_txt.get("job_title")
+                    designation_name = parsed_job.get("job_title")
                     if designation_name and not frappe.db.exists("Designation", designation_name):
                         new_desig = frappe.get_doc({
                             "doctype": "Designation",
@@ -73,13 +79,13 @@ def job_opening_parse(path: str):
                         new_desig.insert(ignore_permissions=True)
                     new_job = frappe.get_doc({
                         "doctype": "Job Opening",
-                        "job_title": ai_txt.get("job_title"),
-                        "designation": ai_txt.get("job_title"), # Usually maps to title
-                        "description": ai_txt.get("description"),
-                        "lower_range": ai_txt.get("lower_range") or 0.0,
+                        "job_title": parsed_job.get("job_title"),
+                        "designation": parsed_job.get("job_title"), # Usually maps to title
+                        "description": parsed_job.get("description"),
+                        "lower_range": parsed_job.get("lower_range") or 0.0,
                         "custom_pipeline" : "Main",
-                        "upper_range": ai_txt.get("upper_range") or 0.0,
-                        "currency": ai_txt.get("currency") or "SAR",
+                        "upper_range": parsed_job.get("upper_range") or 0.0,
+                        "currency": parsed_job.get("currency") or "SAR",
                         "company": "Mawhub", # Hardcoded default for now
                         "status": "Open",
                         "planned_vacancies": 1,
@@ -89,13 +95,6 @@ def job_opening_parse(path: str):
                     frappe.db.commit() # Mandatory for SSE because it's a separate transaction
                     job_id = new_job.name
                     yield f"data: {json.dumps(new_event)}\n\n"
-                if event_type == "final":
-                    # The final data is a list of ParsedDocumentSection
-
-                    final_sections_dto = parsed_document_from_agent_to_dto(event.get("data"),{},path,"job_opening",str(job_id))
-                    # Optionally: do something with the final_sections (e.g., store in DB)
-                    print("Final parsed sections:", final_sections_dto)
-                    app_container.job_usecase.parsed_document.parsed_document_create_update(final_sections_dto)
 
                 # Always yield SSE formatted string
 
