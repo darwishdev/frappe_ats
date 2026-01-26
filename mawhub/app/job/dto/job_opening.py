@@ -1,7 +1,7 @@
 from datetime import date, datetime
 import json
-from typing import List, TypedDict, cast
-from frappe import Optional
+from typing import List, Mapping, TypeVar, TypedDict, cast
+from frappe import Any, Optional
 
 from mawhub.sqltypes.tal_models import JobView
 
@@ -134,53 +134,57 @@ def _dt_to_str(value: date | datetime | None) -> str:
         return ""
     return value.isoformat()
 
-def job_opening_sql_to_dto(job: JobView) -> JobOpeningDTO:
-    """
-    Convert DB JobView into API JobOpeningDTO
-    """
 
-    # --------------------------------------------------
-    # Parse steps JSON
-    # --------------------------------------------------
-    if isinstance(job["steps"] , str):
+T = TypeVar("T")
+
+def get(
+    row: Mapping[str, Any],
+    key: str,
+    default: T,
+) -> T:
+    value = row.get(key, default)
+    return cast(T, value)
+def job_opening_sql_to_dto(job: JobView) -> JobOpeningDTO:
+    # ---------------------------
+    # Parse steps
+    # ---------------------------
+    steps_raw = get(job, "steps", [])
+    if isinstance(steps_raw, str):
         try:
-            steps = json.loads(job["steps"])
+            steps = json.loads(steps_raw)
         except json.JSONDecodeError as exc:
             raise ValueError("Invalid JSON in job.steps") from exc
     else:
         steps = []
 
-    # Optional: validate shape if you want stricter guarantees
     steps = cast(list[JobPipelineStepDTO], steps)
 
-    # --------------------------------------------------
-    # Build DTO
-    # --------------------------------------------------
     dto: JobOpeningDTO = {
-        "name": job["name"],
-        "designation": job.get("designation") or "",
-        "department": job.get("department"),
-        "employment_type": job.get("employment_type") or "",
-        "location": job.get("location") or "",
+        "name": get(job, "name", ""),
+        "designation": get(job, "designation", ""),
+        "department": get(job, "department", ""),
+        "employment_type": get(job, "employment_type", ""),
+        "location": get(job, "location", ""),
 
-        "docstatus": job["docstatus"],
-        "publish": job["publish"],
-        "publish_salary_range": job["publish_salary_range"],
-        "publish_applications_received": job["publish_applications_received"],
+        "docstatus": get(job, "docstatus", 1),
 
-        "route": job.get("route") or "",
-        "job_application_route": job.get("job_application_route"),
+        "publish": get(job, "publish", True),
+        "publish_salary_range": get(job, "publish_salary_range", False),
+        "publish_applications_received": get(job, "publish_applications_received", False),
 
-        "currency": job.get("currency") or "",
-        "salary_per": job.get("salary_per") or "",
-        "lower_range": str(job["lower_range"]),
-        "upper_range": str(job["upper_range"]),
+        "route": get(job, "route", ""),
+        "job_application_route": get(job, "job_application_route", ""),
+
+        "currency": get(job, "currency", ""),
+        "salary_per": get(job, "salary_per", ""),
+        "lower_range": str(get(job, "lower_range", 0)),
+        "upper_range": str(get(job, "upper_range", 0)),
 
         "posted_on": _dt_to_str(job.get("posted_on")),
         "closes_on": _dt_to_str(job.get("closes_on")),
 
-        "step_count": job["step_count"],
-        "candidate_count": job["candidate_count"],
+        "step_count": get(job, "step_count", 0),
+        "candidate_count": get(job, "candidate_count", 0),
 
         "steps": steps,
     }
