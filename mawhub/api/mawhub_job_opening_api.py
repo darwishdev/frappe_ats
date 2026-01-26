@@ -59,37 +59,40 @@ def job_opening_parse(path: str):
                     )
                     ai_txt = ai_job_data.model_dump()
                     new_event_data = {
+                        "event" : "update",
                         "job_opening_details" : ai_txt
                     }
                     new_event = {"event" : "update" , "data" : new_event_data}
 # --- DIRECT FRAPPE CREATION (Quick & Dirty) ---
-                    try:
-                        new_job = frappe.get_doc({
-                            "doctype": "Job Opening",
-                            "job_title": ai_txt.get("job_title"),
-                            "designation": ai_txt.get("job_title"), # Usually maps to title
-                            "description": ai_txt.get("description"),
-                            "location": ai_txt.get("location") or "Riyadh",
-                            "lower_range": ai_txt.get("lower_range") or 0.0,
-                            "upper_range": ai_txt.get("upper_range") or 0.0,
-                            "currency": ai_txt.get("currency") or "SAR",
-                            "company": "Mawhub", # Hardcoded default for now
-                            "status": "Open",
-                            "planned_vacancies": 1,
-                            "publish": 1
+                    designation_name = ai_txt.get("job_title")
+                    if designation_name and not frappe.db.exists("Designation", designation_name):
+                        new_desig = frappe.get_doc({
+                            "doctype": "Designation",
+                            "designation_name": designation_name
                         })
-                        new_job.insert(ignore_permissions=True)
-                        frappe.db.commit() # Mandatory for SSE because it's a separate transaction
-                        job_id = new_job.name
-                        raise ValueError(job_id)
-                    except Exception as e:
-                        # Log the error but don't crash the whole stream
-                        print(f"Direct Frappe Creation Failed: {str(e)}")
+                        new_desig.insert(ignore_permissions=True)
+                    new_job = frappe.get_doc({
+                        "doctype": "Job Opening",
+                        "job_title": ai_txt.get("job_title"),
+                        "designation": ai_txt.get("job_title"), # Usually maps to title
+                        "description": ai_txt.get("description"),
+                        "lower_range": ai_txt.get("lower_range") or 0.0,
+                        "custom_pipeline" : "Main",
+                        "upper_range": ai_txt.get("upper_range") or 0.0,
+                        "currency": ai_txt.get("currency") or "SAR",
+                        "company": "Mawhub", # Hardcoded default for now
+                        "status": "Open",
+                        "planned_vacancies": 1,
+                        "publish": 1
+                    })
+                    new_job.insert(ignore_permissions=True)
+                    frappe.db.commit() # Mandatory for SSE because it's a separate transaction
+                    job_id = new_job.name
                     yield f"data: {json.dumps(new_event)}\n\n"
                 if event_type == "final":
                     # The final data is a list of ParsedDocumentSection
 
-                    final_sections_dto = parsed_document_from_agent_to_dto(event.get("data"),{},path,"job_opening" , "1")
+                    final_sections_dto = parsed_document_from_agent_to_dto(event.get("data"),{},path,"job_opening",str(job_id))
                     # Optionally: do something with the final_sections (e.g., store in DB)
                     print("Final parsed sections:", final_sections_dto)
                     app_container.job_usecase.parsed_document.parsed_document_create_update(final_sections_dto)
@@ -103,6 +106,7 @@ def job_opening_parse(path: str):
                 "event": "error",
                 "data": str(e),
             }
+            frappe.db.rollback()
             yield f"data: {json.dumps(error_event)}\n\n"
 
     # Build the SSE response
