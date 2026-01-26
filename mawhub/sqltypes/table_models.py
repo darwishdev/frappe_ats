@@ -1,10 +1,49 @@
 # AUTO-GENERATED FILE
 # Source: MariaDB information_schema
-# Contains TypedDicts for $['tabJob Applicant', 'tabInterview', 'tabInterview Feedback']* tables
+# Contains TypedDicts for $['tabJob Opening', 'tabJob Applicant', 'tabInterview', 'tabInterview Feedback']* tables
 # Do not edit manually
 
 from typing import TypedDict, NotRequired
 from datetime import date, datetime
+
+class JobOpening(TypedDict):
+    name: str
+    creation: NotRequired[datetime]
+    modified: NotRequired[datetime]
+    modified_by: NotRequired[str]
+    owner: NotRequired[str]
+    docstatus: NotRequired[int]
+    idx: NotRequired[int]
+    job_opening_template: NotRequired[str]
+    job_title: NotRequired[str]
+    designation: NotRequired[str]
+    status: NotRequired[str]
+    posted_on: NotRequired[datetime]
+    closes_on: NotRequired[date]
+    closed_on: NotRequired[date]
+    company: NotRequired[str]
+    department: NotRequired[str]
+    employment_type: NotRequired[str]
+    location: NotRequired[str]
+    staffing_plan: NotRequired[str]
+    planned_vacancies: int
+    job_requisition: NotRequired[str]
+    vacancies: int
+    publish: int
+    route: NotRequired[str]
+    publish_applications_received: int
+    job_application_route: NotRequired[str]
+    description: NotRequired[str]
+    currency: NotRequired[str]
+    lower_range: float
+    upper_range: float
+    salary_per: NotRequired[str]
+    publish_salary_range: int
+    _user_tags: NotRequired[str]
+    _comments: NotRequired[str]
+    _assign: NotRequired[str]
+    _liked_by: NotRequired[str]
+    custom_pipeline: NotRequired[str]
 
 class JobApplicant(TypedDict):
     name: str

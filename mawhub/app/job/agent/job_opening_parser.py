@@ -1,75 +1,28 @@
-
-# mawhub/app/job/dto/job_opening.py
-from concurrent.futures import ThreadPoolExecutor, as_completed
+# mawhub/app/job/agent/job_opening_workflow.py
 import hashlib
 import json
-from typing import Dict, Iterator, List, Literal, Optional, TypedDict, cast
+from typing import Dict, Optional, cast
 from google.genai import types, Client
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
-from mawhub.app.job.agent.resume_parser_agent import AgentEvent
+from mawhub.app.job.agent.document_parser_agent import ChunkedDocument
 
-
-class JobMeta(BaseModel):
-    title: str
-    company: str
-    location: Optional[str]
-    reports_to: Optional[str]
-
-
-class ResponsibilityList(BaseModel):
-    items: List[str]
-
-
-class RequirementList(BaseModel):
-    items: List[str]
-
-
-class QualificationList(BaseModel):
-    items: List[str]
-
-
-class KPIList(BaseModel):
-    items: List[str]
-
-
-class JobOpeningAgentDTO(BaseModel):
-    meta: Optional[JobMeta]
-    summary: Optional[str]
-    responsibilities: Optional[List[str]]
-    requirements: Optional[List[str]]
-    qualifications: Optional[List[str]]
-    kpis: Optional[List[str]]
-    benefits: Optional[str]
-class JobSection(BaseModel):
-    name: str = Field(
-        description=(
-            "One of: 'meta', 'summary', 'responsibilities', "
-            "'requirements', 'qualifications', 'kpis', 'benefits'"
-        )
-    )
-    content: str
-
-
-class ChunkedJobDescription(BaseModel):
-    sections: List[JobSection]
-
-class JobAgentSection(TypedDict):
-    name: str
-    content: str
-
-
-class JobAgentEvent(TypedDict):
-    event: Literal["update", "final", "error"]
-    data: JobOpeningAgentDTO | JobAgentSection | str
+class AIJobOpeningExtraction(BaseModel):
+    """The AI only extracts these specific fields from the text"""
+    job_title: str
+    description: str
+    location: Optional[str] = None
+    lower_range: Optional[float] = 0.0
+    upper_range: Optional[float] = 0.0
+    currency: Optional[str] = "SAR"
 
 class JobOpeningWorkflow:
     def __init__(
         self,
-        client:Client,
+        client: Client,
         model_name: str,
-        get_cache_fn,
-        set_cache_fn
+        get_cache_fn=None,
+        set_cache_fn=None
     ):
         self.client = client
         self.default_model = model_name
@@ -77,125 +30,69 @@ class JobOpeningWorkflow:
         self.set_cache_fn = set_cache_fn
 
     def get_text_hash(self, text: str) -> str:
-        return hashlib.sha256(text.strip().encode()).hexdigest()
+        # Consistency with your resume agent's hashing style
+        return hashlib.md5(text.encode('utf-8')).hexdigest()
 
-    def agent_meta_labeler(self, raw_text: str, model_id: str) -> ChunkedJobDescription:
+    def run(
+        self,
+        chunked_doc: dict,
+        model_overrides: Optional[Dict[str, str]] = None
+    ) -> AIJobOpeningExtraction:
+        overrides = model_overrides or {}
+        model_id = overrides.get("model", self.default_model)
+
+        # 1. Create a stable hash for caching
+        full_content = json.dumps(chunked_doc, sort_keys=True)
+        text_hash = self.get_text_hash(full_content)
+
+        # 2. Check Cache
+        # if self.get_cache_fn:
+        #     cached_data = self.get_cache_fn(text_hash, model_id)
+        #     if cached_data:
+        #         # If cached as string, parse it; if dict, unpack it
+        #         data = json.loads(cached_data) if isinstance(cached_data, str) else cached_data
+        #         return AIJobOpeningExtraction(**data)
+
+        # 3. Prepare Extraction Prompt
+        # Passing raw JSON to the prompt is fine, but we give Gemini context
         prompt = f"""
-Analyze the following job description and split it into structured sections.
+        Extract job details from the following structured document sections.
+        Focus on the job title, description, location, and salary ranges.
 
-Sections:
-- meta (title, company, location, reports_to)
-- summary
-- responsibilities
-- requirements
-- qualifications
-- kpis
-- benefits
+        DOCUMENT SECTIONS:
+        {full_content}
+        """
 
-Text:
-{raw_text}
-"""
-
+        # 4. Call Gemini with Native Parsing (response.parsed)
         response = self.client.models.generate_content(
             model=model_id,
             contents=prompt,
             config=types.GenerateContentConfig(
                 response_mime_type="application/json",
-                response_schema=ChunkedJobDescription
+                response_schema=AIJobOpeningExtraction,
+                temperature=0.1
             )
         )
 
-        return cast(ChunkedJobDescription, response.parsed)
-    def extraction_worker(self, section_name: str, text: str, schema, model_id: str):
-        is_plain_text = schema is str
+        # 5. Robust Extraction (Silent Fix)
+        # Using .parsed is the SDK's built-in way to get the Pydantic object directly
+        validated_data = cast(AIJobOpeningExtraction, response.parsed)
 
-        prompt = f"Extract structured {section_name} from the following text:\n\n{text}"
+        # Fallback if .parsed failed but .text exists
+        if not validated_data and response.text:
+            try:
+                # Clean markdown if AI ignored the mime_type instruction
+                clean_text = response.text.strip().strip('`').replace('json', '', 1).strip()
+                validated_data = AIJobOpeningExtraction(**json.loads(clean_text))
+            except Exception:
+                # Last resort: empty model or handle as error
+                raise ValueError("Failed to parse AI response into AIJobOpeningExtraction mapping")
 
-        response = self.client.models.generate_content(
-            model=model_id,
-            contents=prompt,
-            config=types.GenerateContentConfig(
-                response_mime_type="text/plain" if is_plain_text else "application/json",
-                response_schema=None if is_plain_text else schema
-            )
-        )
+        # 6. Save to Cache
+        if self.set_cache_fn and validated_data:
+            try:
+                self.set_cache_fn(text_hash, model_id, validated_data.model_dump())
+            except:
+                pass
 
-        if is_plain_text:
-            return response.text.strip() if response.text else ""
-
-        res = response.parsed
-
-        if hasattr(res, "items"):
-            return [i for i in getattr(res,"items")]
-
-        if isinstance(res,BaseModel):
-            return res.model_dump()
-        return res
-    def run(
-        self,
-        job_text: str,
-        model_overrides: Optional[Dict[str, str]] = None
-    ) ->Iterator[JobAgentEvent]:
-        overrides = model_overrides or {}
-
-        def get_model(step: str) -> str:
-            return overrides.get(step, self.default_model)
-
-        text_hash = self.get_text_hash(job_text)
-        config_hash = hashlib.md5(json.dumps(overrides, sort_keys=True).encode()).hexdigest()
-        cache_key = f"{text_hash}_{config_hash}"
-
-        if self.get_cache_fn:
-            cached = self.get_cache_fn(cache_key, self.default_model)
-            if cached:
-                yield {"event": "final", "data": json.loads(cached)}
-                return
-
-        # 1️⃣ Label JD
-        chunked = self.agent_meta_labeler(job_text, get_model("labeler"))
-
-        schema_map = {
-            "meta": JobMeta,
-            "summary": str,
-            "responsibilities": ResponsibilityList,
-            "requirements": RequirementList,
-            "qualifications": QualificationList,
-            "kpis": KPIList,
-            "benefits": str,
-        }
-
-        results = {}
-
-        with ThreadPoolExecutor() as executor:
-            futures = {
-                executor.submit(
-                    self.extraction_worker,
-                    section.name,
-                    section.content,
-                    schema_map[section.name],
-                    get_model(section.name)
-                ): section.name
-                for section in chunked.sections
-                if section.name in schema_map
-            }
-
-            for future in as_completed(futures):
-                section_name = futures[future]
-                try:
-                    data = future.result()
-                    results[section_name] = data
-
-                    yield {
-                        "event": "update",
-                        "data": {
-                            "name": section_name,
-                            "content": json.dumps(data)
-                        }
-                    }
-                except Exception as e:
-                    yield {"event": "error", "data": str(e)}
-
-        if self.set_cache_fn:
-            self.set_cache_fn(cache_key, self.default_model, results)
-
-        yield {"event": "final", "data": cast(JobOpeningAgentDTO, results)}
+        return validated_data

@@ -1,9 +1,11 @@
 import asyncio
 import json
+import re
 from typing import Iterator, List, cast
 import frappe
 from frappe.core.doctype.user.user import reset_user_data
 from werkzeug.wrappers import Response
+from mawhub.api.mawhub_parsed_document_api import parsed_document_from_agent_to_dto
 from mawhub.app.job.agent.document_parser_agent import ParsedDocumentSection
 from mawhub.app.job.dto.job_opening import JobOpeningDTO
 from mawhub.bootstrap import app_container
@@ -37,19 +39,51 @@ def job_opening_parse(path: str):
     def sse_stream() -> Iterator[str]:
         try:
             # Run the workflow
+            job_id = "1"
+            context = {"meta_data": {}}
             for event in workflow.run(document_text=document_text):
                 # Handle final event specially
-                if event.get("event") == "final":
+                event_type = event.get("event")
+                event_data = event.get("data", {})
+
+                yield f"data: {json.dumps(event)}\n\n"
+                # 1. Intercept the first 'update' that contains titles/metadata
+                if event_type == "update" and "titles" in event_data:
+
+                    context["meta_data"] = event_data.get("metadata", {})
+
+                    # --- NEW: Trigger Job Opening Extraction ---
+                    # This is the synchronous method we just built
+                    ai_job_data = app_container.job_usecase.job_agent.run(
+                        chunked_doc=context["meta_data"]
+                    )
+                    ai_txt = ai_job_data.model_dump()
+                    new_event_data = {
+                        "event" : "update",
+                        "job_opening_details" : ai_txt
+                    }
+                    new_event = {"event" : "update" , "data" : new_event_data}
+                    yield f"data: {json.dumps(new_event)}\n\n"
+                    # Hydrate with defaults (adapter step)
+                    # job_payload = adapter_to_full_job_opening(ai_job_data)
+
+                    # Create the Job Opening record in Frappe
+                    # new_job = app_container.job_usecase.job_opening.create(job_payload)
+                    # job_id = new_job.name # Capture the actual Frappe ID
+
+                    # Add the job info to the current event so the UI knows the Job ID
+                    # event_data["job_opening_id"] = job_id
+                    # event_data["job_details"] = job_payload
+                if event_type == "final":
                     # The final data is a list of ParsedDocumentSection
-                    final_sections: List[ParsedDocumentSection] = cast(List[ParsedDocumentSection], [
-                        ParsedDocumentSection.model_validate(s) if isinstance(s, dict) else s
-                        for s in event.get("data", [])
-                    ])
+
+                    final_sections_dto = parsed_document_from_agent_to_dto(event.get("data"),{},path,"job_opening" , "1")
                     # Optionally: do something with the final_sections (e.g., store in DB)
-                    print("Final parsed sections:", final_sections)
+                    print("Final parsed sections:", final_sections_dto)
+                    app_container.job_usecase.parsed_document.parsed_document_create_update(final_sections_dto)
 
                 # Always yield SSE formatted string
-                yield f"data: {json.dumps(event)}\n\n"
+
 
         except Exception as e:
             # Catch any errors in the workflow

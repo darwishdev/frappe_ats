@@ -15,6 +15,7 @@ class ParsedDocumentRepo(AppRepo[ParsedDocumentDTO]):
             name_key="file",
             scalar_fields=[
                 "file",
+                "file_hash",
                 "meta_data",
                 "parent_id",
                 "parent_type",
