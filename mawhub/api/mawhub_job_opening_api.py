@@ -59,21 +59,33 @@ def job_opening_parse(path: str):
                     )
                     ai_txt = ai_job_data.model_dump()
                     new_event_data = {
-                        "event" : "update",
                         "job_opening_details" : ai_txt
                     }
                     new_event = {"event" : "update" , "data" : new_event_data}
+# --- DIRECT FRAPPE CREATION (Quick & Dirty) ---
+                    try:
+                        new_job = frappe.get_doc({
+                            "doctype": "Job Opening",
+                            "job_title": ai_txt.get("job_title"),
+                            "designation": ai_txt.get("job_title"), # Usually maps to title
+                            "description": ai_txt.get("description"),
+                            "location": ai_txt.get("location") or "Riyadh",
+                            "lower_range": ai_txt.get("lower_range") or 0.0,
+                            "upper_range": ai_txt.get("upper_range") or 0.0,
+                            "currency": ai_txt.get("currency") or "SAR",
+                            "company": "Mawhub", # Hardcoded default for now
+                            "status": "Open",
+                            "planned_vacancies": 1,
+                            "publish": 1
+                        })
+                        new_job.insert(ignore_permissions=True)
+                        frappe.db.commit() # Mandatory for SSE because it's a separate transaction
+                        job_id = new_job.name
+                        raise ValueError(job_id)
+                    except Exception as e:
+                        # Log the error but don't crash the whole stream
+                        print(f"Direct Frappe Creation Failed: {str(e)}")
                     yield f"data: {json.dumps(new_event)}\n\n"
-                    # Hydrate with defaults (adapter step)
-                    # job_payload = adapter_to_full_job_opening(ai_job_data)
-
-                    # Create the Job Opening record in Frappe
-                    # new_job = app_container.job_usecase.job_opening.create(job_payload)
-                    # job_id = new_job.name # Capture the actual Frappe ID
-
-                    # Add the job info to the current event so the UI knows the Job ID
-                    # event_data["job_opening_id"] = job_id
-                    # event_data["job_details"] = job_payload
                 if event_type == "final":
                     # The final data is a list of ParsedDocumentSection
 
