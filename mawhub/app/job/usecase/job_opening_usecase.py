@@ -1,5 +1,6 @@
 from frappe import _
 from typing import Iterator, List, Protocol, cast
+from mawhub.app.job.agent.document_parser_agent import DocumentParserWorkflow
 from mawhub.app.job.agent.job_opening_parser import JobAgentEvent, JobOpeningAgentDTO, JobOpeningWorkflow
 from mawhub.app.job.dto.job_opening import JobOpeningDTO, job_opening_list_sql_to_dto, job_opening_sql_to_dto
 from mawhub.app.job.repo.job_repo import  JobRepoInterface
@@ -23,13 +24,16 @@ class JobOpeningUsecaseInterface(Protocol):
 class JobOpeningUsecase:
     repo: JobRepoInterface
     job_agent: JobOpeningWorkflow
+    document_parser_agent: DocumentParserWorkflow
     def __init__(
         self,
         repo: JobRepoInterface,
         job_agent: JobOpeningWorkflow,
+        document_parser_agent: DocumentParserWorkflow,
     ):
         self.repo = repo
         self.job_agent = job_agent
+        self.document_parser_agent = document_parser_agent
 
     def job_opening_list(
         self,

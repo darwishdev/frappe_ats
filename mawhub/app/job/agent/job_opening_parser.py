@@ -66,12 +66,12 @@ class JobAgentEvent(TypedDict):
 class JobOpeningWorkflow:
     def __init__(
         self,
-        api_key: str,
+        client:Client,
         model_name: str,
         get_cache_fn,
         set_cache_fn
     ):
-        self.client = Client(api_key=api_key)
+        self.client = client
         self.default_model = model_name
         self.get_cache_fn = get_cache_fn
         self.set_cache_fn = set_cache_fn

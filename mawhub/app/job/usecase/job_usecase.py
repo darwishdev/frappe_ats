@@ -1,5 +1,8 @@
 from typing import Protocol
 
+from google.genai.client import Client
+
+from mawhub.app.job.agent.document_parser_agent import DocumentParserWorkflow
 from mawhub.app.job.agent.job_opening_parser import JobOpeningWorkflow
 from mawhub.app.job.agent.resume_parser_agent import ResumeWorkflow
 from mawhub.app.job.repo.job_repo import JobRepoInterface
@@ -17,6 +20,7 @@ class JobUseCaseInterface(Protocol):
     auth: AuthUsecaseInterface
     applicant_resume: ApplicantResumeUsecaseInterface
     resume_agent: ResumeWorkflow
+    document_parser_agent: DocumentParserWorkflow
 
 class JobUseCase:
     job_opening: JobOpeningUsecaseInterface
@@ -26,17 +30,21 @@ class JobUseCase:
     applicant_resume: ApplicantResumeUsecaseInterface
     resume_agent: ResumeWorkflow
     job_agent: JobOpeningWorkflow
+    document_parser_agent: DocumentParserWorkflow
     def __init__(
         self,
-        gemini_api_key:str,
+        gemini_api_client: Client,
         job_repo: JobRepoInterface,
     ):
         model_name = 'gemini-2.5-flash-lite'
-        resume_agent = ResumeWorkflow(api_key=gemini_api_key,model_name=model_name , get_cache_fn=get_ai_cache ,set_cache_fn=set_ai_cache)
-        job_agent = JobOpeningWorkflow(api_key=gemini_api_key,model_name=model_name , get_cache_fn=get_ai_cache ,set_cache_fn=set_ai_cache)
+        resume_agent = ResumeWorkflow(client=gemini_api_client,model_name=model_name , get_cache_fn=get_ai_cache ,set_cache_fn=set_ai_cache)
+        job_agent = JobOpeningWorkflow(client=gemini_api_client,model_name=model_name , get_cache_fn=get_ai_cache ,set_cache_fn=set_ai_cache)
+
+        doc_parser = DocumentParserWorkflow(client=gemini_api_client,model_name=model_name , get_cache_fn=get_ai_cache ,set_cache_fn=set_ai_cache)
         self.resume_agent = resume_agent
         self.job_agent = job_agent
-        self.job_opening = JobOpeningUsecase(job_repo,job_agent)
+        self.document_parser_agent = doc_parser
+        self.job_opening = JobOpeningUsecase(job_repo,job_agent,doc_parser)
         self.job_applicant = JobApplicantUsecase(job_repo)
         self.interview = InterviewUsecase(job_repo)
         self.auth = AuthUsecase(job_repo)

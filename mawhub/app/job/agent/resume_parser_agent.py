@@ -45,12 +45,12 @@ class AgentEvent(TypedDict):
 class ResumeWorkflow:
     def __init__(
         self,
-        api_key: str,
+        client: genai.Client,
         model_name: str,
         get_cache_fn: Callable[[str, str], Optional[str]],
         set_cache_fn: Callable[[str, str, dict], None]
     ):
-        self.client = genai.Client(api_key=api_key)
+        self.client = client
         self.default_model = model_name
         self.get_cache_fn = get_cache_fn
         self.set_cache_fn = set_cache_fn
