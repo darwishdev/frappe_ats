@@ -28,12 +28,49 @@
         </div>
 
         <div>
-          <label class="block text-sm font-medium mb-1">Message *</label>
+          <div class="flex justify-between items-center mb-1">
+            <label class="block text-sm font-medium">Message *</label>
+            <div class="flex gap-2">
+              <Button
+                size="sm" class="p-4"
+                @click="togglePromptInput"
+                :disabled="isGenerating"
+              >
+                <div class="flex w-full items-center">
+                  <Settings :size="14" class="mr-1" />
+                  Custom Instructions
+                </div>
+              </Button>
+              <Button
+                size="sm" class="p-4"
+                theme="gray"
+                :variant="'solid'"
+                @click="generateEmailContent"
+                :loading="isGenerating"
+              >
+              <div class="flex w-full items-center">
+                <Sparkles :size="14" class="mr-1" v-if="!isGenerating" />
+                {{ isGenerating ? 'Generating...' : 'Generate with AI' }}
+              </div>
+              </Button>
+            </div>
+          </div>
+          
+          <!-- Custom Prompt Input (collapsible) -->
+          <div v-if="showPromptInput" class="prompt-input-container">
+            <textarea
+              v-model="customPrompt"
+              class="form-control prompt-textarea"
+              rows="3"
+              placeholder="Enter custom instructions for the AI (e.g., 'Keep it formal and brief', 'Mention the interview date'...)"
+            ></textarea>
+          </div>
+
           <textarea
             v-model="formData.message"
-            class="form-control"
+            class="form-control mt-1"
             rows="8"
-            placeholder="Write your email message here..."
+            placeholder="Write your email message here or generate with AI..."
           ></textarea>
         </div>
 
@@ -80,6 +117,11 @@
 <script setup>
 import { ref, watch } from 'vue';
 import { Dialog, Button, TextInput } from 'frappe-ui';
+import { Sparkles, Settings } from 'lucide-vue-next';
+import { useToast } from 'vue-toastification';
+import { JobDetailsAPI } from '../../api/apiClient.js';
+
+const toast = useToast();
 
 const props = defineProps({
   modelValue: {
@@ -117,6 +159,10 @@ const formData = ref({
   send_me_a_copy: false,
 });
 
+const isGenerating = ref(false);
+const showPromptInput = ref(false);
+const customPrompt = ref('');
+
 watch(() => props.modelValue, (newVal) => {
   isOpen.value = newVal;
   if (newVal) {
@@ -153,6 +199,42 @@ async function submit() {
 
 function close() {
   isOpen.value = false;
+}
+
+function togglePromptInput() {
+  showPromptInput.value = !showPromptInput.value;
+}
+
+async function generateEmailContent() {
+  if (!props.candidateEmail || !props.candidateName) {
+    toast.warning('Candidate information is required to generate email');
+    return;
+  }
+
+  isGenerating.value = true;
+  
+  try {
+    const payload = {
+      candidate_name: props.candidateName,
+      candidate_email: props.candidateEmail,
+      job_title: props.jobTitle || 'the position',
+      custom_prompt: customPrompt.value || null,
+    };
+
+    const response = await JobDetailsAPI.generateEmail(payload);
+    
+    if (response && response.content) {
+      formData.value.message = response.content;
+      toast.success('Email content generated successfully!');
+    } else {
+      throw new Error('Invalid response from AI');
+    }
+  } catch (error) {
+    console.error('Failed to generate email:', error);
+    toast.error(`Failed to generate email: ${error.message || 'Unknown error'}`);
+  } finally {
+    isGenerating.value = false;
+  }
 }
 </script>
 
@@ -228,5 +310,36 @@ label {
 
 .cursor-pointer {
   cursor: pointer;
+}
+
+.prompt-input-container {
+  margin-bottom: 8px;
+  animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.prompt-textarea {
+  background-color: #f8fafc;
+  border-color: #cbd5e1;
+  font-size: 13px;
+}
+
+.prompt-textarea::placeholder {
+  color: #94a3b8;
+  font-size: 12px;
+}
+
+.mr-1 {
+  margin-right: 0.25rem;
 }
 </style>

@@ -3,7 +3,7 @@
     v-model="isOpen" 
     :options="{ 
       title: `${applicantProfile?.applicant_name || applicantProfile?.job_applicant || candidateName || 'Applicant'} Profile`, 
-      size: '4xl' 
+      size: '5xl' 
     }"
   >
   <template #body-content>

@@ -141,6 +141,22 @@
 
         <!-- Empty state -->
         <div v-else class="jc-empty">No jobs found.</div>
+
+        <!-- File input for job upload -->
+        <input
+            ref="jobFileInput"
+            type="file"
+            accept=".pdf,.doc,.docx"
+            style="display: none"
+            @change="handleJobFileUpload"
+        />
+
+        <!-- Job Description Dialog -->
+        <JobDescriptionDialog
+            v-model="showJobDialog"
+            :parsed-data="parsedJobData"
+            :is-loading="isParsing"
+        />
     </div>
 </template>
 
@@ -149,9 +165,13 @@ import { createResource, TextInput, Select, Checkbox, Button } from "frappe-ui";
 import { ref, computed } from "vue";
 import { useRouter } from "vue-router";
 import { useToast } from "vue-toastification";
+import { JobDetailsAPI } from "../../api/apiClient.js";
+import JobDescriptionDialog from "../../components/jobs/JobDescriptionDialog.vue";
 
 const router = useRouter();
 const toast = useToast();
+
+JobDetailsAPI.init(createResource);
 
 // State
 const filters = ref({
@@ -164,6 +184,14 @@ const filters = ref({
 
 const allJobs = ref([]);
 const filteredJobs = ref([]);
+
+// File upload and parsing state
+const jobFileInput = ref(null);
+const isUploading = ref(false);
+const uploadProgress = ref(0);
+const isParsing = ref(false);
+const showJobDialog = ref(false);
+const parsedJobData = ref(null);
 
 // Fetch jobs from API
 const jobsResource = createResource({
@@ -336,8 +364,129 @@ function findCandidates(jobName) {
 }
 
 function createNewJob() {
-    // Redirect to ERPNext job opening form
-    window.open("http://localhost:8001/desk/job-opening/new-job-opening", "_blank");
+    if (jobFileInput.value) {
+        jobFileInput.value.click();
+    }
+}
+
+async function handleJobFileUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    // Validate file type
+    const validTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+    if (!validTypes.includes(file.type)) {
+        toast.error('Please upload a PDF or Word document');
+        return;
+    }
+
+    // Validate file size (max 10MB)
+    const maxSize = 10 * 1024 * 1024; // 10MB
+    if (file.size > maxSize) {
+        toast.error('File size must be less than 10MB');
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('is_private', 1);
+
+    try {
+        isUploading.value = true;
+        uploadProgress.value = 0;
+
+        const response = await fetch('/api/method/upload_file', {
+            method: 'POST',
+            headers: {
+                'X-Frappe-CSRF-Token': window.frappe?.csrf_token || '',
+            },
+            body: formData
+        });
+
+        if (!response.ok) {
+            throw new Error('Upload failed');
+        }
+
+        const result = await response.json();
+        
+        if (result.message && result.message.file_url) {
+            uploadProgress.value = 100;
+            toast.success('Job description uploaded successfully');
+            console.log('File Uploaded:', result.message.file_url);
+            
+            // Parse the job description
+            await parseJobDescription(result.message.file_url, result.message.name);
+        } else {
+            throw new Error('Invalid response from server');
+        }
+    } catch (error) {
+        console.error('Upload failed:', error);
+        toast.error(`Upload failed: ${error.message || 'Unknown error'}`);
+    } finally {
+        isUploading.value = false;
+        uploadProgress.value = 0;
+        // Reset file input
+        if (jobFileInput.value) {
+            jobFileInput.value.value = '';
+        }
+    }
+}
+
+async function parseJobDescription(fileUrl, fileName) {
+    try {
+        toast.info('Parsing job description...');
+        
+        // Initialize empty parsed data
+        parsedJobData.value = {};
+        
+        // Set loading state to true
+        isParsing.value = true;
+        
+        // Open the dialog to show real-time parsing
+        showJobDialog.value = true;
+        
+        // Call the job opening parse API with progress callback
+        const response = await JobDetailsAPI.parseJobOpening(
+            {
+                path: `./${import.meta.env.VITE_SITE_NAME}${fileUrl}`,
+                file_name: fileName,
+            },
+            (progressData) => {
+                // Handle progress updates from the EventStream
+                console.log('Job parsing step:', progressData);
+
+                if(!progressData || !progressData.data) return;
+                isParsing.value = false;
+                if(progressData.event == 'final'){
+                    toast.success('Job description parsed successfully!');
+                    parsedJobData.value = progressData.data
+                    return;
+                }
+                // Update the parsed data in real-time
+                if(progressData.data.titles){
+                    progressData.data.titles.forEach(title => {
+                        if(!parsedJobData.value[title]){
+                            parsedJobData.value[title] = {
+                                description: '',
+                                bullet_points: []
+                            };
+                        }
+                    });
+                    return
+                }
+                parsedJobData.value[Object.keys(progressData.data)[0]] = progressData.data[Object.keys(progressData.data)[0]];
+                console.log('parsedJobData:', parsedJobData.value);
+            }
+        );
+    } catch (error) {
+        console.error('Job parsing failed:', error);
+        toast.error(`Job parsing failed: ${error.message || 'Unknown error'}`);
+        showJobDialog.value = false;
+        parsedJobData.value = null;
+    } finally {
+        // Set loading state to false when parsing ends
+        // isParsing.value = false;
+    }
 }
 
 // Reload function (can be called externally)

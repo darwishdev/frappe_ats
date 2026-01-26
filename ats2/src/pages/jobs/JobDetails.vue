@@ -147,13 +147,13 @@
           <div v-else>
             <div class="jd-detail-head">
               <div style="display: flex; align-items: center; gap: 12px">
-                <div class="jd-avatar" style="width: 48px; height: 48px; font-size: 20px">
+                <div class="jd-avatar" style="width: 55px; height: 55px; font-size: 20px">
                   {{ activeCandidate.name?.charAt(0).toUpperCase() }}
                 </div>
                 <div>
                   <h3 class="jd-detail-name">{{ activeCandidate.name }}</h3>
                   <div class="jd-detail-meta">
-                    {{ activeCandidate.designation || activeCandidate.email }}
+                    {{ activeCandidate.designation }} |  <a class="underline" href="mailto:{{ activeCandidate.email }}">{{ activeCandidate.email }}</a>
                   </div>
                 </div>
               </div>
@@ -182,44 +182,25 @@
                 </div>
             </div>
 
-            <div>
-              <div class="jd-badges">
-                <span class="jd-badge">📧 {{ activeCandidate.email }}</span>
-                <span class="jd-badge">☎ {{ activeCandidate.phone }}</span>
-                <span class="jd-badge">🌍 {{ activeCandidate.country }}</span>
-              </div>
-              <div class="jd-badges" style="margin-top: 8px">
-                <span class="jd-badge">Status: {{ activeCandidate.status }}</span>
-                <span class="jd-badge">Source: {{ activeCandidate.source }}</span>
-                <span class="jd-badge">Rating: {{ getRatingStars(activeCandidate.rating) }}</span>
-              </div>
-              <div class="jd-badges" style="margin-top: 8px">
-                <span class="jd-badge">Current Stage: {{ activeCandidate.stage_name }}</span>
-                <span class="jd-badge">Applied: {{ formatDate(activeCandidate.created_at) }}</span>
-              </div>
-              <div
-                v-if="activeCandidate.cover_letter"
-                style="
-                  margin-top: 12px;
-                  padding: 10px;
-                  background: #f9fafb;
-                  border-radius: 6px;
-                "
+            <!-- Tab Navigation -->
+            <div class="jd-tabs-nav">
+              <button
+                v-for="tab in tabs"
+                :key="tab.key"
+                :class="['jd-tab-button', { active: activeTab === tab.key }]"
+                @click="activeTab = tab.key"
               >
-                <strong>Cover Letter:</strong>
-                <p style="margin: 4px 0 0 0; color: #6b7280">
-                  {{ activeCandidate.cover_letter }}
-                </p>
-              </div>
-              <div v-if="activeCandidate.resume_link" style="margin-top: 8px">
-                <Button
-                  size="sm"
-                  @click="window.open(activeCandidate.resume_link, '_blank')"
-                >
-                  <FileText :size="16" class="button-icon" />
-                  View Resume
-                </Button>
-              </div>
+                {{ tab.label }}
+              </button>
+            </div>
+
+            <!-- Tab Content -->
+            <div class="jd-tab-content">
+              <component
+                :is="tabComponents[activeTab]"
+                :candidate="activeCandidate"
+                :job-title="job?.title"
+              />
             </div>
           </div>
         </div>
@@ -231,43 +212,22 @@
           Select a candidate
         </div>
         <div v-else class="jd-actions-content">
-          <!-- <h4 class="jd-actions-title">Actions</h4> -->
-          <div class="jd-actions-buttons !w-[10rem]">
+          <h4 class="jd-actions-title">Actions</h4>
+          <div class="jd-actions-buttons">
             <Button
-              size="md"
-              theme="gray"
-              :variant="'solid'"
-              class="p-8 !w-[10rem]"
-              @click="viewApplicantProfile"
+              v-for="action in candidateActions"
+              :key="action.key"
+              size="sm"
+              theme="gray" class="p-7"
+              :variant="action.variant === 'danger' ? 'outline' : 'solid'"
+              @click="action.action"
             >
-                <div class="flex flex-col justify-center gap-1 items-center">
-                    <User :size="18" class="button-icon" />
-                    <span>View Profile</span>
-                </div>
-            </Button>
-            <Button
-              size="md"
-              theme="gray"
-              :variant="'solid'"
-              class="p-8 !w-[10rem]"
-              @click="showAssignInterviewDialog = true"
+            <div
+              :class="['jd-action-button']"
             >
-            <div class="flex flex-col justify-center gap-1 items-center">
-                <Calendar :size="18" class="button-icon" />
-                <span>Assign Interview</span>
+                <component :is="action.icon" :size="14" class="jd-action-icon" />
+                <span>{{ action.label }}</span>
             </div>
-            </Button>
-            <Button
-              size="md"
-              theme="gray"
-              :variant="'solid'"
-              class="p-8 !w-[10rem]"
-              @click="sendEmail"
-            >
-                <div class="flex flex-col justify-center gap-1 items-center">
-                <Mail :size="18" class="button-icon" />
-                <span>Send Email</span>
-                </div>
             </Button>
           </div>
         </div>
@@ -320,12 +280,17 @@ import { useRoute, useRouter } from "vue-router";
 import { TextInput, Select, Button, createResource } from "frappe-ui";
 import { useToast } from "vue-toastification";
 import { JobDetailsAPI } from "../../api/apiClient.js";
-import { Edit2, Upload, UserPlus, CheckSquare, Square, MoveRight, X, User, Calendar, Mail, FileText } from 'lucide-vue-next';
+import { Edit2, Upload, UserPlus, CheckSquare, Square, MoveRight, X, User, Calendar, Mail, FileText, Share2, Printer, Copy, ArrowRightLeft, Trash2, Edit } from 'lucide-vue-next';
 import AddCandidateDialog from "../../components/jobs/AddCandidateDialog.vue";
 import AssignInterviewDialog from "../../components/jobs/AssignInterviewDialog.vue";
 import BulkMoveDialog from "../../components/jobs/BulkMoveDialog.vue";
 import ApplicantProfileDialog from "../../components/jobs/ApplicantProfileDialog.vue";
 import SendEmailDialog from "../../components/jobs/SendEmailDialog.vue";
+import ApplicantProfile from "../../components/jobs/ApplicantProfile.vue";
+import ApplicantTimeline from "../../components/jobs/ApplicantTimeline.vue";
+import ApplicantCommunication from "../../components/jobs/ApplicantCommunication.vue";
+import ApplicantReview from "../../components/jobs/ApplicantReview.vue";
+import ApplicantComments from "../../components/jobs/ApplicantComments.vue";
 
 const toast = useToast();
 
@@ -378,6 +343,74 @@ const showBulkMoveDialog = ref(false);
 const showProfileDialog = ref(false);
 const showSendEmailDialog = ref(false);
 const parsingProfile = ref(null);
+
+// Tab state
+const activeTab = ref('profile');
+
+// Tab configuration
+const tabs = [
+    { key: 'profile', label: 'Profile' },
+    { key: 'communication', label: 'Communication' },
+    { key: 'timeline', label: 'Timeline' },
+    { key: 'review', label: 'Review' },
+    { key: 'comments', label: 'Comments' },
+];
+
+// Tab component mapping
+const tabComponents = {
+    profile: ApplicantProfile,
+    timeline: ApplicantTimeline,
+    communication: ApplicantCommunication,
+    review: ApplicantReview,
+    comments: ApplicantComments,
+};
+
+// Actions panel configuration
+const candidateActions = [
+    { 
+        key: 'assign-interview', 
+        label: 'Assign Interview', 
+        icon: Calendar, 
+        action: () => { showAssignInterviewDialog.value = true; }
+    },
+    { 
+        key: 'share', 
+        label: 'Share Candidate', 
+        icon: Share2, 
+        action: shareCandidate
+    },
+    { 
+        key: 'print', 
+        label: 'Print Profile', 
+        icon: Printer, 
+        action: printProfile
+    },
+    { 
+        key: 'copy-job', 
+        label: 'Copy to Job', 
+        icon: Copy, 
+        action: copyToJob
+    },
+    { 
+        key: 'move-job', 
+        label: 'Move to Job', 
+        icon: ArrowRightLeft, 
+        action: moveToJob
+    },
+    { 
+        key: 'edit', 
+        label: 'Edit Candidate', 
+        icon: Edit, 
+        action: editCandidate
+    },
+    { 
+        key: 'delete', 
+        label: 'Delete Candidate', 
+        icon: Trash2, 
+        action: deleteCandidate,
+        variant: 'danger'
+    },
+];
 
 // Resume upload state
 const resumeFileInput = ref(null);
@@ -702,7 +735,7 @@ async function parseResume(fileUrl, fileName) {
                 path: `./${import.meta.env.VITE_SITE_NAME}${fileUrl}`,
                 file_name: fileName,
                 job_opening_id: job.value.name,
-                pipeline_step_id : activeStep.value == 'all' ? job.value?.pipeline_steps[0].key : activeStep.value
+                pipeline_step_id : activeStep.value == 'all' ? job.value?.pipeline_steps[1].key : activeStep.value
             },
             (progressData) => {
                 // Handle progress updates from the EventStream
@@ -711,9 +744,9 @@ async function parseResume(fileUrl, fileName) {
                 // Update the parsing profile in real-time
                 if (progressData && progressData.data) {
                     // Merge the new data with existing profile
-                    if(progressData.section){
-                        toast.info(`Parsed ${progressData.section} Section`);
-                        parsingProfile.value[progressData.section] = progressData.data;
+                    if(progressData.data.name){
+                        toast.info(`Parsed ${progressData.data.name} Section`);
+                        parsingProfile.value[progressData.data.name] = JSON.parse(progressData.data.content);
                     }
                     else{
                         parsingProfile.value = progressData.data;
@@ -892,6 +925,81 @@ function sendEmail() {
   showSendEmailDialog.value = true;
 }
 
+// New action handlers
+function shareCandidate() {
+  if (!activeCandidate.value) return;
+  
+  const shareUrl = `${window.location.origin}${window.location.pathname}?candidate=${activeCandidate.value.id}`;
+  
+  if (navigator.share) {
+    navigator.share({
+      title: `${activeCandidate.value.name} - Candidate Profile`,
+      text: `Check out ${activeCandidate.value.name}'s profile for ${job.value?.title}`,
+      url: shareUrl,
+    }).then(() => {
+      toast.success('Shared successfully');
+    }).catch((error) => {
+      console.error('Share failed:', error);
+      copyToClipboard(shareUrl);
+    });
+  } else {
+    copyToClipboard(shareUrl);
+  }
+}
+
+function copyToClipboard(text) {
+  navigator.clipboard.writeText(text).then(() => {
+    toast.success('Link copied to clipboard');
+  }).catch((error) => {
+    console.error('Copy failed:', error);
+    toast.error('Failed to copy link');
+  });
+}
+
+function printProfile() {
+  if (!activeCandidate.value) return;
+  toast.info('Print profile feature coming soon...');
+  // Future: Open print dialog with formatted profile
+  // window.print() or open a new window with printable profile
+}
+
+function copyToJob() {
+  if (!activeCandidate.value) return;
+  toast.info('Copy to job feature coming soon...');
+  // Future: Show dialog to select target job and copy candidate
+}
+
+function moveToJob() {
+  if (!activeCandidate.value) return;
+  toast.info('Move to job feature coming soon...');
+  // Future: Show dialog to select target job and move candidate
+}
+
+function editCandidate() {
+  if (!activeCandidate.value) return;
+  window.open(`http://localhost:8001/desk/job-applicant/${activeCandidate.value.id}`, "_blank");
+}
+
+async function deleteCandidate() {
+  if (!activeCandidate.value) return;
+  
+  const confirmed = confirm(`Are you sure you want to delete ${activeCandidate.value.name}? This action cannot be undone.`);
+  
+  if (!confirmed) return;
+  
+  try {
+    // Future: Call delete API
+    // await JobDetailsAPI.deleteApplicant(activeCandidate.value.id);
+    toast.info('Delete candidate feature coming soon...');
+    // Remove from local state after successful deletion
+    // candidates.value = candidates.value.filter(c => c.id !== activeCandidate.value.id);
+    // activeCandidateId.value = candidates.value[0]?.id || null;
+  } catch (error) {
+    toast.error(error.message || 'Failed to delete candidate');
+    console.error(error);
+  }
+}
+
 async function handleSendEmail(formData) {
   if (!formData.to || !formData.subject || !formData.message) {
     toast.warning('Please fill in all required fields');
@@ -939,7 +1047,7 @@ watch(
 );
 </script>
 
-<style scoped>
+<style>
 .jd-page {
     padding: 2rem;
 }
@@ -1037,23 +1145,41 @@ watch(
 }
 
 .jd-actions-title {
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 700;
   color: #111827;
-  margin: 0 0 16px 0;
-  padding-bottom: 12px;
+  margin: 0 0 12px 0;
+  padding-bottom: 10px;
   border-bottom: 1px solid var(--border-color, #e6e6e6);
 }
 
 .jd-actions-buttons {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 6px;
+  /* overflow-y: auto; */
 }
 
+.jd-action-button {
+  width: 100%;
+  justify-content: center !important;
+  padding: 25px 12px !important;
+  font-size: 13px !important;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.jd-action-button span {
+  font-weight: 500;
+}
+
+
+
+
 .jd-action-icon {
-  font-size: 18px;
-  line-height: 1;
+  flex-shrink: 0;
 }
 
 .jd-left-top {
@@ -1236,5 +1362,42 @@ label {
     display: inline-block;
     vertical-align: middle;
     margin-right: 6px;
+}
+
+/* Tab Navigation Styles */
+.jd-tabs-nav {
+    display: flex;
+    gap: 0;
+    border-bottom: 1px solid #e5e7eb;
+    margin-bottom: 20px;
+    background: transparent;
+}
+
+.jd-tab-button {
+    padding: 12px 24px;
+    background: transparent;
+    border: none;
+    color: #6b7280;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    position: relative;
+    transition: color 0.2s ease;
+    border-bottom: 2px solid transparent;
+}
+
+.jd-tab-button:hover {
+    color: #374151;
+    background: #f9fafb;
+}
+
+.jd-tab-button.active {
+    color: #111827;
+    background: #f3f4f6;
+    border-bottom-color: #111827;
+}
+
+.jd-tab-content {
+    padding: 0;
 }
 </style>

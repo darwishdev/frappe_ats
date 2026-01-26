@@ -9,9 +9,16 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     AddCandidateDialog: typeof import('./src/components/jobs/AddCandidateDialog.vue')['default']
+    ApplicantComments: typeof import('./src/components/jobs/ApplicantComments.vue')['default']
+    ApplicantCommunication: typeof import('./src/components/jobs/ApplicantCommunication.vue')['default']
+    ApplicantFiles: typeof import('./src/components/jobs/ApplicantFiles.vue')['default']
+    ApplicantProfile: typeof import('./src/components/jobs/ApplicantProfile.vue')['default']
     ApplicantProfileDialog: typeof import('./src/components/jobs/ApplicantProfileDialog.vue')['default']
+    ApplicantReview: typeof import('./src/components/jobs/ApplicantReview.vue')['default']
+    ApplicantTimeline: typeof import('./src/components/jobs/ApplicantTimeline.vue')['default']
     AssignInterviewDialog: typeof import('./src/components/jobs/AssignInterviewDialog.vue')['default']
     BulkMoveDialog: typeof import('./src/components/jobs/BulkMoveDialog.vue')['default']
+    JobDescriptionDialog: typeof import('./src/components/jobs/JobDescriptionDialog.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     SendEmailDialog: typeof import('./src/components/jobs/SendEmailDialog.vue')['default']

@@ -325,6 +325,111 @@ export const JobDetailsAPI = {
     });
     
     return resource.promise;
+  },
+
+  /**
+   * Parse job opening from document (EventStream)
+   * @param {Object} jobData - Job parsing data
+   * @param {string} jobData.path - Uploaded document file URL
+   * @param {string} jobData.file_name - Document file name
+   * @param {Function} onProgress - Optional callback for progress updates
+   * @returns {Promise<Object>} Final parsed job data
+   */
+  parseJobOpening: async function(jobData, onProgress = null) {
+    return new Promise(async (resolve, reject) => {
+      // Build query parameters
+      const params = new URLSearchParams({
+        ...jobData,
+      });
+      
+      // Construct the URL
+      const url = `/api/method/mawhub.job_opening_parse?${params.toString()}`;
+      
+      // Create EventSource for SSE
+      const eventSource = new EventSource(url, { withCredentials: true });
+      let finalResult = null;
+      
+      eventSource.onmessage = (event) => {
+        try {
+          if(!event.data) return;
+          const data = JSON.parse(event.data);
+          console.log(data);
+          
+          // Call progress callback if provided
+          if (onProgress && typeof onProgress === 'function') {
+            onProgress(data);
+          }
+          
+          // Store the last message as the final result
+          finalResult = data;
+          
+          console.log('Job parsing progress:', data);
+        } catch (error) {
+          console.error('Failed to parse SSE message:', error, event.data);
+        }
+      };
+      
+      eventSource.onerror = (error) => {
+        eventSource.close();
+        
+        // If we have a final result, consider it success
+        if (finalResult) {
+          resolve(finalResult);
+        } else {
+          reject(new Error('Job parsing failed: Connection error'));
+        }
+      };
+      
+      // Handle completion event
+      eventSource.addEventListener('complete', (event) => {
+        try {
+          const data = JSON.parse(event.data);
+          eventSource.close();
+          resolve(data);
+        } catch (error) {
+          eventSource.close();
+          reject(new Error('Failed to parse completion message'));
+        }
+      });
+      
+      // Fallback: close connection after timeout
+      setTimeout(() => {
+        if (eventSource.readyState !== EventSource.CLOSED) {
+          eventSource.close();
+          if (finalResult) {
+            resolve(finalResult);
+          } else {
+            reject(new Error('Job parsing timed out'));
+          }
+        }
+      }, 90000); // 90 second timeout
+
+    });
+  },
+
+  /**
+   * Generate email content using AI
+   * @param {Object} emailConfig - Email generation configuration
+   * @param {string} emailConfig.candidate_name - Candidate's name
+   * @param {string} emailConfig.candidate_email - Candidate's email
+   * @param {string} emailConfig.job_title - Job title
+   * @param {string} emailConfig.custom_prompt - Optional custom instructions for AI
+   * @returns {Promise<Object>} Generated email content
+   */
+  generateEmail: function(emailConfig) {
+    if (!_createResource) {
+      throw new Error('JobDetailsAPI not initialized. Call JobDetailsAPI.init(createResource) first.');
+    }
+    
+    const resource = _createResource({
+      url: 'mawhub.generate_applicant_email',
+      params: {
+        payload: emailConfig
+      },
+      auto: true
+    });
+    
+    return resource.promise;
   }
 };
 
