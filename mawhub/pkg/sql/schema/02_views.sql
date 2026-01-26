@@ -319,217 +319,90 @@ GROUP BY
     a.applicant_docstatus,
     a.applicant_created_at,
     a.applicant_modified_at;
-CREATE OR REPLACE VIEW tal_job_view AS
+CREATE OR REPLACE VIEW `tal_job_view` AS
 WITH
-    jobs AS (
-        SELECT
-            j.name,
-            j.designation,
-            j.department,
-            j.employment_type,
-            j.location,
-            j.docstatus,
-            j.publish_salary_range,
-            j.publish_applications_received,
-            j.publish,
-            j.route,
-            j.job_application_route,
-            j.currency,
-            j.salary_per,
-            j.lower_range,
-            j.upper_range,
-            j.posted_on,
-            j.closes_on,
-            p.name pipeline_name,
-            ps.name step_id,
-            ps.step_name,
-            ps.step_type,
-            ps.idx step_idx,
-            a.job_opening_id,
-            a.pipeline_id,
-            a.pipeline_description,
-            a.pipeline_is_primary,
-            a.pipeline_docstatus,
-            a.pipeline_created_at,
-            a.pipeline_modified_at,
-            a.pipeline_step_id,
-            a.pipeline_step_idx,
-            a.pipeline_step_name,
-            a.pipeline_step_type,
-            a.pipeline_parent_id,
-            a.applicant_id,
-            a.applicant_name,
-            a.applicant_email,
-            a.applicant_phone,
-            a.applicant_country,
-            a.applicant_job_title,
-            a.applicant_designation,
-            a.applicant_status,
-            a.applicant_source,
-            a.applicant_source_name,
-            a.applicant_employee_referral,
-            a.applicant_rating,
-            a.applicant_resume_link,
-            a.applicant_resume_attachment,
-            a.applicant_cover_letter,
-            a.applicant_pipeline_step_ref,
-            a.applicant_docstatus,
-            a.applicant_created_at,
-            a.applicant_modified_at,
-            a.appointment_letters,
-            a.job_offers,
-            a.interviews,
-            a.pipeline_step_id candidate_step
-        FROM
-            `tabJob Opening` j
-            JOIN `tabJob Pipeline` p ON j.custom_pipeline = p.name
-            JOIN `tabPipeline Step` ps ON ps.parent = p.name
-            LEFT JOIN tal_job_applicants_view a ON ps.name = a.pipeline_step_id
-            AND a.job_opening_id = j.name
-    ),
-    steps AS (
-        SELECT
-            j.name job_name,
-            j.step_id,
-            j.step_name,
-            j.step_type,
-            j.step_idx,
-            count(j.applicant_id) candidate_count,
-            JSON_ARRAYAGG(
-                JSON_OBJECT(
-                    'job_opening_id,',
-                    j.job_opening_id,
-                    'pipeline_id,',
-                    j.pipeline_id,
-                    'pipeline_description,',
-                    j.pipeline_description,
-                    'pipeline_is_primary,',
-                    j.pipeline_is_primary,
-                    'pipeline_docstatus,',
-                    j.pipeline_docstatus,
-                    'pipeline_created_at,',
-                    j.pipeline_created_at,
-                    'pipeline_modified_at,',
-                    j.pipeline_modified_at,
-                    'pipeline_step_id,',
-                    j.pipeline_step_id,
-                    'pipeline_step_idx,',
-                    j.pipeline_step_idx,
-                    'pipeline_step_name,',
-                    j.pipeline_step_name,
-                    'pipeline_step_type,',
-                    j.pipeline_step_type,
-                    'pipeline_parent_id,',
-                    j.pipeline_parent_id,
-                    'applicant_id,',
-                    j.applicant_id,
-                    'applicant_name,',
-                    j.applicant_name,
-                    'applicant_email,',
-                    j.applicant_email,
-                    'applicant_phone,',
-                    j.applicant_phone,
-                    'applicant_country,',
-                    j.applicant_country,
-                    'applicant_job_title,',
-                    j.applicant_job_title,
-                    'applicant_designation,',
-                    j.applicant_designation,
-                    'applicant_status,',
-                    j.applicant_status,
-                    'applicant_source,',
-                    j.applicant_source,
-                    'applicant_source_name,',
-                    j.applicant_source_name,
-                    'applicant_employee_referral,',
-                    j.applicant_employee_referral,
-                    'applicant_rating,',
-                    j.applicant_rating,
-                    'applicant_resume_link,',
-                    j.applicant_resume_link,
-                    'applicant_resume_attachment,',
-                    j.applicant_resume_attachment,
-                    'applicant_cover_letter,',
-                    j.applicant_cover_letter,
-                    'applicant_pipeline_step_ref,',
-                    j.applicant_pipeline_step_ref,
-                    'applicant_docstatus,',
-                    j.applicant_docstatus,
-                    'applicant_created_at,',
-                    j.applicant_created_at,
-                    'applicant_modified_at,',
-                    j.applicant_modified_at,
-                    'appointment_letters,',
-                    j.appointment_letters,
-                    'job_offers,',
-                    j.job_offers,
-                    'interviews,',
-                    j.interviews
-                )
-            ) AS candidates
-        FROM
-            jobs j
-        GROUP BY
-            j.step_id,
-            j.step_name,
-            j.step_type,
-            j.step_idx
+  -- Step 1: Define the base structure of Jobs and their required Pipeline Steps
+  job_structure AS (
+    SELECT
+      j.name AS job_name,
+      j.*, -- Select specific columns in production
+      ps.name AS step_id,
+      ps.step_name,
+      ps.step_type,
+      ps.idx AS step_idx
+    FROM `tabjob opening` j
+    JOIN `tabjob pipeline` p ON j.custom_pipeline = p.name
+    JOIN `tabpipeline step` ps ON ps.parent = p.name
+  ),
+
+  -- Step 2: Aggregate candidates per step, per job
+  step_aggregates AS (
+    SELECT
+      js.job_name,
+      js.step_id,
+      js.step_name,
+      js.step_type,
+      js.step_idx,
+      COUNT(a.applicant_id) AS candidate_count,
+      JSON_ARRAYAGG(
+        IF(a.applicant_id IS NULL, NULL, JSON_OBJECT(
+          'applicant_id', a.applicant_id,
+          'applicant_name', a.applicant_name,
+          'applicant_email', a.applicant_email,
+          'applicant_status', a.applicant_status,
+          'applicant_rating', a.applicant_rating
+          -- Add other applicant fields here without trailing commas
+        ))
+      ) AS candidates
+    FROM job_structure js
+    LEFT JOIN `tal_job_applicants_view` a ON (
+      js.step_id = a.pipeline_step_id
+      AND a.job_opening_id = js.job_name
     )
+    GROUP BY js.job_name, js.step_id, js.step_name, js.step_type, js.step_idx
+  )
+
+-- Step 3: Final aggregation into Job level
 SELECT
-    j.name,
-    j.designation,
-    j.department,
-    j.employment_type,
-    j.location,
-    j.docstatus,
-    j.publish_salary_range,
-    j.publish_applications_received,
-    j.publish,
-    j.route,
-    j.job_application_route,
-    j.currency,
-    j.salary_per,
-    j.lower_range,
-    j.upper_range,
-    j.posted_on,
-    j.closes_on,
-    COUNT(DISTINCT j.step_id) AS step_count,
-    COUNT(DISTINCT j.applicant_id) AS candidate_count,
-    /* steps array */
-    JSON_ARRAYAGG(
-        JSON_OBJECT(
-            'step_id',
-            s.step_id,
-            'step_name',
-            s.step_name,
-            'step_type',
-            s.step_type,
-            'step_idx',
-            s.step_idx,
-            'candidates',
-            s.candidates,
-            'candidate_count',
-            s.candidate_count
-        )
-    ) AS steps
-FROM
-    jobs j
-    JOIN steps s ON j.name = s.job_name
+  j.name,
+  j.designation,
+  j.department,
+  j.employment_type,
+  j.location,
+  j.docstatus,
+  j.publish_salary_range,
+  j.currency,
+  j.lower_range,
+  j.upper_range,
+  j.posted_on,
+  j.closes_on,
+  COUNT(DISTINCT s.step_id) AS step_count,
+  -- Sum the counts from the CTE to avoid duplication across joins
+  SUM(s.candidate_count) AS total_candidate_count,
+  JSON_ARRAYAGG(
+    JSON_OBJECT(
+      'step_id', s.step_id,
+      'step_name', s.step_name,
+      'step_type', s.step_type,
+      'step_idx', s.step_idx,
+      'candidate_count', s.candidate_count,
+      'candidates', s.candidates
+    )
+  ) AS steps
+FROM `tabjob opening` j
+LEFT JOIN step_aggregates s ON j.name = s.job_name
 GROUP BY
-    j.name,
-    j.designation,
-    j.department,
-    j.employment_type,
-    j.location,
-    j.docstatus,
-    j.publish_salary_range,
-    j.publish_applications_received,
-    j.publish,
-    j.route,
-    j.job_application_route,
-    j.currency,
-    j.salary_per,
-    j.lower_range,
-    j.upper_range,
-    j.posted_on,
-    j.closes_on;
+  j.name, j.designation, j.department, j.employment_type,
+  j.location, j.docstatus, j.publish_salary_range,
+  j.currency, j.lower_range, j.upper_range,
+  j.posted_on, j.closes_on;
+
+
+
+
+
+
+
+
+
+
