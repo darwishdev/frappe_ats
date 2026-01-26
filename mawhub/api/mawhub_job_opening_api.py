@@ -65,7 +65,6 @@ def job_opening_parse(path: str):
                     )
                     parsed_job = ai_job_data.model_dump()
                     new_event_data = {
-                        "event" : "update",
                         "job_opening_details" : parsed_job
                     }
                     new_event = {"event" : "update" , "data" : new_event_data}
