@@ -3,6 +3,7 @@ from typing import Protocol
 from google.genai.client import Client
 
 from mawhub.app.job.agent.document_parser_agent import DocumentParserWorkflow
+from mawhub.app.job.agent.email_agent import CommunicationWorkflow
 from mawhub.app.job.agent.job_opening_parser import JobOpeningWorkflow
 from mawhub.app.job.agent.resume_parser_agent import ResumeWorkflow
 from mawhub.app.job.repo.job_repo import JobRepoInterface
@@ -23,6 +24,8 @@ class JobUseCaseInterface(Protocol):
     applicant_resume: ApplicantResumeUsecaseInterface
     job_agent: JobOpeningWorkflow
     resume_agent: ResumeWorkflow
+
+    communication_agent: CommunicationWorkflow
     document_parser_agent: DocumentParserWorkflow
 
 class JobUseCase:
@@ -34,6 +37,7 @@ class JobUseCase:
     parsed_document: ParsedDocumentUsecaseInterface
     resume_agent: ResumeWorkflow
     job_agent: JobOpeningWorkflow
+    communication_agent: CommunicationWorkflow
     document_parser_agent: DocumentParserWorkflow
     def __init__(
         self,
@@ -42,10 +46,12 @@ class JobUseCase:
     ):
         model_name = 'gemini-2.5-flash-lite'
         resume_agent = ResumeWorkflow(client=gemini_api_client,model_name=model_name , get_cache_fn=get_ai_cache ,set_cache_fn=set_ai_cache)
+        communication_workflow = CommunicationWorkflow(client=gemini_api_client,model_name=model_name)
         job_agent = JobOpeningWorkflow(client=gemini_api_client,model_name=model_name , get_cache_fn=get_ai_cache ,set_cache_fn=set_ai_cache)
 
         doc_parser = DocumentParserWorkflow(client=gemini_api_client,model_name=model_name , get_cache_fn=get_ai_cache ,set_cache_fn=set_ai_cache)
         self.resume_agent = resume_agent
+        self.communication_agent = communication_workflow
         self.job_agent = job_agent
         self.document_parser_agent = doc_parser
         self.job_opening = JobOpeningUsecase(job_repo,job_agent,doc_parser)

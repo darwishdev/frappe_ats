@@ -182,3 +182,26 @@ def job_opening_list()->List[JobOpeningDTO]:
 @frappe.whitelist(methods=["GET" , "POST"], allow_guest=True)
 def job_opening_find(job:str)->JobOpeningDTO:
     return app_container.job_usecase.job_opening.job_opening_find(job)
+
+@frappe.whitelist(methods=["POST"])
+def generate_candidate_email(applicant: dict, job: dict, pipeline_step: str,
+                                      user_instructions: str = ""):
+    """
+    Generates a personalized email for a candidate based on JD and Resume.
+    """
+    try:
+        agent = app_container.job_usecase.communication_agent
+
+        email_response = agent.generate_candidate_email(
+            job_info=job,
+            applicant_info=applicant,
+            pipeline_step=pipeline_step,
+            user_instructions=user_instructions
+        )
+
+        # 4. Return as a dictionary for the frontend
+        return email_response.model_dump()
+
+    except Exception as e:
+        frappe.log_error(frappe.get_traceback(), "Email Generation Error")
+        frappe.throw(f"Error generating email: {str(e)}")
