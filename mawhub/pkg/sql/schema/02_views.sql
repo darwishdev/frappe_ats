@@ -330,9 +330,9 @@ WITH
       ps.step_name,
       ps.step_type,
       ps.idx AS step_idx
-    FROM `tabjob opening` j
-    JOIN `tabjob pipeline` p ON j.custom_pipeline = p.name
-    JOIN `tabpipeline step` ps ON ps.parent = p.name
+    FROM `tabJob Opening` j
+    JOIN `tabJob Pipeline` p ON j.custom_pipeline = p.name
+    JOIN `tabPipeline Step` ps ON ps.parent = p.name
   ),
 
   -- Step 2: Aggregate candidates per step, per job
@@ -389,20 +389,10 @@ SELECT
       'candidates', s.candidates
     )
   ) AS steps
-FROM `tabjob opening` j
+FROM `tabJob Opening` j
 LEFT JOIN step_aggregates s ON j.name = s.job_name
 GROUP BY
   j.name, j.designation, j.department, j.employment_type,
   j.location, j.docstatus, j.publish_salary_range,
   j.currency, j.lower_range, j.upper_range,
   j.posted_on, j.closes_on;
-
-
-
-
-
-
-
-
-
-
