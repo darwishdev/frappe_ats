@@ -141,7 +141,7 @@
       <!-- Middle: details -->
       <div class="jd-middle">
         <div class="jd-detail-card">
-          <div v-if="!activeCandidate" class="text-muted">
+          <div v-if="!activeCandidate" class="text-muted py-10">
             Select a candidate from the list.
           </div>
           <div v-else>
@@ -153,7 +153,7 @@
                 <div>
                   <h3 class="jd-detail-name">{{ activeCandidate.name }}</h3>
                   <div class="jd-detail-meta">
-                    {{ activeCandidate.designation }} |  <a class="underline" href="mailto:{{ activeCandidate.email }}">{{ activeCandidate.email }}</a>
+                    <a class="underline" href="mailto:{{ activeCandidate.email }}">{{ activeCandidate.email }}</a>
                   </div>
                 </div>
               </div>
@@ -208,7 +208,7 @@
 
       <!-- Right: action panel -->
       <div class="jd-actions-panel !w-[12rem]">
-        <div v-if="!activeCandidate" class="text-muted">
+        <div v-if="!activeCandidate" class="text-muted py-10">
           Select a candidate
         </div>
         <div v-else class="jd-actions-content">
@@ -464,6 +464,16 @@ function transformJobData(rawJob) {
     const stepsMap = new Map();
     const allCandidates = [];
 
+    // Helper to safely read fields from both old and new API shapes
+    const getField = (obj, ...keys) => {
+        for (const k of keys) {
+            if (obj[k] !== undefined && obj[k] !== null && obj[k] !== "") {
+                return obj[k];
+            }
+        }
+        return null;
+    };
+
     if (rawJob.steps && Array.isArray(rawJob.steps)) {
         rawJob.steps.forEach((step) => {
             const stepKey = `${step.step_id}`;
@@ -479,30 +489,57 @@ function transformJobData(rawJob) {
 
             if (step.candidates && Array.isArray(step.candidates)) {
                 step.candidates.forEach((candidate) => {
+                    // Support both old keys with trailing commas and new clean keys
+                    const candidateId = getField(
+                        candidate,
+                        "applicant_id",
+                        "applicant_id,",
+                        "applicant_email",
+                        "applicant_email,"
+                    );
+                    const email = getField(candidate, "applicant_email", "applicant_email,");
+
                     // Skip candidates without valid ID or email
-                    if (!candidate["applicant_id,"] && !candidate["applicant_email,"]) {
+                    if (!candidateId && !email) {
                         return;
                     }
 
-                    const candidateId =
-                        candidate["applicant_id,"] || candidate["applicant_email,"];
-                    const existingIdx = allCandidates.findIndex((c) => c.id === candidateId);
-                    if (existingIdx === -1) {
+                    const uniqueId = candidateId || email;
+                    const exists = allCandidates.findIndex(
+                        (c) => c.id === uniqueId || (email && c.email === email)
+                    );
+                    if (exists === -1) {
                         allCandidates.push({
-                            id: candidateId,
-                            name: candidate["applicant_name,"],
-                            email: candidate["applicant_email,"],
-                            phone: candidate["applicant_phone,"] || "N/A",
-                            country: candidate["applicant_country,"] || "N/A",
-                            designation: candidate["applicant_designation,"],
-                            status: candidate["applicant_status,"],
-                            source: candidate["applicant_source,"] || "Unknown",
-                            rating: candidate["applicant_rating,"] || 0,
-                            resume_link: candidate["applicant_resume_link,"] || null,
-                            cover_letter: candidate["applicant_cover_letter,"] || null,
+                            id: uniqueId,
+                            name: getField(candidate, "applicant_name", "applicant_name,") || "Unknown",
+                            email: email || "",
+                            phone: getField(candidate, "applicant_phone", "applicant_phone,") || "N/A",
+                            country: getField(candidate, "applicant_country", "applicant_country,") || "N/A",
+                            designation:
+                                getField(candidate, "applicant_designation", "applicant_designation,") || "",
+                            status: getField(candidate, "applicant_status", "applicant_status,") || "",
+                            source: getField(candidate, "applicant_source", "applicant_source,") || "Unknown",
+                            rating:
+                                parseFloat(
+                                    getField(candidate, "applicant_rating", "applicant_rating,") ?? 0
+                                ) || 0,
+                            resume_link: getField(
+                                candidate,
+                                "applicant_resume_link",
+                                "applicant_resume_link,"
+                            ),
+                            cover_letter: getField(
+                                candidate,
+                                "applicant_cover_letter",
+                                "applicant_cover_letter,"
+                            ),
                             stage: stepKey,
                             stage_name: step.step_name,
-                            created_at: candidate["applicant_created_at,"],
+                            created_at: getField(
+                                candidate,
+                                "applicant_created_at",
+                                "applicant_created_at,"
+                            ),
                         });
                     }
                 });
