@@ -43,7 +43,7 @@
                         @click="triggerResumeUpload"
                     >
                         <Upload :size="16" class="button-icon" v-if="!isUploading" />
-                        {{ isUploading ? `Uploading... ${uploadProgress}%` : 'Upload Resume' }}
+                        {{ isUploading ? `Uploading... ${uploadProgress}%` : "Upload Resume" }}
                     </Button>
                     <Button
                         theme="gray"
@@ -138,107 +138,112 @@
                     </div>
                 </div>
 
-      <!-- Middle: details -->
-      <div class="jd-middle">
-        <div class="jd-detail-card">
-          <div v-if="!activeCandidate" class="text-muted py-10">
-            Select a candidate from the list.
-          </div>
-          <div v-else>
-            <div class="jd-detail-head">
-              <div style="display: flex; align-items: center; gap: 12px">
-                <div class="jd-avatar" style="width: 55px; height: 55px; font-size: 20px">
-                  {{ activeCandidate.name?.charAt(0).toUpperCase() }}
-                </div>
-                <div>
-                  <h3 class="jd-detail-name">{{ activeCandidate.name }}</h3>
-                  <div class="jd-detail-meta">
-                    <a class="underline" href="mailto:{{ activeCandidate.email }}">{{ activeCandidate.email }}</a>
-                  </div>
-                </div>
-              </div>
-                <div
-                    style="
-                        display: flex;
-                        flex-direction: column;
-                        gap: 8px;
-                        min-width: 200px;
-                    "
-                >
-                    <Select
-                        v-model="targetStep"
-                        :options="stepOptions"
-                        placeholder="Select step"
-                    />
-                    <Button
-                        size="sm"
-                        theme="gray"
-                        :variant="'solid'"
-                        @click="moveCandidateToStep"
-                    >
-                        <MoveRight :size="16" class="button-icon" />
-                        Move to selected step
-                    </Button>
-                </div>
-            </div>
+                <!-- Middle: details -->
+                <div class="jd-middle">
+                    <div class="jd-detail-card">
+                        <div v-if="!activeCandidate" class="text-muted py-10">
+                            Select a candidate from the list.
+                        </div>
+                        <div v-else>
+                            <div class="jd-detail-head">
+                                <div style="display: flex; align-items: center; gap: 12px">
+                                    <div
+                                        class="jd-avatar"
+                                        style="width: 55px; height: 55px; font-size: 20px"
+                                    >
+                                        {{ activeCandidate.name?.charAt(0).toUpperCase() }}
+                                    </div>
+                                    <div>
+                                        <h3 class="jd-detail-name">{{ activeCandidate.name }}</h3>
+                                        <div class="jd-detail-meta">
+                                            <a
+                                                class="underline"
+                                                href="mailto:{{ activeCandidate.email }}"
+                                                >{{ activeCandidate.email }}</a
+                                            >
+                                        </div>
+                                    </div>
+                                </div>
+                                <div
+                                    style="
+                                        display: flex;
+                                        flex-direction: column;
+                                        gap: 8px;
+                                        min-width: 200px;
+                                    "
+                                >
+                                    <Select
+                                        v-model="targetStep"
+                                        :options="stepOptions"
+                                        placeholder="Select step"
+                                    />
+                                    <Button
+                                        size="sm"
+                                        theme="gray"
+                                        :variant="'solid'"
+                                        @click="moveCandidateToStep"
+                                    >
+                                        <MoveRight :size="16" class="button-icon" />
+                                        Move to selected step
+                                    </Button>
+                                </div>
+                            </div>
 
-            <!-- Tab Navigation -->
-            <div class="jd-tabs-nav">
-              <button
-                v-for="tab in tabs"
-                :key="tab.key"
-                :class="['jd-tab-button', { active: activeTab === tab.key }]"
-                @click="activeTab = tab.key"
-              >
-                {{ tab.label }}
-              </button>
-            </div>
+                            <!-- Tab Navigation -->
+                            <div class="jd-tabs-nav">
+                                <button
+                                    v-for="tab in tabs"
+                                    :key="tab.key"
+                                    :class="['jd-tab-button', { active: activeTab === tab.key }]"
+                                    @click="activeTab = tab.key"
+                                >
+                                    {{ tab.label }}
+                                </button>
+                            </div>
 
-            <!-- Tab Content -->
-            <div class="jd-tab-content">
-              <component
-                :is="tabComponents[activeTab]"
-                :candidate="activeCandidate"
-                :job-title="job?.title"
-              />
-            </div>
-          </div>
-        </div>
-      </div>
+                            <!-- Tab Content -->
+                            <div class="jd-tab-content">
+                                <component
+                                    :is="tabComponents[activeTab]"
+                                    :candidate="activeCandidate"
+                                    :job-title="job?.title"
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-      <!-- Right: action panel -->
-      <div class="jd-actions-panel !w-[12rem]">
-        <div v-if="!activeCandidate" class="text-muted py-10">
-          Select a candidate
-        </div>
-        <div v-else class="jd-actions-content">
-          <h4 class="jd-actions-title">Actions</h4>
-          <div class="jd-actions-buttons">
-            <Button
-              v-for="action in candidateActions"
-              :key="action.key"
-              size="sm"
-              theme="gray" class="p-7"
-              :variant="action.variant === 'danger' ? 'outline' : 'solid'"
-              @click="action.action"
-            >
-            <div
-              :class="['jd-action-button']"
-            >
-                <component :is="action.icon" :size="14" class="jd-action-icon" />
-                <span>{{ action.label }}</span>
+                <!-- Right: action panel -->
+                <div class="jd-actions-panel !w-[12rem]">
+                    <div v-if="!activeCandidate" class="text-muted py-10">Select a candidate</div>
+                    <div v-else class="jd-actions-content">
+                        <h4 class="jd-actions-title">Actions</h4>
+                        <div class="jd-actions-buttons">
+                            <Button
+                                v-for="action in candidateActions"
+                                :key="action.key"
+                                size="sm"
+                                theme="gray"
+                                class="p-7"
+                                :variant="action.variant === 'danger' ? 'outline' : 'solid'"
+                                @click="action.action"
+                            >
+                                <div :class="['jd-action-button']">
+                                    <component
+                                        :is="action.icon"
+                                        :size="14"
+                                        class="jd-action-icon"
+                                    />
+                                    <span>{{ action.label }}</span>
+                                </div>
+                            </Button>
+                        </div>
+                    </div>
+                </div>
             </div>
-            </Button>
-          </div>
-        </div>
-      </div>
-    </div>
 
             <!-- Dialog Components -->
-            <AddCandidateDialog
-                v-model="showAddCandidateDialog"
-                :on-submit="handleAddCandidate"
-            />
+            <AddCandidateDialog v-model="showAddCandidateDialog" :on-submit="handleAddCandidate" />
 
             <AssignInterviewDialog
                 v-model="showAssignInterviewDialog"
@@ -265,13 +270,13 @@
 
             <SendEmailDialog
                 v-model="showSendEmailDialog"
-                :candidate-email="activeCandidate?.email"
-                :candidate-name="activeCandidate?.name"
-                :job-title="job?.title"
+                :candidate="activeCandidate"
+                :job="job"
+                :step="activeStep"
                 :on-submit="handleSendEmail"
             />
+        </div>
     </div>
-  </div>
 </template>
 
 <script setup>
@@ -280,7 +285,25 @@ import { useRoute, useRouter } from "vue-router";
 import { TextInput, Select, Button, createResource } from "frappe-ui";
 import { useToast } from "vue-toastification";
 import { JobDetailsAPI } from "../../api/apiClient.js";
-import { Edit2, Upload, UserPlus, CheckSquare, Square, MoveRight, X, User, Calendar, Mail, FileText, Share2, Printer, Copy, ArrowRightLeft, Trash2, Edit } from 'lucide-vue-next';
+import {
+    Edit2,
+    Upload,
+    UserPlus,
+    CheckSquare,
+    Square,
+    MoveRight,
+    X,
+    User,
+    Calendar,
+    Mail,
+    FileText,
+    Share2,
+    Printer,
+    Copy,
+    ArrowRightLeft,
+    Trash2,
+    Edit,
+} from "lucide-vue-next";
 import AddCandidateDialog from "../../components/jobs/AddCandidateDialog.vue";
 import AssignInterviewDialog from "../../components/jobs/AssignInterviewDialog.vue";
 import BulkMoveDialog from "../../components/jobs/BulkMoveDialog.vue";
@@ -345,15 +368,15 @@ const showSendEmailDialog = ref(false);
 const parsingProfile = ref(null);
 
 // Tab state
-const activeTab = ref('profile');
+const activeTab = ref("profile");
 
 // Tab configuration
 const tabs = [
-    { key: 'profile', label: 'Profile' },
-    { key: 'communication', label: 'Communication' },
-    { key: 'timeline', label: 'Timeline' },
-    { key: 'review', label: 'Review' },
-    { key: 'comments', label: 'Comments' },
+    { key: "profile", label: "Profile" },
+    { key: "communication", label: "Communication" },
+    { key: "timeline", label: "Timeline" },
+    { key: "review", label: "Review" },
+    { key: "comments", label: "Comments" },
 ];
 
 // Tab component mapping
@@ -367,48 +390,50 @@ const tabComponents = {
 
 // Actions panel configuration
 const candidateActions = [
-    { 
-        key: 'assign-interview', 
-        label: 'Assign Interview', 
-        icon: Calendar, 
-        action: () => { showAssignInterviewDialog.value = true; }
+    {
+        key: "assign-interview",
+        label: "Assign Interview",
+        icon: Calendar,
+        action: () => {
+            showAssignInterviewDialog.value = true;
+        },
     },
-    { 
-        key: 'share', 
-        label: 'Share Candidate', 
-        icon: Share2, 
-        action: shareCandidate
+    {
+        key: "share",
+        label: "Share Candidate",
+        icon: Share2,
+        action: shareCandidate,
     },
-    { 
-        key: 'print', 
-        label: 'Print Profile', 
-        icon: Printer, 
-        action: printProfile
+    {
+        key: "print",
+        label: "Print Profile",
+        icon: Printer,
+        action: printProfile,
     },
-    { 
-        key: 'copy-job', 
-        label: 'Copy to Job', 
-        icon: Copy, 
-        action: copyToJob
+    {
+        key: "copy-job",
+        label: "Copy to Job",
+        icon: Copy,
+        action: copyToJob,
     },
-    { 
-        key: 'move-job', 
-        label: 'Move to Job', 
-        icon: ArrowRightLeft, 
-        action: moveToJob
+    {
+        key: "move-job",
+        label: "Move to Job",
+        icon: ArrowRightLeft,
+        action: moveToJob,
     },
-    { 
-        key: 'edit', 
-        label: 'Edit Candidate', 
-        icon: Edit, 
-        action: editCandidate
+    {
+        key: "edit",
+        label: "Edit Candidate",
+        icon: Edit,
+        action: editCandidate,
     },
-    { 
-        key: 'delete', 
-        label: 'Delete Candidate', 
-        icon: Trash2, 
+    {
+        key: "delete",
+        label: "Delete Candidate",
+        icon: Trash2,
         action: deleteCandidate,
-        variant: 'danger'
+        variant: "danger",
     },
 ];
 
@@ -495,7 +520,7 @@ function transformJobData(rawJob) {
                         "applicant_id",
                         "applicant_id,",
                         "applicant_email",
-                        "applicant_email,"
+                        "applicant_email,",
                     );
                     const email = getField(candidate, "applicant_email", "applicant_email,");
 
@@ -506,39 +531,53 @@ function transformJobData(rawJob) {
 
                     const uniqueId = candidateId || email;
                     const exists = allCandidates.findIndex(
-                        (c) => c.id === uniqueId || (email && c.email === email)
+                        (c) => c.id === uniqueId || (email && c.email === email),
                     );
                     if (exists === -1) {
                         allCandidates.push({
                             id: uniqueId,
-                            name: getField(candidate, "applicant_name", "applicant_name,") || "Unknown",
+                            name:
+                                getField(candidate, "applicant_name", "applicant_name,") ||
+                                "Unknown",
                             email: email || "",
-                            phone: getField(candidate, "applicant_phone", "applicant_phone,") || "N/A",
-                            country: getField(candidate, "applicant_country", "applicant_country,") || "N/A",
+                            phone:
+                                getField(candidate, "applicant_phone", "applicant_phone,") ||
+                                "N/A",
+                            country:
+                                getField(candidate, "applicant_country", "applicant_country,") ||
+                                "N/A",
                             designation:
-                                getField(candidate, "applicant_designation", "applicant_designation,") || "",
-                            status: getField(candidate, "applicant_status", "applicant_status,") || "",
-                            source: getField(candidate, "applicant_source", "applicant_source,") || "Unknown",
+                                getField(
+                                    candidate,
+                                    "applicant_designation",
+                                    "applicant_designation,",
+                                ) || "",
+                            status:
+                                getField(candidate, "applicant_status", "applicant_status,") || "",
+                            source:
+                                getField(candidate, "applicant_source", "applicant_source,") ||
+                                "Unknown",
                             rating:
                                 parseFloat(
-                                    getField(candidate, "applicant_rating", "applicant_rating,") ?? 0
+                                    getField(candidate, "applicant_rating", "applicant_rating,") ??
+                                        0,
                                 ) || 0,
                             resume_link: getField(
                                 candidate,
                                 "applicant_resume_link",
-                                "applicant_resume_link,"
+                                "applicant_resume_link,",
                             ),
                             cover_letter: getField(
                                 candidate,
                                 "applicant_cover_letter",
-                                "applicant_cover_letter,"
+                                "applicant_cover_letter,",
                             ),
                             stage: stepKey,
                             stage_name: step.step_name,
                             created_at: getField(
                                 candidate,
                                 "applicant_created_at",
-                                "applicant_created_at,"
+                                "applicant_created_at,",
                             ),
                         });
                     }
@@ -685,124 +724,132 @@ async function handleResumeUpload(event) {
     if (!file) return;
 
     // Validate file type
-    const validTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+    const validTypes = [
+        "application/pdf",
+        "application/msword",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    ];
     if (!validTypes.includes(file.type)) {
-        toast.error('Please upload a PDF or Word document');
+        toast.error("Please upload a PDF or Word document");
         return;
     }
 
     // Validate file size (max 10MB)
     const maxSize = 10 * 1024 * 1024; // 10MB
     if (file.size > maxSize) {
-        toast.error('File size must be less than 10MB');
+        toast.error("File size must be less than 10MB");
         return;
     }
 
     const formData = new FormData();
-    formData.append('file', file);
-    formData.append('is_private', 1);
-   // formData.append('folder', 'Home/Resumes');
+    formData.append("file", file);
+    formData.append("is_private", 1);
+    // formData.append('folder', 'Home/Resumes');
 
     try {
         isUploading.value = true;
         uploadProgress.value = 0;
 
-        const response = await fetch('/api/method/upload_file', {
-            method: 'POST',
+        const response = await fetch("/api/method/upload_file", {
+            method: "POST",
             headers: {
-                'X-Frappe-CSRF-Token': window.frappe?.csrf_token || '',
+                "X-Frappe-CSRF-Token": window.frappe?.csrf_token || "",
             },
-            body: formData
+            body: formData,
         });
 
         if (!response.ok) {
-            throw new Error('Upload failed');
+            throw new Error("Upload failed");
         }
 
         const result = await response.json();
-        
+
         if (result.message && result.message.file_url) {
             uploadProgress.value = 100;
-            toast.success('Resume uploaded successfully');
-            console.log('File Uploaded:', result.message.file_url);
-            
+            toast.success("Resume uploaded successfully");
+            console.log("File Uploaded:", result.message.file_url);
+
             // Parse the resume
             await parseResume(result.message.file_url, result.message.name);
         } else {
-            throw new Error('Invalid response from server');
+            throw new Error("Invalid response from server");
         }
     } catch (error) {
-        console.error('Upload failed:', error);
-        toast.error(`Upload failed: ${error.message || 'Unknown error'}`);
+        console.error("Upload failed:", error);
+        toast.error(`Upload failed: ${error.message || "Unknown error"}`);
     } finally {
         isUploading.value = false;
         uploadProgress.value = 0;
         // Reset file input
         if (resumeFileInput.value) {
-            resumeFileInput.value.value = '';
+            resumeFileInput.value.value = "";
         }
     }
 }
 
 async function parseResume(fileUrl, fileName) {
     try {
-        toast.info('Parsing resume...');
-        
+        toast.info("Parsing resume...");
+
         // Initialize empty profile for real-time updates
         parsingProfile.value = {
-            job_applicant: 'Parsing...',
+            job_applicant: "Parsing...",
             summary: null,
             skills: null,
             experience: [],
             education: [],
             projects: [],
             links: [],
-            personal : {}
+            personal: {},
         };
-        
+
         // Set loading state to true
         isParsingResume.value = true;
-        
+
         // Open the profile dialog to show real-time parsing
         showProfileDialog.value = true;
-        
+
         // Call the resume parsing API with progress callback
         const response = await JobDetailsAPI.parseResume(
             {
                 path: `./${import.meta.env.VITE_SITE_NAME}${fileUrl}`,
                 file_name: fileName,
                 job_opening_id: job.value.name,
-                pipeline_step_id : activeStep.value == 'all' ? job.value?.pipeline_steps[1].key : activeStep.value
+                pipeline_step_id:
+                    activeStep.value == "all"
+                        ? job.value?.pipeline_steps[1].key
+                        : activeStep.value,
             },
             (progressData) => {
                 // Handle progress updates from the EventStream
-                console.log('Resume parsing step:', progressData);
-                
+                console.log("Resume parsing step:", progressData);
+
                 // Update the parsing profile in real-time
                 if (progressData && progressData.data) {
                     // Merge the new data with existing profile
-                    if(progressData.data.name){
+                    if (progressData.data.name) {
                         toast.info(`Parsed ${progressData.data.name} Section`);
-                        parsingProfile.value[progressData.data.name] = JSON.parse(progressData.data.content);
-                    }
-                    else{
+                        parsingProfile.value[progressData.data.name] = JSON.parse(
+                            progressData.data.content,
+                        );
+                    } else {
                         parsingProfile.value = progressData.data;
                     }
-                    console.log('parsingProfile:', parsingProfile.value);
+                    console.log("parsingProfile:", parsingProfile.value);
                 }
-            }
+            },
         );
-        
+
         if (response) {
-            toast.success('Resume parsed successfully! Candidate added.');
+            toast.success("Resume parsed successfully! Candidate added.");
             // Update with final complete profile
             // parsingProfile.value = response;
             // Reload job details to show the new candidate
             reloadJobDetails();
         }
     } catch (error) {
-        console.error('Resume parsing failed:', error);
-        toast.error(`Resume parsing failed: ${error.message || 'Unknown error'}`);
+        console.error("Resume parsing failed:", error);
+        toast.error(`Resume parsing failed: ${error.message || "Unknown error"}`);
         showProfileDialog.value = false;
         parsingProfile.value = null;
     } finally {
@@ -831,14 +878,14 @@ async function moveCandidateToStep() {
     try {
         const response = await JobDetailsAPI.bulkUpdateApplicants(payload);
         toast.success(`${activeCandidate.value.name} moved to "${targetStepName}"`);
-        
+
         // Update local state
         const candidate = candidates.value.find((c) => c.id === activeCandidate.value.id);
         if (candidate) {
             candidate.stage = targetStep.value;
             candidate.stage_name = targetStepName;
         }
-        changeStep(targetStep.value)
+        changeStep(targetStep.value);
     } catch (error) {
         console.log(error);
 
@@ -863,28 +910,30 @@ async function handleAssignInterview(formData) {
         throw new Error("Invalid time range");
     }
 
-  const payload = {
-    job_applicant: activeCandidate.value.id,
-    job_opening: job.value.name,
-    designation: job.value.title,
-    interview_round: formData.interview_round,
-    status: formData.status,
-    scheduled_on: formData.scheduled_on,
-    from_time: formData.from_time,
-    to_time: formData.to_time,
-    expected_average_rating: formData.expected_average_rating || 0,
-    interview_summary: formData.interview_summary || "",
-    resume_link: activeCandidate.value.resume_link || "",
-    reminded: 0,
-  };
+    const payload = {
+        job_applicant: activeCandidate.value.id,
+        job_opening: job.value.name,
+        designation: job.value.title,
+        interview_round: formData.interview_round,
+        status: formData.status,
+        scheduled_on: formData.scheduled_on,
+        from_time: formData.from_time,
+        to_time: formData.to_time,
+        expected_average_rating: formData.expected_average_rating || 0,
+        interview_summary: formData.interview_summary || "",
+        resume_link: activeCandidate.value.resume_link || "",
+        reminded: 0,
+    };
 
-  try {
-    await JobDetailsAPI.createOrUpdateInterview(payload);
-    toast.success(`Interview assigned to ${activeCandidate.value?.name} on ${formData.scheduled_on}`);
-  } catch (error) {
-    toast.error(error.message || "Failed to assign interview");
-    throw error;
-  }
+    try {
+        await JobDetailsAPI.createOrUpdateInterview(payload);
+        toast.success(
+            `Interview assigned to ${activeCandidate.value?.name} on ${formData.scheduled_on}`,
+        );
+    } catch (error) {
+        toast.error(error.message || "Failed to assign interview");
+        throw error;
+    }
 }
 
 async function handleBulkMove(formData) {
@@ -923,12 +972,12 @@ async function handleBulkMove(formData) {
                 }
             }
         });
-        changeStep(formData.target_step)
+        changeStep(formData.target_step);
         clearSelection();
     } catch (error) {
         toast.error(error.message || "Failed to move candidates");
         console.log(error);
-        
+
         throw error;
     }
 }
@@ -940,127 +989,135 @@ function reloadJobDetails() {
 
 // Action panel methods
 function viewApplicantProfile() {
-  if (!activeCandidate.value) return;
-  showProfileDialog.value = true;
+    if (!activeCandidate.value) return;
+    showProfileDialog.value = true;
 }
 
 async function fetchApplicantProfile(applicantId) {
-  try {
-    const profile = await JobDetailsAPI.jobApplicantFind(applicantId);
-    console.log(profile);
-    
-    return profile.resume;
-  } catch (error) {
-    toast.error('Failed to load profile');
-    console.error(error);
-    throw error;
-  }
+    try {
+        const profile = await JobDetailsAPI.jobApplicantFind(applicantId);
+        console.log(profile);
+
+        return profile.resume;
+    } catch (error) {
+        toast.error("Failed to load profile");
+        console.error(error);
+        throw error;
+    }
 }
 
 function sendEmail() {
-  if (!activeCandidate.value) return;
-  showSendEmailDialog.value = true;
+    if (!activeCandidate.value) return;
+    showSendEmailDialog.value = true;
 }
 
 // New action handlers
 function shareCandidate() {
-  if (!activeCandidate.value) return;
-  
-  const shareUrl = `${window.location.origin}${window.location.pathname}?candidate=${activeCandidate.value.id}`;
-  
-  if (navigator.share) {
-    navigator.share({
-      title: `${activeCandidate.value.name} - Candidate Profile`,
-      text: `Check out ${activeCandidate.value.name}'s profile for ${job.value?.title}`,
-      url: shareUrl,
-    }).then(() => {
-      toast.success('Shared successfully');
-    }).catch((error) => {
-      console.error('Share failed:', error);
-      copyToClipboard(shareUrl);
-    });
-  } else {
-    copyToClipboard(shareUrl);
-  }
+    if (!activeCandidate.value) return;
+
+    const shareUrl = `${window.location.origin}${window.location.pathname}?candidate=${activeCandidate.value.id}`;
+
+    if (navigator.share) {
+        navigator
+            .share({
+                title: `${activeCandidate.value.name} - Candidate Profile`,
+                text: `Check out ${activeCandidate.value.name}'s profile for ${job.value?.title}`,
+                url: shareUrl,
+            })
+            .then(() => {
+                toast.success("Shared successfully");
+            })
+            .catch((error) => {
+                console.error("Share failed:", error);
+                copyToClipboard(shareUrl);
+            });
+    } else {
+        copyToClipboard(shareUrl);
+    }
 }
 
 function copyToClipboard(text) {
-  navigator.clipboard.writeText(text).then(() => {
-    toast.success('Link copied to clipboard');
-  }).catch((error) => {
-    console.error('Copy failed:', error);
-    toast.error('Failed to copy link');
-  });
+    navigator.clipboard
+        .writeText(text)
+        .then(() => {
+            toast.success("Link copied to clipboard");
+        })
+        .catch((error) => {
+            console.error("Copy failed:", error);
+            toast.error("Failed to copy link");
+        });
 }
 
 function printProfile() {
-  if (!activeCandidate.value) return;
-  toast.info('Print profile feature coming soon...');
-  // Future: Open print dialog with formatted profile
-  // window.print() or open a new window with printable profile
+    if (!activeCandidate.value) return;
+    toast.info("Print profile feature coming soon...");
+    // Future: Open print dialog with formatted profile
+    // window.print() or open a new window with printable profile
 }
 
 function copyToJob() {
-  if (!activeCandidate.value) return;
-  toast.info('Copy to job feature coming soon...');
-  // Future: Show dialog to select target job and copy candidate
+    if (!activeCandidate.value) return;
+    toast.info("Copy to job feature coming soon...");
+    // Future: Show dialog to select target job and copy candidate
 }
 
 function moveToJob() {
-  if (!activeCandidate.value) return;
-  toast.info('Move to job feature coming soon...');
-  // Future: Show dialog to select target job and move candidate
+    if (!activeCandidate.value) return;
+    toast.info("Move to job feature coming soon...");
+    // Future: Show dialog to select target job and move candidate
 }
 
 function editCandidate() {
-  if (!activeCandidate.value) return;
-  window.open(`http://localhost:8001/desk/job-applicant/${activeCandidate.value.id}`, "_blank");
+    if (!activeCandidate.value) return;
+    window.open(`http://localhost:8001/desk/job-applicant/${activeCandidate.value.id}`, "_blank");
 }
 
 async function deleteCandidate() {
-  if (!activeCandidate.value) return;
-  
-  const confirmed = confirm(`Are you sure you want to delete ${activeCandidate.value.name}? This action cannot be undone.`);
-  
-  if (!confirmed) return;
-  
-  try {
-    // Future: Call delete API
-    // await JobDetailsAPI.deleteApplicant(activeCandidate.value.id);
-    toast.info('Delete candidate feature coming soon...');
-    // Remove from local state after successful deletion
-    // candidates.value = candidates.value.filter(c => c.id !== activeCandidate.value.id);
-    // activeCandidateId.value = candidates.value[0]?.id || null;
-  } catch (error) {
-    toast.error(error.message || 'Failed to delete candidate');
-    console.error(error);
-  }
+    if (!activeCandidate.value) return;
+
+    const confirmed = confirm(
+        `Are you sure you want to delete ${activeCandidate.value.name}? This action cannot be undone.`,
+    );
+
+    if (!confirmed) return;
+
+    try {
+        // Future: Call delete API
+        // await JobDetailsAPI.deleteApplicant(activeCandidate.value.id);
+        toast.info("Delete candidate feature coming soon...");
+        // Remove from local state after successful deletion
+        // candidates.value = candidates.value.filter(c => c.id !== activeCandidate.value.id);
+        // activeCandidateId.value = candidates.value[0]?.id || null;
+    } catch (error) {
+        toast.error(error.message || "Failed to delete candidate");
+        console.error(error);
+    }
 }
 
 async function handleSendEmail(formData) {
-  if (!formData.to || !formData.subject || !formData.message) {
-    toast.warning('Please fill in all required fields');
-    throw new Error('Required fields missing');
-  }
+    if (!formData.to || !formData.subject || !formData.message) {
+        toast.warning("Please fill in all required fields");
+        throw new Error("Required fields missing");
+    }
 
-  try {
-    // Call the email API
-    await JobDetailsAPI.sendEmail({
-      recipient: formData.to,
-      subject: formData.subject,
-      message: formData.message,
-      cc: formData.cc,
-      bcc: formData.bcc,
-      send_me_a_copy: formData.send_me_a_copy,
-      job_applicant: activeCandidate.value.id,
-      job_opening: job.value.name,
-    });
+    try {
+        // Call the email API
+        await JobDetailsAPI.sendEmail({
+            recipient: formData.to,
+            subject: formData.subject,
+            message: formData.message,
+            cc: formData.cc,
+            bcc: formData.bcc,
+            send_me_a_copy: formData.send_me_a_copy,
+            job_applicant: activeCandidate.value.id,
+            job_opening: job.value.name,
+        });
 
-    toast.success(`Email sent successfully to ${formData.to}`);
-  } catch (error) {
-    toast.error(error.message || 'Failed to send email');
-    throw error;
-  }
+        toast.success(`Email sent successfully to ${formData.to}`);
+    } catch (error) {
+        toast.error(error.message || "Failed to send email");
+        throw error;
+    }
 }
 
 // Watch for search query changes
@@ -1155,68 +1212,65 @@ watch(
 }
 
 .jd-body {
-  display: grid;
-  grid-template-columns: 350px 1fr 190px;
-  gap: 14px;
-  min-height: 520px;
+    display: grid;
+    grid-template-columns: 350px 1fr 190px;
+    gap: 14px;
+    min-height: 520px;
 }
 
 .jd-left,
 .jd-middle,
 .jd-actions-panel {
-  background: #ffffff66;
-  border: 1px solid var(--border-color, #e6e6e6);
-  border-radius: 10px;
+    background: #ffffff66;
+    border: 1px solid var(--border-color, #e6e6e6);
+    border-radius: 10px;
 }
 
 .jd-actions-panel {
-  display: flex;
-  flex-direction: column;
+    display: flex;
+    flex-direction: column;
 }
 
 .jd-actions-content {
-  padding: 14px;
-  display: flex;
-  flex-direction: column;
-  height: 100%;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
 }
 
 .jd-actions-title {
-  font-size: 14px;
-  font-weight: 700;
-  color: #111827;
-  margin: 0 0 12px 0;
-  padding-bottom: 10px;
-  border-bottom: 1px solid var(--border-color, #e6e6e6);
+    font-size: 14px;
+    font-weight: 700;
+    color: #111827;
+    margin: 0 0 12px 0;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border-color, #e6e6e6);
 }
 
 .jd-actions-buttons {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  /* overflow-y: auto; */
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    /* overflow-y: auto; */
 }
 
 .jd-action-button {
-  width: 100%;
-  justify-content: center !important;
-  padding: 25px 12px !important;
-  font-size: 13px !important;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
+    width: 100%;
+    justify-content: center !important;
+    padding: 25px 12px !important;
+    font-size: 13px !important;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
 }
 
 .jd-action-button span {
-  font-weight: 500;
+    font-weight: 500;
 }
 
-
-
-
 .jd-action-icon {
-  flex-shrink: 0;
+    flex-shrink: 0;
 }
 
 .jd-left-top {

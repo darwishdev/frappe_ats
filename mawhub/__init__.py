@@ -2,7 +2,7 @@ __version__ = "0.0.1"
 from mawhub.api.mawhub_auth_api import user_login
 from mawhub.api.mawhub_parsed_document_api import parsed_document_create_update
 from mawhub.api.mawhub_job_opening_api import (
-        generate_candidate_email,
+        generate_applicant_email,
         job_opening_create_update,
         job_opening_list,
         job_opening_find,
@@ -31,7 +31,7 @@ __all__ = [
     "job_opening_find",
     "interview_create_update",
     "job_applicant_create_update",
-    "generate_candidate_email",
+    "generate_applicant_email",
     "job_applicant_create_with_resume",
     "job_applicant_find",
     "job_opening_parse",

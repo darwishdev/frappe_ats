@@ -193,7 +193,7 @@ def job_opening_find(job:str)->JobOpeningDTO:
 def job_opening_create_update(payload:dict):
     return app_container.job_usecase.job_opening.job_opening_create_update(cast(JobOpening,payload))
 @frappe.whitelist(methods=["POST"])
-def generate_candidate_email(applicant: dict, job: dict, pipeline_step: str,
+def generate_applicant_email(applicant: dict, job: dict, pipeline_step: str,
                                       user_instructions: str = ""):
     """
     Generates a personalized email for a candidate based on JD and Resume.
