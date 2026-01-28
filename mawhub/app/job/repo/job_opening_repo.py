@@ -1,13 +1,43 @@
 from typing import List, Protocol, cast
 import frappe
 
+from mawhub.app.job.dto.applicant_resume import ApplicantResumeDTO
+from mawhub.pkg.baseclasses.app_repo import AppRepo, AppRepoInterface
+from mawhub.sqltypes.table_models import JobOpening
 from mawhub.sqltypes.tal_models import JobView
-class JobOpeningRepoInterface(Protocol):
+class JobOpeningRepoInterface(AppRepoInterface[JobOpening],Protocol):
 	def job_opening_list(self, user_name: str)->List[JobView]: ...
 	def job_opening_find(self, job: str)->JobView: ...
 
 
-class JobOpeningRepo:
+class JobOpeningRepo(AppRepo[JobOpening]):
+    def __init__(self):
+        super().__init__(
+            doc_name="Job Opening",
+            name_key="name",
+            scalar_fields=[
+                "job_title",
+                "status",
+                "description",
+                "department",
+                "employment_type",
+                "location",
+                "staffing_plan",
+                "planned_vacancies",
+                "publish",
+                "publish_applications_received",
+                "currency",
+                "company",
+                "designation",
+                "lower_range",
+                "upper_range",
+                "salary_per",
+                "publish_salary_range",
+                "custom_pipeline",
+            ],
+            child_tables={
+            },
+        )
     def job_opening_list(self,user_name:str)->List[JobView]:
         print(user_name)
         raw_rows = frappe.db.sql("""

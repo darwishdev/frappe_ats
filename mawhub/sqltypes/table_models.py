@@ -1,10 +1,49 @@
 # AUTO-GENERATED FILE
 # Source: MariaDB information_schema
-# Contains TypedDicts for $['tabJob Opening', 'tabJob Applicant', 'tabInterview', 'tabInterview Feedback']* tables
+# Contains TypedDicts for $['tabParsed Document Section', 'tabParsed Document', 'tabJob Opening', 'tabJob Applicant', 'tabInterview', 'tabInterview Feedback']* tables
 # Do not edit manually
 
 from typing import TypedDict, NotRequired
 from datetime import date, datetime
+
+class ParsedDocumentSection(TypedDict):
+    name: str
+    creation: NotRequired[datetime]
+    modified: NotRequired[datetime]
+    modified_by: NotRequired[str]
+    owner: NotRequired[str]
+    docstatus: NotRequired[int]
+    idx: NotRequired[int]
+    _user_tags: NotRequired[str]
+    _comments: NotRequired[str]
+    _assign: NotRequired[str]
+    _liked_by: NotRequired[str]
+    title: NotRequired[str]
+    description: NotRequired[str]
+    pullet_points: NotRequired[str]
+    parent_section: NotRequired[str]
+    parent: NotRequired[str]
+    parenttype: NotRequired[str]
+    parentfield: NotRequired[str]
+
+class ParsedDocument(TypedDict):
+    name: str
+    creation: NotRequired[datetime]
+    modified: NotRequired[datetime]
+    modified_by: NotRequired[str]
+    owner: NotRequired[str]
+    docstatus: NotRequired[int]
+    idx: NotRequired[int]
+    _user_tags: NotRequired[str]
+    _comments: NotRequired[str]
+    _assign: NotRequired[str]
+    _liked_by: NotRequired[str]
+    file: NotRequired[str]
+    output: NotRequired[str]
+    file_hash: NotRequired[str]
+    parent_type: NotRequired[str]
+    parent_id: NotRequired[str]
+    meta_data: NotRequired[str]
 
 class JobOpening(TypedDict):
     name: str

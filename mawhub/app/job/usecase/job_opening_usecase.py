@@ -1,10 +1,13 @@
 from frappe import _
 from typing import Iterator, List, Protocol, cast
+
+from frappe.model.document import Document
 from mawhub.app.job.agent.document_parser_agent import DocumentParserWorkflow
 from mawhub.app.job.agent.job_opening_parser import  JobOpeningWorkflow
 from mawhub.app.job.dto.job_opening import JobOpeningDTO, job_opening_list_sql_to_dto, job_opening_sql_to_dto
 from mawhub.app.job.repo.job_repo import  JobRepoInterface
 from mawhub.pkg.pdfconvertor.pdfconvertor import extract_text_from_pdf
+from mawhub.sqltypes.table_models import JobOpening
 
 
 class JobOpeningUsecaseInterface(Protocol):
@@ -12,7 +15,10 @@ class JobOpeningUsecaseInterface(Protocol):
         self,
         user_name: str,
     ) -> List[JobOpeningDTO]: ...
-
+    def job_opening_create_update(
+        self,
+        payload: JobOpening,
+    ) -> Document: ...
     # def job_opening_parse(
     #     self,
     #     path: str,
@@ -41,6 +47,13 @@ class JobOpeningUsecase:
     ) -> List[JobOpeningDTO]:
         db_rows = self.repo.job_opening.job_opening_list(user_name)
         return job_opening_list_sql_to_dto(db_rows)
+
+
+    def job_opening_create_update(
+        self,
+        payload: JobOpening,
+    ) -> Document:
+        return self.repo.job_opening.create_or_update(payload)
 
     def job_opening_find(
         self,

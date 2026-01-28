@@ -5,9 +5,10 @@ from typing import Iterator, List, cast
 import frappe
 from frappe.core.doctype.user.user import reset_user_data
 from werkzeug.wrappers import Response
-from mawhub.api.mawhub_parsed_document_api import parsed_document_from_agent_to_dto
+# from mawhub.api.mawhub_parsed_document_api import parsed_document_from_agent_to_dto
 from mawhub.app.job.agent.document_parser_agent import ParsedDocumentSection
 from mawhub.app.job.dto.job_opening import JobOpeningDTO
+from mawhub.app.job.dto.parsed_document_dto import ParsedDocumentDTO, parsed_document_dto_to_sql
 from mawhub.bootstrap import app_container
 from mawhub.pkg.pdfconvertor.pdfconvertor import extract_text_from_pdf
 
@@ -20,6 +21,8 @@ from mawhub.bootstrap import app_container
 from werkzeug.wrappers import Response
 
 from queue import Queue
+
+from mawhub.sqltypes.table_models import JobOpening
 def sse_event(event: str, data):
     import json
     return (
@@ -48,10 +51,13 @@ def job_opening_parse(path: str):
                 event_data = event.get("data", {})
 
                 if event_type == "final":
-                    final_sections_dto = parsed_document_from_agent_to_dto(event.get("data"),{},path,"job_opening",str(job_id))
-                    print("Final parsed sections:", final_sections_dto)
+                    event_data = event.get("data")
+                    event_data["file"] = path
+                    event_data["file_hash"] = path
+                    event_data["parent_type"] = "job_opening"
+                    event_data["job_id"] = job_id
                     event['data']['job_opening_details'] = parsed_job
-                    app_container.job_usecase.parsed_document.parsed_document_create_update(final_sections_dto)
+                    app_container.job_usecase.parsed_document.parsed_document_create_update(cast(ParsedDocumentDTO, event_data))
                 yield f"data: {json.dumps(event)}\n\n"
                 # 1. Intercept the first 'update' that contains titles/metadata
                 if event_type == "update" and "titles" in event_data:
@@ -183,6 +189,9 @@ def job_opening_list()->List[JobOpeningDTO]:
 def job_opening_find(job:str)->JobOpeningDTO:
     return app_container.job_usecase.job_opening.job_opening_find(job)
 
+@frappe.whitelist(methods=["PUT" , "POST"], allow_guest=False)
+def job_opening_create_update(payload:dict):
+    return app_container.job_usecase.job_opening.job_opening_create_update(cast(JobOpening,payload))
 @frappe.whitelist(methods=["POST"])
 def generate_candidate_email(applicant: dict, job: dict, pipeline_step: str,
                                       user_instructions: str = ""):

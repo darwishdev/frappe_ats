@@ -2,6 +2,7 @@ from datetime import date, datetime
 import json
 from typing import List, Mapping, TypeVar, TypedDict, cast
 from frappe import Any, Optional
+from frappe.utils import secho
 
 from mawhub.sqltypes.tal_models import JobView
 
@@ -104,6 +105,7 @@ class JobOpeningDTO(TypedDict):
     name: str
     designation: str
     department: Optional[str]
+    parsed_documents:List
     employment_type: str
     location: str
 
@@ -159,10 +161,12 @@ def job_opening_sql_to_dto(job: JobView) -> JobOpeningDTO:
 
     steps = cast(list[JobPipelineStepDTO], steps)
 
+    parsed_documents  : str = cast(str,get(job, "parsed_documents", "[]"))
     dto: JobOpeningDTO = {
         "name": get(job, "name", ""),
         "designation": get(job, "designation", ""),
         "department": get(job, "department", ""),
+        "parsed_documents": json.loads(parsed_documents),
         "employment_type": get(job, "employment_type", ""),
         "location": get(job, "location", ""),
 

@@ -1,3 +1,48 @@
+CREATE OR REPLACE VIEW tal_parsed_document_view AS
+SELECT
+    pd.name AS document_id,
+    pd.file,
+    pd.file_hash,
+    pd.parent_type,
+    pd.parent_id,
+    pd.meta_data,
+    pd.creation,
+    -- Aggregate sections into a JSON Array
+   JSON_ARRAYAGG(
+        JSON_OBJECT(
+            'title', pds.title,
+            'description', pds.description,
+            'pullet_points', pds.pullet_points
+        )
+    ) AS sections
+FROM
+    `tabParsed Document` pd
+LEFT JOIN
+    `tabParsed Document Section` pds ON pd.name = pds.parent
+GROUP BY
+    pd.name,
+    pd.file,
+    pd.file_hash,
+    pd.parent_type,
+    pd.parent_id,
+    pd.meta_data,
+    pd.creation;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 CREATE OR REPLACE VIEW tal_job_applicants_view AS
 WITH
@@ -321,11 +366,11 @@ GROUP BY
     a.applicant_modified_at;
 CREATE OR REPLACE VIEW `tal_job_view` AS
 WITH
-  -- Step 1: Define the base structure of Jobs and their required Pipeline Steps
+  -- Step 1: Base Job & Pipeline Structure
   job_structure AS (
     SELECT
       j.name AS job_name,
-      j.*, -- Select specific columns in production
+      j.custom_pipeline,
       ps.name AS step_id,
       ps.step_name,
       ps.step_type,
@@ -335,7 +380,7 @@ WITH
     JOIN `tabPipeline Step` ps ON ps.parent = p.name
   ),
 
-  -- Step 2: Aggregate candidates per step, per job
+  -- Step 2: Aggregate candidates per step
   step_aggregates AS (
     SELECT
       js.job_name,
@@ -344,25 +389,44 @@ WITH
       js.step_type,
       js.step_idx,
       COUNT(a.applicant_id) AS candidate_count,
-      IF(a.applicant_id IS NULL , NULL ,JSON_ARRAYAGG(
+      IF(COUNT(a.applicant_id) = 0, JSON_ARRAY(), JSON_ARRAYAGG(
         JSON_OBJECT(
           'applicant_id', a.applicant_id,
           'applicant_name', a.applicant_name,
           'applicant_email', a.applicant_email,
           'applicant_status', a.applicant_status,
           'applicant_rating', a.applicant_rating
-          -- Add other applicant fields here without trailing commas
-        ))
-      ) AS candidates
+        )
+      )) AS candidates
     FROM job_structure js
     LEFT JOIN `tal_job_applicants_view` a ON (
       js.step_id = a.pipeline_step_id
       AND a.job_opening_id = js.job_name
     )
     GROUP BY js.job_name, js.step_id, js.step_name, js.step_type, js.step_idx
+  ),
+
+  -- Step 3: Aggregate Parsed Documents per Job
+  -- Here we wrap the sections from your view into a Document object
+  document_cte AS (
+    SELECT
+      parent_id AS job_name,
+      JSON_ARRAYAGG(
+        JSON_OBJECT(
+          'document_id', document_id,
+          'file', file,
+          'file_hash', file_hash,
+          'meta_data', meta_data,
+          'creation', creation,
+          'sections', sections -- This is the nested JSON array from your child view
+        )
+      ) AS parsed_documents
+    FROM `tal_parsed_document_view`
+    WHERE parent_type in ('Job Opening' , 'job_opening')
+    GROUP BY parent_id
   )
 
--- Step 3: Final aggregation into Job level
+-- Step 4: Final aggregation
 SELECT
   j.name,
   j.designation,
@@ -377,8 +441,8 @@ SELECT
   j.posted_on,
   j.closes_on,
   COUNT(DISTINCT s.step_id) AS step_count,
-  -- Sum the counts from the CTE to avoid duplication across joins
-  SUM(s.candidate_count) AS total_candidate_count,
+  COALESCE(SUM(s.candidate_count), 0) AS total_candidate_count,
+  -- Steps Array
   JSON_ARRAYAGG(
     JSON_OBJECT(
       'step_id', s.step_id,
@@ -388,22 +452,15 @@ SELECT
       'candidate_count', s.candidate_count,
       'candidates', s.candidates
     )
-  ) AS steps
+  ) AS steps,
+  -- Array of Parsed Documents (Each containing its own sections)
+  COALESCE(dcte.parsed_documents, JSON_ARRAY()) AS parsed_documents
 FROM `tabJob Opening` j
 LEFT JOIN step_aggregates s ON j.name = s.job_name
+LEFT JOIN document_cte dcte ON j.name = dcte.job_name
 GROUP BY
   j.name, j.designation, j.department, j.employment_type,
   j.location, j.docstatus, j.publish_salary_range,
   j.currency, j.lower_range, j.upper_range,
-  j.posted_on, j.closes_on;
-
-select * from tal_job_view;
-
-
-
-
-
-
-
-
-
+  j.posted_on, j.closes_on,
+  dcte.parsed_documents;

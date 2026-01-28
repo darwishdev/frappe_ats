@@ -1,14 +1,15 @@
 from typing import  Protocol
-from mawhub.app.job.dto.parsed_document_dto import ParsedDocumentDTO
+from mawhub.app.job.dto.parsed_document_dto import ParsedDocumentDTO, ParsedDocumentWithSections
 from mawhub.pkg.baseclasses.app_repo import AppRepo, AppRepoInterface
+from mawhub.sqltypes.table_models import ParsedDocument
 
 
-class ParsedDocumentRepoInterface(AppRepoInterface[ParsedDocumentDTO],Protocol):
+class ParsedDocumentRepoInterface(AppRepoInterface[ParsedDocumentWithSections],Protocol):
     pass
 
 
 
-class ParsedDocumentRepo(AppRepo[ParsedDocumentDTO]):
+class ParsedDocumentRepo(AppRepo[ParsedDocumentWithSections]):
     def __init__(self):
         super().__init__(
             doc_name="Parsed Document",
