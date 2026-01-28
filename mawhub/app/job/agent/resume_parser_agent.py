@@ -94,7 +94,7 @@ class ResumeWorkflow:
                 system_instruction=SYSTEM_INSTRUCTION,
                 temperature=0.0,
                 top_p=0.1,
-                max_output_tokens=1024,
+                max_output_tokens=6000,
                 response_mime_type="application/json",
                 response_schema=ChunkedResume
             )
@@ -262,6 +262,6 @@ class ResumeWorkflow:
                     yield {"event": "error", "data": str(e)}
 
         # 4. Finalize
-        if self.set_cache_fn:
-            self.set_cache_fn(f"{text_hash}_{config_hash}", self.default_model, results)
+        # if self.set_cache_fn:
+        #     self.set_cache_fn(f"{text_hash}_{config_hash}", self.default_model, results)
         yield {"event" : "final" , "data" : cast(ApplicantResumeDTO , results)}

@@ -2,7 +2,7 @@
     <Dialog
         v-model="isOpen"
         :options="{
-            title: `Send Email to ${candidateName.split(' ')[0] || ''}`,
+            title: `Send Email to  || ''}`,
             size: 'xl',
         }"
     >
@@ -184,7 +184,6 @@ const props = defineProps({
         default: false,
     },
     candidate: {
-        type: Record,
         default: "",
     },
     step: {
@@ -192,7 +191,6 @@ const props = defineProps({
         default: "",
     },
     job: {
-        type: Record,
         default: "",
     },
     onSubmit: {
@@ -269,7 +267,7 @@ function togglePromptInput() {
 }
 
 async function generateEmailContent() {
-    if (!props.candidateEmail || !props.candidateName) {
+    if (!props.candidate) {
         toast.warning("Candidate information is required to generate email");
         return;
     }
