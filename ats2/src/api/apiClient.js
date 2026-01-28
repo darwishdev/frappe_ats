@@ -455,6 +455,93 @@ export const JobDetailsAPI = {
     });
     
     return resource.promise;
+  },
+
+  /**
+   * Find job opening details
+   * @param {string} jobName - Job opening name/ID
+   * @returns {Promise<Object>} Job opening details
+   */
+  findJobOpening: function(jobName) {
+    if (!_createResource) {
+      throw new Error('JobDetailsAPI not initialized. Call JobDetailsAPI.init(createResource) first.');
+    }
+    
+    const resource = _createResource({
+      url: 'mawhub.job_opening_find',
+      method: 'GET',
+      params: {
+        job: jobName
+      },
+      auto: true
+    });
+    
+    return resource.promise;
+  },
+
+  /**
+   * Create or update a job opening
+   * @param {Object} jobData - Job opening data
+   * @param {string} jobData.name - Job opening name/ID (for updates)
+   * @param {number} jobData.vacancies - Number of vacancies
+   * @param {string} jobData.job_title - Job title
+   * @param {string} jobData.status - Job status (Open, Closed, On Hold)
+   * @param {string} jobData.description - Job description
+   * @param {string} jobData.department - Department
+   * @param {string} jobData.employment_type - Employment type (Full-time, Part-time, etc.)
+   * @param {string} jobData.location - Location
+   * @param {string} jobData.staffing_plan - Staffing plan
+   * @param {number} jobData.planned_vacancies - Planned vacancies
+   * @param {number} jobData.publish - Publish status (0 or 1)
+   * @param {number} jobData.publish_applications_received - Publish applications received (0 or 1)
+   * @param {string} jobData.currency - Currency code
+   * @param {number} jobData.lower_range - Lower salary range
+   * @param {number} jobData.upper_range - Upper salary range
+   * @param {string} jobData.salary_per - Salary period (Month, Year, Hour)
+   * @param {number} jobData.publish_salary_range - Publish salary range (0 or 1)
+   * @param {string} jobData.custom_pipeline - Custom pipeline name
+   * @returns {Promise<Object>} Created/updated job opening details
+   */
+  createOrUpdateJobOpening: function(jobData) {
+    if (!_createResource) {
+      throw new Error('JobDetailsAPI not initialized. Call JobDetailsAPI.init(createResource) first.');
+    }
+    
+    const resource = _createResource({
+      url: 'mawhub.job_opening_create_update',
+      params: {
+        payload: jobData
+      },
+      auto: true
+    });
+    
+    return resource.promise;
+  },
+
+  /**
+   * Create or update a parsed document
+   * @param {Object} parsedDocData - Parsed document data
+   * @param {string} parsedDocData.file - File path
+   * @param {string} parsedDocData.file_hash - File hash
+   * @param {string} parsedDocData.parent_type - Parent type (Job Opening, Job Application, etc.)
+   * @param {string} parsedDocData.parent_id - Parent ID
+   * @param {Array} parsedDocData.sections - Sections array with title, description, and pullet_points
+   * @returns {Promise<Object>} Created/updated parsed document details
+   */
+  createOrUpdateParsedDocument: function(parsedDocData) {
+    if (!_createResource) {
+      throw new Error('JobDetailsAPI not initialized. Call JobDetailsAPI.init(createResource) first.');
+    }
+    
+    const resource = _createResource({
+      url: 'mawhub.parsed_document_create_update',
+      params: {
+        payload: parsedDocData
+      },
+      auto: true
+    });
+    
+    return resource.promise;
   }
 };
 

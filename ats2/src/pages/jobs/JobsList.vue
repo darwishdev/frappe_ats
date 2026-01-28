@@ -98,10 +98,10 @@
 
                     <div class="jc-actions">
                         <button class="btn btn-default btn-sm" @click="copyJobLink(job)">
-                            📋 Copy Link
+                             Copy Link
                         </button>
-                        <button class="btn btn-default btn-sm" @click="findCandidates(job.name)">
-                            Find Candidates
+                        <button class="btn btn-default !bg-black !text-white !px-5 btn-sm" @click="editJob(job.name)">
+                             Edit Job
                         </button>
                     </div>
                 </div>
@@ -158,6 +158,13 @@
             :is-loading="isParsing"
             @create="handleJobCreate"
         />
+
+        <!-- Edit Job Dialog -->
+        <EditJobDialog
+            v-model="showEditDialog"
+            :job-name="selectedJobName"
+            @saved="handleJobSaved"
+        />
     </div>
 </template>
 
@@ -168,6 +175,7 @@ import { useRouter } from "vue-router";
 import { useToast } from "vue-toastification";
 import { JobDetailsAPI } from "../../api/apiClient.js";
 import JobDescriptionDialog from "../../components/jobs/JobDescriptionDialog.vue";
+import EditJobDialog from "../../components/jobs/EditJobDialog.vue";
 
 const router = useRouter();
 const toast = useToast();
@@ -193,6 +201,10 @@ const uploadProgress = ref(0);
 const isParsing = ref(false);
 const showJobDialog = ref(false);
 const parsedJobData = ref(null);
+
+// Edit job state
+const showEditDialog = ref(false);
+const selectedJobName = ref(null);
 
 // Fetch jobs from API
 const jobsResource = createResource({
@@ -358,10 +370,9 @@ function copyJobLink(job) {
         });
 }
 
-function findCandidates(jobName) {
-    // Navigate to candidates list for this job
-    console.log("Finding candidates for:", jobName);
-    // Example: router.push(`/candidates?job=${jobName}`);
+function editJob(jobName) {
+    selectedJobName.value = jobName;
+    showEditDialog.value = true;
 }
 
 function createNewJob() {
@@ -501,6 +512,12 @@ async function parseJobDescription(fileUrl, fileName) {
 // Handle job creation
 function handleJobCreate(parsedData) {
     // Reload the jobs list after creating a new job
+    reload();
+}
+
+// Handle job saved
+function handleJobSaved(updatedJob) {
+    // Reload the jobs list after updating a job
     reload();
 }
 
