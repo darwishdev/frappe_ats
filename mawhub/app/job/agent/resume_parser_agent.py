@@ -60,11 +60,41 @@ class ResumeWorkflow:
         return hashlib.sha256(clean_text).hexdigest()
 
     def agent_meta_labeler(self, raw_text: str, model_id: str) -> ChunkedResume:
+        SYSTEM_INSTRUCTION = """
+        You are a resume labeling engine.
+
+        Your task is to analyze raw resume text and return a JSON object
+        with the following sections only:
+        - personal
+        - summary
+        - skills
+        - experience
+        - projects
+        - education
+
+        Definitions:
+        - personal: name, job title, contact info, location, links only
+        - summary: profile or professional summary
+        - skills: technical skills, tools, technologies
+        - experience: work experience and internships
+        - projects: personal or professional projects
+        - education: degrees, institutes, courses
+
+        Rules:
+        - Preserve original text exactly
+        - Do not infer or rewrite content
+        - Do not duplicate content across sections
+        - If a section is missing, return it as an empty string
+        """
         prompt = f"Analyze this resume text and split it into sections: 'personal', 'summary', 'skills', 'experience', 'projects', 'education'.\n\nText:\n{raw_text}"
         response = self.client.models.generate_content(
             model=model_id,
             contents=prompt,
             config=types.GenerateContentConfig(
+                system_instruction=SYSTEM_INSTRUCTION,
+                temperature=0.0,
+                top_p=0.1,
+                max_output_tokens=1024,
                 response_mime_type="application/json",
                 response_schema=ChunkedResume
             )
@@ -73,14 +103,69 @@ class ResumeWorkflow:
 
     def extraction_worker(self, section_name: str, text_chunk: str, schema: Type, model_id: str):
         is_plain_text = (schema is str)
+        GLOBAL_EXTRACTOR_INSTRUCTIONS = """
+        You are a resume information extraction engine.
+
+
+        Rules:
+        - Extract information ONLY from the provided text
+        - Do not infer or fabricate missing values
+        - Preserve original wording exactly
+        - If required information is missing, return an empty value
+        - Output MUST strictly follow the provided schema
+        """
+        SECTION_INSTRUCTIONS = {
+            "personal": """
+        Extract personal information.
+
+        Requirements:
+        - Always attempt to extract the candidate's email address
+        - Email is REQUIRED; if not found, return an empty string
+        - Include name, job title, phone, location, and links if present
+        """,
+
+            "experience": """
+        Extract work experience entries.
+
+        Requirements:
+        - Each item must represent a distinct role
+        - Do not merge multiple roles into one
+        - Preserve date ranges exactly as written
+        """,
+
+            "skills": """
+        Extract technical skills only.
+
+        Requirements:
+        - Do not include soft skills
+        - Normalize skill names (no descriptions)
+        """,
+
+            "education": """
+        Extract education history.
+
+        Requirements:
+        - Include degrees, institutions, and dates
+        - Do not infer GPA if not present
+        """
+        }
+        section_rules = SECTION_INSTRUCTIONS.get(section_name, "")
+        system_instruction = (
+        GLOBAL_EXTRACTOR_INSTRUCTIONS.strip()
+        + "\n\n"
+        + section_rules.strip()
+        )
         prompt = f"Extract the {section_name} from the following text.\n\nText:\n{text_chunk}"
 
         config_args = {
             "model": model_id,
             "contents": prompt,
             "config": types.GenerateContentConfig(
+                system_instruction=system_instruction,
                 response_mime_type="text/plain" if is_plain_text else "application/json",
-                response_schema=schema if not is_plain_text else None
+                response_schema=None if is_plain_text else schema,
+                temperature=0.0,
+                top_p=0.1,
             )
         }
 
@@ -122,13 +207,13 @@ class ResumeWorkflow:
         config_hash = hashlib.md5(json.dumps(overrides, sort_keys=True).encode()).hexdigest()
 
         # # 1. Check Cache
-        if self.get_cache_fn:
-            cached = self.get_cache_fn(f"{text_hash}_{config_hash}", self.default_model)
-            if cached:
-                final_res = json.loads(cached) if isinstance(cached, str) else cached
-                yield {"event": "update", "data": final_res}
-                return final_res
-
+        # if self.get_cache_fn:
+        #     cached = self.get_cache_fn(f"{text_hash}_{config_hash}", self.default_model)
+        #     if cached:
+        #         final_res = json.loads(cached) if isinstance(cached, str) else cached
+        #         yield {"event": "update", "data": final_res}
+        #         return final_res
+        #
         # 2. Step 1: Labeling
         labeler_model = get_model("labeler")
         chunked_data = self.agent_meta_labeler(resume_text, labeler_model)
