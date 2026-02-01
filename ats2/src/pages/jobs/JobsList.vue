@@ -156,7 +156,7 @@
             v-model="showJobDialog"
             :parsed-data="parsedJobData"
             :is-loading="isParsing"
-            @create="handleJobCreate"
+            @create="handleJobCreate" @update:model-value="handleJobCreate"
         />
 
         <!-- Edit Job Dialog -->
@@ -468,9 +468,9 @@ async function parseJobDescription(fileUrl, fileName) {
                 console.log('Job parsing step:', progressData);
 
                 if(progressData && progressData.event == 'error') {
-                    toast.error(`Job parsing error: ${progressData.data || 'Unknown error'}`);
+                    toast.error(`Job parsing error: ${progressData.data.message || 'Unknown error'}`);
                     isParsing.value = false;
-                    showJobDialog.value = false;
+                    // showJobDialog.value = false;
                     // parsedJobData.value = null;
                     return
                 };
@@ -501,7 +501,7 @@ async function parseJobDescription(fileUrl, fileName) {
     } catch (error) {
         console.error('Job parsing failed:', error);
         toast.error(`Job parsing failed: ${error.message || 'Unknown error'}`);
-        showJobDialog.value = false;
+        // showJobDialog.value = false;
         parsedJobData.value = null;
     } finally {
         // Set loading state to false when parsing ends
