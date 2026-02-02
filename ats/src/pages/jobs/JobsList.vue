@@ -92,7 +92,22 @@
                             {{ job.title }}
                         </div>
                         <div class="jc-subtitle">
-                            {{ job.department }} · {{ job.work_mode }} · {{ job.location }}
+                            <span v-if="job.customer" class="jc-info-item">
+                                <Building2 :size="14" />
+                                {{ job.customer }}
+                            </span>
+                            <span v-if="job.department" class="jc-info-item">
+                                <Users :size="14" />
+                                {{ job.department }}
+                            </span>
+                            <span v-if="job.work_mode" class="jc-info-item">
+                                <Briefcase :size="14" />
+                                {{ job.work_mode }}
+                            </span>
+                            <span v-if="job.location" class="jc-info-item">
+                                <MapPin :size="14" />
+                                {{ job.location }}
+                            </span>
                         </div>
                     </div>
 
@@ -176,6 +191,7 @@ import { useToast } from "vue-toastification";
 import { JobDetailsAPI } from "../../api/apiClient.js";
 import JobDescriptionDialog from "../../components/jobs/JobDescriptionDialog.vue";
 import EditJobDialog from "../../components/jobs/EditJobDialog.vue";
+import { Building2, Users, Briefcase, MapPin } from "lucide-vue-next";
 
 const router = useRouter();
 const toast = useToast();
@@ -248,8 +264,9 @@ function transformJobData(rawJobs) {
         return {
             name: job.name,
             title: job.designation || "Untitled Position",
-            department: job.department || "Not Specified",
-            location: job.location || "Not Specified",
+            department: job.department || "General",
+            customer : job.customer,
+            location: job.location,
             work_mode: job.employment_type || "Full-time",
             is_published: isPublished,
             is_draft: isDraft,
@@ -591,6 +608,22 @@ defineExpose({ reload });
     color: #6b7280;
     margin-top: 4px;
     font-size: 13px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+}
+
+.jc-info-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.jc-info-item svg {
+    flex-shrink: 0;
+    opacity: 0.7;
+    stroke-width: 2;
 }
 
 .jc-actions {

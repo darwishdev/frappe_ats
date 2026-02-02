@@ -58,15 +58,21 @@
             </div>
 
             <!-- Pipeline tabs -->
-            <div class="jd-pipeline">
-                <div
-                    v-for="step in job?.pipeline_steps"
-                    :key="step.key"
-                    :class="['jd-step', { active: activeStep === step.key }]"
-                    @click="changeStep(step.key)"
-                >
-                    {{ step.label }} <span class="count">{{ getStepCount(step.key) }}</span>
+            <div class="jd-pipeline-container">
+                <div class="jd-pipeline">
+                    <div
+                        v-for="step in job?.pipeline_steps"
+                        :key="step.key"
+                        :class="['jd-step', { active: activeStep === step.key }]"
+                        @click="changeStep(step.key)"
+                    >
+                        {{ step.label }} <span class="count">{{ getStepCount(step.key) }}</span>
+                    </div>
                 </div>
+                <Button size="sm" theme="gray" @click="editPipeline">
+                    <Settings :size="16" class="button-icon" />
+                    Edit Pipeline
+                </Button>
             </div>
 
             <!-- Body -->
@@ -252,6 +258,12 @@
                 :on-submit="handleAssignInterview"
             />
 
+            <EditJobDialog
+                v-model="showEditDialog"
+                :job-name="jobId"
+                @saved="reloadJobDetails"
+            />
+
             <BulkMoveDialog
                 v-model="showBulkMoveDialog"
                 :step-options="stepOptions"
@@ -303,6 +315,7 @@ import {
     ArrowRightLeft,
     Trash2,
     Edit,
+    Settings,
 } from "lucide-vue-next";
 import AddCandidateDialog from "../../components/jobs/AddCandidateDialog.vue";
 import AssignInterviewDialog from "../../components/jobs/AssignInterviewDialog.vue";
@@ -314,11 +327,13 @@ import ApplicantTimeline from "../../components/jobs/ApplicantTimeline.vue";
 import ApplicantCommunication from "../../components/jobs/ApplicantCommunication.vue";
 import ApplicantReview from "../../components/jobs/ApplicantReview.vue";
 import ApplicantComments from "../../components/jobs/ApplicantComments.vue";
+import EditJobDialog from "../../components/jobs/EditJobDialog.vue";
 
 const toast = useToast();
 
 const route = useRoute();
 const router = useRouter();
+const showEditDialog = ref(false);
 
 JobDetailsAPI.init(createResource);
 // Get job ID from route
@@ -672,7 +687,13 @@ function formatDate(dateStr) {
 }
 
 function editJob() {
-    window.open(`http://localhost:8001/desk/job-opening/${job.value?.name}`, "_blank");
+    showEditDialog.value = true;
+}
+
+function editPipeline() {
+    // if (!job.value?.name) return;
+    // window.open(`http://localhost:8001/desk/job-opening/${job.value.name}`, "_blank");
+    // toast.info("Opening job pipeline in Frappe Desk");
 }
 
 // Handler functions for dialog components
@@ -1177,14 +1198,22 @@ watch(
     margin-top: 6px;
 }
 
+.jd-pipeline-container {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border-color, #eee);
+    margin-bottom: 12px;
+}
+
 .jd-pipeline {
     display: flex;
     gap: 10px;
     align-items: center;
     overflow: auto;
-    padding: 10px 0;
-    border-bottom: 1px solid var(--border-color, #eee);
-    margin-bottom: 12px;
+    flex: 1;
 }
 
 .jd-step {
