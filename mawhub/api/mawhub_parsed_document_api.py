@@ -17,7 +17,12 @@ def parsed_document_create_update(payload:ParsedDocumentDTO):
     return app_container.job_usecase.parsed_document.parsed_document_create_update(payload)
 
 @frappe.whitelist(methods=["POST", "GET"], allow_guest=True)
-def parsed_document_parse(payload: ParsedDocumentParseRequest):
+def parsed_document_parse(path: str,parent_type: str, parent_id: str):
+    payload : ParsedDocumentParseRequest = {
+        "path" : path,
+        "parent_type" : parent_type,
+        "parent_id" : parent_id
+    }
     def final_event_callback(final_event: dict):
         try:
             # Initialize the LLM agent
