@@ -14,7 +14,7 @@ def get_app_container() -> AppContainer:
         if not gemini_key:
             # Better to log or raise a specific error than frappe.throw
             # if you want to avoid UI-style breaks in CLI
-            raise ValueError(f"Gemini API Key is missing for  in coomin_site_config.json")
+            raise ValueError(f"Gemini API Key is missing for  in common_site_config.json")
         _app_container = AppContainer(gemini_api_key=str(gemini_key))
 
     return _app_container

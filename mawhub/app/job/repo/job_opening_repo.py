@@ -21,6 +21,7 @@ class JobOpeningRepo(AppRepo[JobOpening]):
                 "description",
                 "department",
                 "employment_type",
+                "custom_customer",
                 "location",
                 "staffing_plan",
                 "planned_vacancies",

@@ -58,6 +58,7 @@ class JobView(TypedDict):
     step_count: int
     total_candidate_count: float
     steps: NotRequired[str]
+    custom_customer: NotRequired[str]
     parsed_documents: str
 
 class ParsedDocumentView(TypedDict):

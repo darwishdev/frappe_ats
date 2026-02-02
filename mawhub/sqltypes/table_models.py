@@ -51,6 +51,7 @@ class JobOpening(TypedDict):
     modified: NotRequired[datetime]
     modified_by: NotRequired[str]
     owner: NotRequired[str]
+    customer: NotRequired[str]
     docstatus: NotRequired[int]
     idx: NotRequired[int]
     job_opening_template: NotRequired[str]

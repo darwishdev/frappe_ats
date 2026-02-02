@@ -364,6 +364,18 @@ GROUP BY
     a.applicant_docstatus,
     a.applicant_created_at,
     a.applicant_modified_at;
+
+
+
+
+
+
+
+
+
+
+
+
 CREATE OR REPLACE VIEW `tal_job_view` AS
 WITH
   -- Step 1: Base Job & Pipeline Structure
@@ -371,6 +383,7 @@ WITH
     SELECT
       j.name AS job_name,
       j.custom_pipeline,
+      j.custom_customer,
       ps.name AS step_id,
       ps.step_name,
       ps.step_type,
@@ -431,6 +444,7 @@ SELECT
   j.name,
   j.designation,
   j.department,
+  j.custom_customer,
   j.employment_type,
   j.location,
   j.docstatus,

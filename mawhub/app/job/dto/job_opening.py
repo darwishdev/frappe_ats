@@ -1,6 +1,6 @@
 from datetime import date, datetime
 import json
-from typing import List, Mapping, TypeVar, TypedDict, cast
+from typing import List, Mapping, NotRequired, TypeVar, TypedDict, cast
 from frappe import Any, Optional
 from frappe.utils import secho
 
@@ -108,6 +108,7 @@ class JobOpeningDTO(TypedDict):
     parsed_documents:List
     employment_type: str
     location: str
+    customer: str
 
     docstatus: int
     publish: int
@@ -169,9 +170,8 @@ def job_opening_sql_to_dto(job: JobView) -> JobOpeningDTO:
         "parsed_documents": json.loads(parsed_documents),
         "employment_type": get(job, "employment_type", ""),
         "location": get(job, "location", ""),
-
+        "customer": get(job, "custom_customer", ""),
         "docstatus": get(job, "docstatus", 1),
-
         "publish": get(job, "publish", True),
         "publish_salary_range": get(job, "publish_salary_range", False),
         "publish_applications_received": get(job, "publish_applications_received", False),
@@ -210,3 +210,16 @@ def job_opening_list_sql_to_dto(
         result.append(job_opening_sql_to_dto(job))
 
     return result
+class JobOpeningCreateRequest(TypedDict):
+    job_title: str
+    designation: NotRequired[str]
+    company: NotRequired[str]
+    location: NotRequired[str]
+    planned_vacancies: int
+    vacancies: int
+    lower_range: float
+    upper_range: float
+    publish: int
+    publish_salary_range: int
+    publish_applications_received: int
+    customer: int
