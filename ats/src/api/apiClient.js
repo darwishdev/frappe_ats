@@ -347,10 +347,12 @@ export const JobDetailsAPI = {
             // Build query parameters
             const params = new URLSearchParams({
                 ...jobData,
+                parent_type : 'job_opening',
+                parent_id : 'job_opening'
             });
 
             // Construct the URL
-            const url = `/api/method/mawhub.job_opening_parse?${params.toString()}`;
+            const url = `/api/method/mawhub.parsed_document_parse?${params.toString()}`;
 
             // Create EventSource for SSE
             const eventSource = new EventSource(url, { withCredentials: true });
@@ -548,7 +550,7 @@ export const JobDetailsAPI = {
         }
 
         const resource = _createResource({
-            url: "mawhub.parsed_document_parse",
+            url: "mawhub.parsed_document_create_update",
             params: {
                 payload: parsedDocData,
             },
