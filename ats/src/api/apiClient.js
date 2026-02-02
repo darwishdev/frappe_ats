@@ -548,7 +548,7 @@ export const JobDetailsAPI = {
         }
 
         const resource = _createResource({
-            url: "mawhub.parsed_document_create_update",
+            url: "mawhub.parsed_document_parse",
             params: {
                 payload: parsedDocData,
             },

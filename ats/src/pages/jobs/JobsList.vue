@@ -475,7 +475,6 @@ async function parseJobDescription(fileUrl, fileName) {
                     return
                 };
                 if(!progressData || !progressData.data) return;
-                if(!progressData || !progressData.data) return;
                 isParsing.value = false;
                 if(progressData.event == 'final'){
                     toast.success('Job description parsed successfully!');
@@ -483,18 +482,18 @@ async function parseJobDescription(fileUrl, fileName) {
                     return;
                 }
                 // Update the parsed data in real-time
-                if(progressData.data.titles){
-                    progressData.data.titles.forEach(title => {
+                if(progressData.event == 'analyzed' && progressData.data.parsed_sections){
+                    Object.entries(progressData.data.parsed_sections).forEach(([title, desc]) => {
                         if(!parsedJobData.value[title]){
                             parsedJobData.value[title] = {
-                                description: '',
+                                description: desc,
                                 bullet_points: []
                             };
                         }
                     });
                     return
                 }
-                parsedJobData.value[Object.keys(progressData.data)[0]] = progressData.data[Object.keys(progressData.data)[0]];
+                parsedJobData.value[progressData.data.title] = progressData.data;
                 console.log('parsedJobData:', parsedJobData.value);
             }
         );

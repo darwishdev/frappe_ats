@@ -67,6 +67,11 @@
                                     </div>
                                 </div>
                             </div>
+
+                            <!-- Footer -->
+                            <div v-if="section.footer" class="jdd-details-footer">
+                                {{ section.footer }}
+                            </div>
                         </div>
 
                         <!-- Regular section rendering for other keys -->
@@ -88,6 +93,11 @@
                                         {{ point }}
                                     </li>
                                 </ul>
+                            </div>
+
+                            <!-- Footer -->
+                            <div v-if="section.footer" class="jdd-section-footer">
+                                {{ section.footer }}
                             </div>
                         </div>
                     </div>
@@ -381,6 +391,33 @@ const formatSalaryRange = (lower, upper, currency = 'SAR') => {
 
 .jdd-bullet-points li:last-child {
     margin-bottom: 0;
+}
+
+.jdd-section-footer {
+    color: #4b5563;
+    font-size: 13px;
+    line-height: 1.6;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid #e5e7eb;
+    font-style: italic;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.jdd-details-footer {
+    position: relative;
+    color: #475569;
+    font-size: 13px;
+    line-height: 1.6;
+    margin-top: 16px;
+    padding: 12px 16px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.7);
+    border: 1px solid #e2e8f0;
+    font-style: italic;
+    white-space: pre-wrap;
+    word-break: break-word;
 }
 
 .jdd-empty {
