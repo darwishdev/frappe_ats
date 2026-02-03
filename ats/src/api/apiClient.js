@@ -559,6 +559,71 @@ export const JobDetailsAPI = {
 
         return resource.promise;
     },
+
+    /**
+     * Fetch a pipeline document
+     * @param {string} pipelineName - Pipeline name
+     * @returns {Promise<Object>} Pipeline document
+     */
+    getPipeline: async function (pipelineName) {
+        try {
+            const response = await fetch(
+                `/api/method/frappe.client.get?doctype=Job Pipeline&name=${encodeURIComponent(pipelineName)}`,
+                {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-Frappe-CSRF-Token": window.frappe?.csrf_token || "",
+                    },
+                }
+            );
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.exception || errorData.message || "Failed to fetch pipeline");
+            }
+
+            const result = await response.json();
+            return result.message;
+        } catch (error) {
+            console.error("Pipeline fetch error:", error);
+            throw error;
+        }
+    },
+
+    /**
+     * Save or update a job pipeline
+     * @param {Object} pipelineDoc - Pipeline document with all fields
+     * @returns {Promise<Object>} Saved pipeline document
+     */
+    savePipeline: async function (pipelineDoc) {
+        try {
+            // Frappe expects form-encoded data with doc as JSON string
+            const formData = new URLSearchParams();
+            formData.append("doc", JSON.stringify(pipelineDoc));
+            formData.append("action", "Save");
+
+            const response = await fetch("/api/method/frappe.desk.form.save.savedocs", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                    "X-Frappe-CSRF-Token": window.frappe?.csrf_token || "",
+                },
+                body: formData.toString(),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.exception || errorData.message || "Failed to save pipeline");
+            }
+
+            const result = await response.json();
+            return result.docs?.[0] || result.message;
+        } catch (error) {
+            console.error("Pipeline save error:", error);
+            throw error;
+        }
+    },
 };
 
 // Keep window.JobDetailsAPI for backward compatibility

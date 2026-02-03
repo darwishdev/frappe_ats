@@ -291,6 +291,7 @@
             <EditPipelineDialog
                 v-model="showEditPipelineDialog"
                 :job-data="job"
+                :pipeline-data="pipelineData"
                 :on-submit="handleEditPipeline"
             />
         </div>
@@ -357,6 +358,7 @@ const jobDetailsResource = createResource({
         if (data) {
             const transformedData = transformJobData(data);
             job.value = transformedData;
+            pipelineData.value = transformedData.pipelineData;
             candidates.value = transformedData.candidates;
             activeStep.value = "all";
             activeCandidateId.value = candidates.value[0]?.id || null;
@@ -375,6 +377,7 @@ const jobDetailsResource = createResource({
 // State
 const job = ref(null);
 const candidates = ref([]);
+const pipelineData = ref(null);
 const activeStep = ref("all");
 const activeCandidateId = ref(null);
 const selectedCandidates = ref(new Set());
@@ -613,6 +616,24 @@ function transformJobData(rawJob) {
 
     const pipeline_steps = [{ key: "all", label: "All" }, ...steps];
 
+    // Store pipeline data for editing
+    const pipelineInfo = {
+        name: rawJob.pipeline || "Main",
+        description: rawJob.pipeline_description || "",
+        is_primary: rawJob.pipeline_is_primary || 0,
+        owner: rawJob.owner || "Administrator",
+        creation: rawJob.creation,
+        modified: rawJob.modified,
+        modified_by: rawJob.modified_by || "Administrator",
+        steps: Array.from(stepsMap.values()).map((step) => ({
+            name: step.id || step.key,
+            step_name: step.label,
+            step_type: step.type || "Other",
+            step_code: step.id || step.key,
+            idx: step.idx,
+        })),
+    };
+
     return {
         name: rawJob.name,
         title: rawJob.designation || "Untitled Position",
@@ -620,8 +641,10 @@ function transformJobData(rawJob) {
         location: rawJob.location || "Not Specified",
         work_mode: rawJob.employment_type || "Full-time",
         pipeline_steps: pipeline_steps,
+        pipeline_name: rawJob.pipeline_name || rawJob.pipeline || "Main",
         steps: steps,
         candidates: allCandidates,
+        pipelineData: pipelineInfo,
     };
 }
 
@@ -1148,27 +1171,29 @@ async function handleSendEmail(formData) {
     }
 }
 
-async function handleEditPipeline(formData) {
-    if (!formData.name || !formData.steps || formData.steps.length === 0) {
+async function handleEditPipeline(pipelineDoc) {
+    if (!pipelineDoc.name || !pipelineDoc.steps || pipelineDoc.steps.length === 0) {
         toast.warning("Please provide pipeline name and at least one step");
         throw new Error("Required fields missing");
     }
 
     try {
-        // TODO: Call API to update pipeline
-        // await JobDetailsAPI.updatePipeline({
-        //     job_opening: job.value.name,
-        //     name: formData.name,
-        //     description: formData.description,
-        //     steps: formData.steps
-        // });
+        // Call API to save pipeline
+        const result = await JobDetailsAPI.savePipeline(pipelineDoc);
         
         toast.success("Pipeline updated successfully");
-        console.log("Pipeline update data:", formData);
+        console.log("Pipeline saved:", result);
+        
+        // Update local pipeline data
+        pipelineData.value = {
+            ...pipelineDoc,
+            steps: pipelineDoc.steps,
+        };
         
         // Reload job details to reflect changes
         reloadJobDetails();
     } catch (error) {
+        console.error("Pipeline update error:", error);
         toast.error(error.message || "Failed to update pipeline");
         throw error;
     }

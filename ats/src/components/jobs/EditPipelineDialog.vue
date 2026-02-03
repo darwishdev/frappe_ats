@@ -43,6 +43,17 @@
                             <div class="step-fields">
                                 <div class="step-field">
                                     <label class="text-xs font-medium mb-1 block"
+                                        >Step Code</label
+                                    >
+                                    <TextInput
+                                        v-model="step.step_code"
+                                        type="text"
+                                        size="sm"
+                                        placeholder="e.g., SC"
+                                    />
+                                </div>
+                                <div class="step-field">
+                                    <label class="text-xs font-medium mb-1 block"
                                         >Step Name</label
                                     >
                                     <TextInput
@@ -80,10 +91,12 @@
         </template>
 
         <template #actions>
-            <Button variant="solid" @click="handleSubmit" :loading="isSubmitting">
-                Save Changes
-            </Button>
-            <Button variant="outline" @click="show = false">Cancel</Button>
+            <div class="flex w-full justify-between items-center">
+                <Button variant="outline" @click="show = false">Cancel</Button>
+                <Button variant="solid" @click="handleSubmit" :loading="isSubmitting">
+                    Save Changes
+                </Button>
+            </div>
         </template>
     </Dialog>
 </template>
@@ -92,6 +105,7 @@
 import { ref, watch, computed } from "vue";
 import { Dialog, TextInput, Select, Button } from "frappe-ui";
 import { Plus, Trash2 } from "lucide-vue-next";
+import { JobDetailsAPI } from "../../api/apiClient.js";
 
 const props = defineProps({
     modelValue: {
@@ -99,6 +113,10 @@ const props = defineProps({
         required: true,
     },
     jobData: {
+        type: Object,
+        default: null,
+    },
+    pipelineData: {
         type: Object,
         default: null,
     },
@@ -146,30 +164,54 @@ watch(
 function initializeFormData() {
     if (!props.jobData) return;
 
+    // Use pipelineData if available, otherwise use jobData
+    const pipeline = props.pipelineData || {};
+    
     formData.value = {
-        name: props.jobData.title || "",
-        description: props.jobData.description || "",
+        name: pipeline.name || props.jobData.pipeline_name || props.jobData.title || "",
+        description: pipeline.description || "",
         steps:
-            props.jobData.steps && props.jobData.steps.length > 0
-                ? props.jobData.steps.map((step) => ({
+            pipeline.steps && pipeline.steps.length > 0
+                ? pipeline.steps.map((step) => ({
+                      name: step.name || step.step_code || "",
+                      step_name: step.step_name || "",
+                      step_type: step.step_type || "Other",
+                      step_code: step.step_code || step.name || "",
+                      idx: step.idx,
+                      doctype: "Pipeline Step",
+                  }))
+                : props.jobData.steps && props.jobData.steps.length > 0
+                ? props.jobData.steps.map((step, index) => ({
+                      name: step.id || step.step_id || "",
                       step_name: step.label || step.step_name || "",
                       step_type: step.type || step.step_type || "Other",
-                      step_id: step.id || step.step_id,
-                      idx: step.idx,
+                      step_code: step.id || step.step_id || "",
+                      idx: step.idx || index + 1,
+                      doctype: "Pipeline Step",
                   }))
                 : [
                       {
+                          name: "SC",
                           step_name: "Initial Screening",
                           step_type: "Screening",
+                          step_code: "SC",
+                          idx: 1,
+                          doctype: "Pipeline Step",
                       },
                   ],
     };
 }
 
 function addStep() {
+    const newIdx = formData.value.steps.length + 1;
     formData.value.steps.push({
+        name: `new-pipeline-step-${Date.now()}`,
         step_name: "",
         step_type: "Other",
+        step_code: "",
+        idx: newIdx,
+        doctype: "Pipeline Step",
+        docstatus: 0,
     });
 }
 
@@ -184,16 +226,70 @@ async function handleSubmit() {
     if (!formData.value.name.trim()) {
         return;
     }
+    console.log(formData.value);
+    
 
-    // Check if all steps have names
-    const hasEmptySteps = formData.value.steps.some((step) => !step.step_name.trim());
+    // Check if all steps have names and codes
+    const hasEmptySteps = formData.value.steps.some(
+        (step) => !step.step_name.trim() || !step.step_code
+    );
     if (hasEmptySteps) {
         return;
     }
 
     try {
         isSubmitting.value = true;
-        await props.onSubmit(formData.value);
+        
+        // Fetch the latest pipeline document to get current timestamps
+        let latestPipeline = null;
+        try {
+            latestPipeline = await JobDetailsAPI.getPipeline(formData.value.name);
+        } catch (error) {
+            console.log("Pipeline not found, creating new one");
+        }
+        
+        // Construct the Frappe document payload
+        const pipeline = latestPipeline || props.pipelineData || {};
+        const now = new Date().toISOString().replace('T', ' ').split('.')[0];
+        
+        const pipelineDoc = {
+            name: formData.value.name,
+            doctype: "Job Pipeline",
+            description: formData.value.description || "",
+            is_primary: pipeline.is_primary || 0,
+            docstatus: 0,
+            idx: 0,
+            owner: pipeline.owner || "Administrator",
+            creation: pipeline.creation || now,
+            modified: pipeline.modified || now, // Use actual modified timestamp from DB
+            modified_by: pipeline.modified_by || "Administrator",
+            steps: formData.value.steps.map((step, index) => {
+                // Find existing step to preserve its timestamps
+                const existingStep = latestPipeline?.steps?.find(s => 
+                    s.name === step.name || s.step_code === step.step_code
+                );
+                
+                return {
+                    name: step.name || step.step_code,
+                    doctype: "Pipeline Step",
+                    step_code: step.step_code || step.name,
+                    step_name: step.step_name,
+                    step_type: step.step_type.toLowerCase(),
+                    idx: index + 1,
+                    docstatus: 0,
+                    parent: formData.value.name,
+                    parentfield: "steps",
+                    parenttype: "Job Pipeline",
+                    owner: existingStep?.owner || "Administrator",
+                    creation: existingStep?.creation || now,
+                    modified: existingStep?.modified || now,
+                    modified_by: existingStep?.modified_by || "Administrator",
+                };
+            }),
+        };
+
+        // Call the API through the onSubmit prop
+        await props.onSubmit(pipelineDoc);
         show.value = false;
     } catch (error) {
         console.error("Error submitting pipeline:", error);
@@ -255,7 +351,7 @@ async function handleSubmit() {
 
 .step-fields {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 0.8fr 1.2fr 1fr;
     gap: 12px;
     flex: 1;
 }
