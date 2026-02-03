@@ -360,7 +360,15 @@ const jobDetailsResource = createResource({
             job.value = transformedData;
             pipelineData.value = transformedData.pipelineData;
             candidates.value = transformedData.candidates;
-            activeStep.value = "all";
+            
+            // Initialize activeStep from query params if available
+            const stepFromQuery = route.query.step;
+            if (stepFromQuery) {
+                activeStep.value = stepFromQuery;
+            } else {
+                activeStep.value = "all";
+            }
+            
             activeCandidateId.value = candidates.value[0]?.id || null;
 
             if (activeCandidate.value) {
@@ -1215,6 +1223,16 @@ watch(
                 params: { job: newJobId },
             });
             jobDetailsResource.fetch();
+        }
+    },
+);
+
+// Watch for step query param changes
+watch(
+    () => route.query.step,
+    (newStep) => {
+        if (newStep && job.value) {
+            changeStep(newStep);
         }
     },
 );

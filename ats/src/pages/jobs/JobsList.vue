@@ -128,6 +128,7 @@
                         :key="`${job.name}-${stage.id}`"
                         class="jc-stage"
                         :title="stage.label"
+                        @click="openJobWithStep(job.name, stage.id)"
                     >
                         <div class="jc-stage-count">{{ formatCount(stage.count) }}</div>
                         <div class="jc-stage-label">{{ stage.label }}</div>
@@ -374,9 +375,18 @@ function openJob(jobName) {
     router.push({ name: "JobDetails", params: { jobId: jobName } });
 }
 
+function openJobWithStep(jobName, stepId) {
+    // Navigate to job details page with step query param
+    router.push({ 
+        name: "JobDetails", 
+        params: { jobId: jobName },
+        query: { step: stepId }
+    });
+}
+
 function copyJobLink(job) {
-    // const jobLink = `${window.location.origin}/jobs/mawhub/${jobName}`;
-    const jobLink = `http://localhost:8001/${job.route}`;
+    const jobLink = `${window.location.origin}/ats2/jobs/${job.name}`;
+    // const jobLink = `http://localhost:8001/${job.route}`;
     navigator.clipboard
         .writeText(jobLink)
         .then(() => {
@@ -646,6 +656,14 @@ defineExpose({ reload });
     text-align: center;
     border-right: 1px solid #f0f0f0;
     padding-right: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border-radius: 6px;
+    padding: 6px 10px 6px 0;
+}
+
+.jc-stage:hover {
+    background: #f9fafb;
 }
 
 .jc-stage:last-child {
