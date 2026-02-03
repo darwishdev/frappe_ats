@@ -10,7 +10,12 @@ from mawhub.pkg.pdfconvertor.pdfconvertor import extract_text_from_pdf
 
 class ParsedDocumentUsecaseInterface(Protocol):
 	def parsed_document_create_update(self, payload: ParsedDocumentDTO)->Document: ...
-	def parse_document(self, payload: ParsedDocumentParseRequest,on_final_event: Optional[Callable[[dict], None]] = None)->Iterator[str]: ...
+	def parse_document(
+            self,
+            payload: ParsedDocumentParseRequest,
+            save_parent_callback: Optional[Callable[[dict], str]] = None,
+            on_final_event: Optional[Callable[[dict], None]] = None
+    )->Iterator[str]: ...
 	def parsed_document_bulk_create(
         self,
         payload:List[ParsedDocumentDTO],
@@ -45,6 +50,7 @@ class ParsedDocumentUsecase:
     def parse_document(
         self,
         payload: ParsedDocumentParseRequest,
+        save_parent_callback: Optional[Callable[[dict], str]] = None,
         on_final_event: Optional[Callable[[dict], None]] = None
     ) -> Iterator[str]:
         try:
@@ -59,17 +65,20 @@ class ParsedDocumentUsecase:
                 # 3. Yield in SSE format: "data: <payload>\n\n"
                 yield f"data: {json_data}\n\n"
                 if event["event"] == "final":
+
+                    created_parent_id = payload.get("parent_id" , "")
+                    if save_parent_callback:
+                        created_parent_id = save_parent_callback(cast(dict,event["data"]))
                     clean_text = document_text.strip().encode('utf-8')
                     hash_text =  hashlib.sha256(clean_text).hexdigest()
                     dto = parsed_document_agent_to_dto(
                         event["data"],
                         path,
                         hash_text,
-                        payload.get("parent_id" , ""),
+                        created_parent_id,
                         payload.get("parent_type" , ""),
                     )
                     self.parsed_document_create_update(dto)
-                    # Run the callback if provided
                     if on_final_event:
                         on_final_event(cast(dict,event["data"]))
 

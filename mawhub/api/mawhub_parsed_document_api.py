@@ -1,16 +1,10 @@
-from typing import Iterator
-from werkzeug.wrappers import Response
-from mawhub.bootstrap import app_container
-from frappe import _
-import frappe
-from mawhub.app.job.dto.parsed_document_dto import ParsedDocumentDTO, ParsedDocumentParseRequest
-from mawhub.pkg.pdfconvertor.pdfconvertor import extract_text_from_pdf
-from mawhub.pkg.realtime.sse_utils import sse_event
-import json
-import frappe
-from werkzeug.wrappers import Response
 
 from mawhub.sqltypes.table_models import JobOpening
+import frappe
+from werkzeug.wrappers import Response
+from mawhub.app.job.dto.parsed_document_dto import ParsedDocumentDTO, ParsedDocumentParseRequest
+from mawhub.bootstrap import app_container
+
 
 @frappe.whitelist(methods=["PUT" , "POST"], allow_guest=True)
 def parsed_document_create_update(payload:ParsedDocumentDTO):
@@ -23,7 +17,7 @@ def parsed_document_parse(path: str,parent_type: str, parent_id: str):
         "parent_type" : parent_type,
         "parent_id" : parent_id
     }
-    def final_event_callback(final_event: dict):
+    def final_event_callback(final_event: dict)->str:
         try:
             # Initialize the LLM agent
 
@@ -46,9 +40,10 @@ def parsed_document_parse(path: str,parent_type: str, parent_id: str):
             job_create_req = app_container.job_usecase.job_opening.job_opening_create_update(job_opening_create_params)
             print(f"final event is hapening here")
             print(f"final event is hapening here")
-            print(f"final event is hapening here {job_create_req}")
+            print(f"final event is hapening here {str(job_create_req.name)}")
             print(f"final event is hapening here")
             print(f"final event is hapening here")
+            return str(job_create_req.name)
 
             # Convert schema to TypedDict event
             # job_event = job_opening_schema_to_event(job_schema)
@@ -57,9 +52,9 @@ def parsed_document_parse(path: str,parent_type: str, parent_id: str):
             # app_container.job_usecase.job_opening_create_update(job_event)
 
         except Exception as e:
-            # Optionally log the error
             frappe.log_error(f"JobOpening creation failed: {str(e)}", "parsed_document_parse")
-    response = Response(app_container.job_usecase.parsed_document.parse_document(payload,on_final_event=final_event_callback), mimetype="text/event-stream")
+            raise Exception(f"Failed to save the job {str(e)}")
+    response = Response(app_container.job_usecase.parsed_document.parse_document(payload,save_parent_callback=final_event_callback), mimetype="text/event-stream")
     response.headers.update({
         "Cache-Control": "no-cache",
         "X-Accel-Buffering": "no",  # Disables Nginx buffering for instant delivery
