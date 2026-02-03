@@ -445,6 +445,7 @@ SELECT
   j.designation,
   j.department,
   j.custom_customer,
+  j.custom_pipeline,
   j.employment_type,
   j.location,
   j.docstatus,
