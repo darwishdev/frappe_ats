@@ -105,6 +105,7 @@ class JobOpeningDTO(TypedDict):
     name: str
     designation: str
     department: Optional[str]
+    pipeline: Optional[str]
     parsed_documents:List
     employment_type: str
     location: str
@@ -171,6 +172,7 @@ def job_opening_sql_to_dto(job: JobView) -> JobOpeningDTO:
         "employment_type": get(job, "employment_type", ""),
         "location": get(job, "location", ""),
         "customer": get(job, "custom_customer", ""),
+        "pipeline": get(job, "custom_pipeline", ""),
         "docstatus": get(job, "docstatus", 1),
         "publish": get(job, "publish", True),
         "publish_salary_range": get(job, "publish_salary_range", False),
