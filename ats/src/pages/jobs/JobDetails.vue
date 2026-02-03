@@ -287,6 +287,12 @@
                 :step="activeStep"
                 :on-submit="handleSendEmail"
             />
+
+            <EditPipelineDialog
+                v-model="showEditPipelineDialog"
+                :job-data="job"
+                :on-submit="handleEditPipeline"
+            />
         </div>
     </div>
 </template>
@@ -328,6 +334,7 @@ import ApplicantCommunication from "../../components/jobs/ApplicantCommunication
 import ApplicantReview from "../../components/jobs/ApplicantReview.vue";
 import ApplicantComments from "../../components/jobs/ApplicantComments.vue";
 import EditJobDialog from "../../components/jobs/EditJobDialog.vue";
+import EditPipelineDialog from "../../components/jobs/EditPipelineDialog.vue";
 
 const toast = useToast();
 
@@ -380,6 +387,7 @@ const showAssignInterviewDialog = ref(false);
 const showBulkMoveDialog = ref(false);
 const showProfileDialog = ref(false);
 const showSendEmailDialog = ref(false);
+const showEditPipelineDialog = ref(false);
 const parsingProfile = ref(null);
 
 // Tab state
@@ -691,9 +699,8 @@ function editJob() {
 }
 
 function editPipeline() {
-    // if (!job.value?.name) return;
-    // window.open(`http://localhost:8001/desk/job-opening/${job.value.name}`, "_blank");
-    // toast.info("Opening job pipeline in Frappe Desk");
+    if (!job.value) return;
+    showEditPipelineDialog.value = true;
 }
 
 // Handler functions for dialog components
@@ -1137,6 +1144,32 @@ async function handleSendEmail(formData) {
         toast.success(`Email sent successfully to ${formData.to}`);
     } catch (error) {
         toast.error(error.message || "Failed to send email");
+        throw error;
+    }
+}
+
+async function handleEditPipeline(formData) {
+    if (!formData.name || !formData.steps || formData.steps.length === 0) {
+        toast.warning("Please provide pipeline name and at least one step");
+        throw new Error("Required fields missing");
+    }
+
+    try {
+        // TODO: Call API to update pipeline
+        // await JobDetailsAPI.updatePipeline({
+        //     job_opening: job.value.name,
+        //     name: formData.name,
+        //     description: formData.description,
+        //     steps: formData.steps
+        // });
+        
+        toast.success("Pipeline updated successfully");
+        console.log("Pipeline update data:", formData);
+        
+        // Reload job details to reflect changes
+        reloadJobDetails();
+    } catch (error) {
+        toast.error(error.message || "Failed to update pipeline");
         throw error;
     }
 }

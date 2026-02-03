@@ -19,6 +19,7 @@ declare module 'vue' {
     AssignInterviewDialog: typeof import('./src/components/jobs/AssignInterviewDialog.vue')['default']
     BulkMoveDialog: typeof import('./src/components/jobs/BulkMoveDialog.vue')['default']
     EditJobDialog: typeof import('./src/components/jobs/EditJobDialog.vue')['default']
+    EditPipelineDialog: typeof import('./src/components/jobs/EditPipelineDialog.vue')['default']
     JobDescriptionDialog: typeof import('./src/components/jobs/JobDescriptionDialog.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
