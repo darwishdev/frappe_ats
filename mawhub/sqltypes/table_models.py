@@ -7,7 +7,7 @@ from typing import TypedDict, NotRequired
 from datetime import date, datetime
 
 class ParsedDocumentSection(TypedDict):
-    name: str
+    name: NotRequired[str]
     creation: NotRequired[datetime]
     modified: NotRequired[datetime]
     modified_by: NotRequired[str]
@@ -23,7 +23,7 @@ class ParsedDocumentSection(TypedDict):
     parenttype: NotRequired[str]
 
 class ParsedDocument(TypedDict):
-    name: str
+    name: NotRequired[str]
     creation: NotRequired[datetime]
     modified: NotRequired[datetime]
     modified_by: NotRequired[str]
@@ -42,7 +42,7 @@ class ParsedDocument(TypedDict):
     _liked_by: NotRequired[str]
 
 class JobOpening(TypedDict):
-    name: str
+    name: NotRequired[str]
     creation: NotRequired[datetime]
     modified: NotRequired[datetime]
     modified_by: NotRequired[str]
@@ -82,7 +82,7 @@ class JobOpening(TypedDict):
     custom_customer: NotRequired[str]
 
 class JobApplicant(TypedDict):
-    name: str
+    name: NotRequired[str]
     creation: NotRequired[datetime]
     modified: NotRequired[datetime]
     modified_by: NotRequired[str]
@@ -114,7 +114,7 @@ class JobApplicant(TypedDict):
     custom_pipeline_step: NotRequired[str]
 
 class Interview(TypedDict):
-    name: str
+    name: NotRequired[str]
     creation: NotRequired[datetime]
     modified: NotRequired[datetime]
     modified_by: NotRequired[str]
@@ -141,7 +141,7 @@ class Interview(TypedDict):
     _liked_by: NotRequired[str]
 
 class InterviewFeedback(TypedDict):
-    name: str
+    name: NotRequired[str]
     creation: NotRequired[datetime]
     modified: NotRequired[datetime]
     modified_by: NotRequired[str]
@@ -162,7 +162,7 @@ class InterviewFeedback(TypedDict):
     _liked_by: NotRequired[str]
 
 class JobPipeline(TypedDict):
-    name: str
+    name: NotRequired[str]
     creation: NotRequired[datetime]
     modified: NotRequired[datetime]
     modified_by: NotRequired[str]

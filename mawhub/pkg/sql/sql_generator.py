@@ -44,6 +44,7 @@ def is_not_required(col: InformationSchemaColumn) -> bool:
     return (
         col["IS_NULLABLE"] == "YES"
         or col["COLUMN_DEFAULT"] == "NULL"
+        or col["COLUMN_NAME"] == "name"
         or  col["COLUMN_NAME"] in FRAPPE_SYSTEM_FIELDS
     )
 def generate_typed_dict_for_table(
