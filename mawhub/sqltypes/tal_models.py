@@ -46,6 +46,8 @@ class JobView(TypedDict):
     name: str
     designation: NotRequired[str]
     department: NotRequired[str]
+    custom_customer: NotRequired[str]
+    custom_pipeline: NotRequired[str]
     employment_type: NotRequired[str]
     location: NotRequired[str]
     docstatus: NotRequired[int]
@@ -58,9 +60,7 @@ class JobView(TypedDict):
     step_count: int
     total_candidate_count: float
     steps: NotRequired[str]
-    custom_customer: NotRequired[str]
-    custom_pipeline: NotRequired[str]
-    parsed_documents: str
+    parsed_documents: NotRequired[str]
 
 class ParsedDocumentView(TypedDict):
     document_id: str

@@ -1,4 +1,5 @@
 __version__ = "0.0.1"
+from mawhub.api.mawhub_job_pipeline_api import job_pipeline_create_update
 from mawhub.api.mawhub_parsed_document_api import(
         parsed_document_create_update,
         parsed_document_parse
@@ -29,6 +30,7 @@ from mawhub.api.mawhub_interview_api import (
 )
 __all__ = [
     "job_opening_list",
+    "job_pipeline_create_update",
     "job_opening_create_update",
     "job_opening_find",
     "interview_create_update",

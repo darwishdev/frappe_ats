@@ -16,7 +16,7 @@ def job_applicant_bulk_update(payload:JobApplicantBulkUpdateRequest)->List[str]:
 def job_applicant_create_update(payload:JobApplicant)->Document:
     return app_container.job_usecase.job_applicant.job_applicant_create_update(payload)
 
-@frappe.whitelist(methods=["GET"])
+@frappe.whitelist(methods=["GET"] , allow_guest=True)
 def job_applicant_find(name:str)->dict:
     return app_container.job_usecase.job_applicant.job_applicant_find(name)
 

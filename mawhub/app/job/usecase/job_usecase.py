@@ -12,12 +12,14 @@ from mawhub.app.job.usecase.auth_usecase import AuthUsecase, AuthUsecaseInterfac
 from mawhub.app.job.usecase.interview_usecase import InterviewUsecase, InterviewUsecaseInterface
 from mawhub.app.job.usecase.job_applicant_usecase import JobApplicantUsecase, JobApplicantUsecaseInterface
 from mawhub.app.job.usecase.job_opening_usecase import JobOpeningUsecase, JobOpeningUsecaseInterface
+from mawhub.app.job.usecase.job_pipeline_usecase import JobPipelineUsecase, JobPipelineUsecaseInterface
 from mawhub.app.job.usecase.parsed_document_usecase import ParsedDocumentUsecase, ParsedDocumentUsecaseInterface
 from mawhub.pkg.sql.cache_utils import get_ai_cache, set_ai_cache
 
 class JobUseCaseInterface(Protocol):
     job_opening: JobOpeningUsecaseInterface
     job_applicant: JobApplicantUsecaseInterface
+    job_pipeline: JobPipelineUsecaseInterface
     interview: InterviewUsecaseInterface
     auth: AuthUsecaseInterface
     parsed_document: ParsedDocumentUsecaseInterface
@@ -31,6 +33,7 @@ class JobUseCaseInterface(Protocol):
 class JobUseCase:
     job_opening: JobOpeningUsecaseInterface
     job_applicant: JobApplicantUsecaseInterface
+    job_pipeline: JobPipelineUsecaseInterface
     interview: InterviewUsecaseInterface
     auth: AuthUsecaseInterface
     applicant_resume: ApplicantResumeUsecaseInterface
@@ -54,6 +57,7 @@ class JobUseCase:
         self.job_agent = job_agent
         self.document_parser_agent = doc_parser
         self.job_opening = JobOpeningUsecase(job_repo,job_agent,doc_parser)
+        self.job_pipeline= JobPipelineUsecase(job_repo)
         self.parsed_document = ParsedDocumentUsecase(job_repo,doc_parser)
         self.job_applicant = JobApplicantUsecase(job_repo)
         self.interview = InterviewUsecase(job_repo)

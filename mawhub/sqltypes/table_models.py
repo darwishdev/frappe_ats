@@ -1,6 +1,6 @@
 # AUTO-GENERATED FILE
 # Source: MariaDB information_schema
-# Contains TypedDicts for $['tabParsed Document Section', 'tabParsed Document', 'tabJob Opening', 'tabJob Applicant', 'tabInterview', 'tabInterview Feedback']* tables
+# Contains TypedDicts for $['tabParsed Document Section', 'tabParsed Document', 'tabJob Opening', 'tabJob Applicant', 'tabInterview', 'tabInterview Feedback', 'tabJob Pipeline']* tables
 # Do not edit manually
 
 from typing import TypedDict, NotRequired
@@ -14,17 +14,13 @@ class ParsedDocumentSection(TypedDict):
     owner: NotRequired[str]
     docstatus: NotRequired[int]
     idx: NotRequired[int]
-    _user_tags: NotRequired[str]
-    _comments: NotRequired[str]
-    _assign: NotRequired[str]
-    _liked_by: NotRequired[str]
     title: NotRequired[str]
     description: NotRequired[str]
     pullet_points: NotRequired[str]
     parent_section: NotRequired[str]
     parent: NotRequired[str]
-    parenttype: NotRequired[str]
     parentfield: NotRequired[str]
+    parenttype: NotRequired[str]
 
 class ParsedDocument(TypedDict):
     name: str
@@ -34,16 +30,16 @@ class ParsedDocument(TypedDict):
     owner: NotRequired[str]
     docstatus: NotRequired[int]
     idx: NotRequired[int]
-    _user_tags: NotRequired[str]
-    _comments: NotRequired[str]
-    _assign: NotRequired[str]
-    _liked_by: NotRequired[str]
     file: NotRequired[str]
     output: NotRequired[str]
     file_hash: NotRequired[str]
     parent_type: NotRequired[str]
     parent_id: NotRequired[str]
     meta_data: NotRequired[str]
+    _user_tags: NotRequired[str]
+    _comments: NotRequired[str]
+    _assign: NotRequired[str]
+    _liked_by: NotRequired[str]
 
 class JobOpening(TypedDict):
     name: str
@@ -51,7 +47,6 @@ class JobOpening(TypedDict):
     modified: NotRequired[datetime]
     modified_by: NotRequired[str]
     owner: NotRequired[str]
-    custom_customer: NotRequired[str]
     docstatus: NotRequired[int]
     idx: NotRequired[int]
     job_opening_template: NotRequired[str]
@@ -84,6 +79,7 @@ class JobOpening(TypedDict):
     _assign: NotRequired[str]
     _liked_by: NotRequired[str]
     custom_pipeline: NotRequired[str]
+    custom_customer: NotRequired[str]
 
 class JobApplicant(TypedDict):
     name: str
@@ -160,6 +156,21 @@ class InterviewFeedback(TypedDict):
     average_rating: NotRequired[float]
     feedback: NotRequired[str]
     amended_from: NotRequired[str]
+    _user_tags: NotRequired[str]
+    _comments: NotRequired[str]
+    _assign: NotRequired[str]
+    _liked_by: NotRequired[str]
+
+class JobPipeline(TypedDict):
+    name: str
+    creation: NotRequired[datetime]
+    modified: NotRequired[datetime]
+    modified_by: NotRequired[str]
+    owner: NotRequired[str]
+    docstatus: NotRequired[int]
+    idx: NotRequired[int]
+    description: NotRequired[str]
+    is_primary: int
     _user_tags: NotRequired[str]
     _comments: NotRequired[str]
     _assign: NotRequired[str]
