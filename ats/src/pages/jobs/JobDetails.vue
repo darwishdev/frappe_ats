@@ -1186,8 +1186,19 @@ async function handleEditPipeline(pipelineDoc) {
     }
 
     try {
-        // Call API to save pipeline
-        const result = await JobDetailsAPI.savePipeline(pipelineDoc);
+        // Transform pipelineDoc to the required payload format
+        const payload = {
+            name: pipelineDoc.name,
+            description: pipelineDoc.description || "",
+            steps: pipelineDoc.steps.map((step) => ({
+                step_code: step.step_code,
+                step_name: step.step_name,
+                step_type: step.step_type,
+            })),
+        };
+
+        // Call API to save pipeline using the new endpoint
+        const result = await JobDetailsAPI.pipelineCreateUpdate(payload);
         
         toast.success("Pipeline updated successfully");
         console.log("Pipeline saved:", result);

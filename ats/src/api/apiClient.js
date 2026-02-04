@@ -592,15 +592,44 @@ export const JobDetailsAPI = {
     },
 
     /**
-     * Save or update a job pipeline
-     * @param {Object} pipelineDoc - Pipeline document with all fields
-     * @returns {Promise<Object>} Saved pipeline document
+     * Create or update a pipeline
+     * @param {Object} payload - Pipeline data
+     * @param {string} payload.name - Pipeline name
+     * @param {string} payload.description - Pipeline description
+     * @param {Array} payload.steps - Array of pipeline steps
+     * @param {string} payload.steps[].step_code - Step code
+     * @param {string} payload.steps[].step_name - Step name
+     * @param {string} payload.steps[].step_type - Step type
+     * @returns {Promise<Object>} Created/updated pipeline details
      */
-    savePipeline: async function (pipelineDoc) {
+    pipelineCreateUpdate: function (payload) {
+        if (!_createResource) {
+            throw new Error(
+                "JobDetailsAPI not initialized. Call JobDetailsAPI.init(createResource) first.",
+            );
+        }
+
+        const resource = _createResource({
+            url: "mawhub.job_pipeline_create_update",
+            params: {
+                payload: payload,
+            },
+            auto: true,
+        });
+
+        return resource.promise;
+    },
+
+    /**
+     * Save or update a job pipeline
+     * @param {Object} -frappe document with all fields
+     * @returns {Promise<Object>} Saved document
+     */
+    frappeDocSave: async function (frappeDoc) {
         try {
             // Frappe expects form-encoded data with doc as JSON string
             const formData = new URLSearchParams();
-            formData.append("doc", JSON.stringify(pipelineDoc));
+            formData.append("doc", JSON.stringify(frappeDoc));
             formData.append("action", "Save");
 
             const response = await fetch("/api/method/frappe.desk.form.save.savedocs", {
@@ -614,13 +643,13 @@ export const JobDetailsAPI = {
 
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({}));
-                throw new Error(errorData.exception || errorData.message || "Failed to save pipeline");
+                throw new Error(errorData.exception || errorData.message || "Failed to save document");
             }
 
             const result = await response.json();
             return result.docs?.[0] || result.message;
         } catch (error) {
-            console.error("Pipeline save error:", error);
+            console.error("Document save error:", error);
             throw error;
         }
     },

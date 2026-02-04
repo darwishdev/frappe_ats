@@ -137,9 +137,9 @@ const stepTypeOptions = [
     { label: "Screening", value: "screening" },
     { label: "Interview", value: "interview" },
     { label: "Assessment", value: "assessment" },
-    { label: "Review", value: "review" },
+    { label: "Rejected", value: "rejected" },
     { label: "Offer", value: "offer" },
-    { label: "Other", value: "other" },
+    { label: "Hired", value: "hired" },
 ];
 
 const isSubmitting = ref(false);
@@ -272,7 +272,7 @@ async function handleSubmit() {
                 return {
                     name: step.name || step.step_code,
                     doctype: "Pipeline Step",
-                    step_code: step.step_code || step.name,
+                    step_code: step.step_code.toString() || step.name,
                     step_name: step.step_name,
                     step_type: step.step_type.toLowerCase(),
                     idx: index + 1,
