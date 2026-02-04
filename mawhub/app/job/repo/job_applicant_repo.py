@@ -53,10 +53,37 @@ class JobApplicantRepo(AppRepo[JobApplicant]):
     def job_applicant_find(self, name: str)->dict:
         applicant_doc = frappe.get_doc("Job Applicant" , name)
         resume_doc = frappe.get_doc("Applicant Resume" , name)
+        interviews = frappe.get_all(
+                "Interview" ,
+                filters={"job_applicant" : name} ,
+                fields=[
+                    "name",
+                    "creation",
+                    "modified",
+                    "modified_by",
+                    "owner",
+                    "docstatus",
+                    "interview_round",
+                    "job_applicant",
+                    "job_opening",
+                    "designation",
+                    "resume_link",
+                    "status",
+                    "scheduled_on",
+                    "from_time",
+                    "to_time",
+                    "expected_average_rating",
+                    "average_rating",
+                    "interview_summary",
+                    "reminded",
+                    "amended_from"
+                    ]
+                )
         return {
-            "applicant" : applicant_doc.as_dict(),
-            "resume" : resume_doc.as_dict(),
-        }
+                "applicant" : applicant_doc.as_dict(),
+                "resume" : resume_doc.as_dict(),
+                "interviews" : interviews,
+                }
     def job_applicant_bulk_update(self, payload: JobApplicantBulkUpdateRequest)->List[str]:
         sql_stmt = """
         UPDATE `tabJob Applicant` a
@@ -66,10 +93,10 @@ class JobApplicantRepo(AppRepo[JobApplicant]):
         where a.name in  %(names)s
         """
         params = {
-            "status": payload["status"],
-            "pipeline_step": payload["pipeline_step"],
-            "names": tuple(payload["names"]),  # IMPORTANT
-        }
+                "status": payload["status"],
+                "pipeline_step": payload["pipeline_step"],
+                "names": tuple(payload["names"]),  # IMPORTANT
+                }
         try:
             frappe.db.sql(sql_stmt,params)
             frappe.db.commit()
