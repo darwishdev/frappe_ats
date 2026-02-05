@@ -1,5 +1,6 @@
-from typing import Dict, List, Protocol
+from typing import Dict, List, Protocol, cast
 
+import frappe
 from frappe.model.document import Document
 from mawhub.app.job.dto.applicant_resume import ApplicantResumeDTO
 from mawhub.app.job.dto.job_applicant import JobApplicantBulkUpdateRequest, JobApplicantCreateWithResume
@@ -22,6 +23,18 @@ class JobApplicantUsecase:
         self.repo = repo
 
     def job_applicant_create_update(self, payload: JobApplicant)->Document:
+        step = payload.get("custom_pipeline_step")
+        if not step:
+            step_names = frappe.db.sql("""
+                SELECT name FROM `tabPipeline Step` s
+                WHERE s.parent = %s
+                ORDER BY idx ASC
+                LIMIT 1
+                                 """ , (payload.get('job_title'),),pluck=True ) or []
+            typed_names = cast(List[str] , step_names)
+            if len(typed_names) == 0:
+                raise frappe.ValidationError("Please set valid pipeline steps to the job opening")
+            payload["custom_pipeline_step"] = typed_names[0]
         return self.repo.job_applicant.create_or_update(payload)
 
     def job_applicant_find(self, name: str)->dict:

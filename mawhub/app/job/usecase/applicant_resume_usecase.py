@@ -46,8 +46,18 @@ class ApplicantResumeUsecase:
         if not personal_info:
             raise ValueError(f"personal is required {json.dumps(applicant_resume)}")
         step_name = payload.get("pipeline_step_id")
-        if step_name == 'all':
-            step_name = 'SC'
+        if not step_name or step_name == "null":
+            step_names = frappe.db.sql("""
+                SELECT name FROM `tabPipeline Step` s
+                WHERE s.parent = %s
+                ORDER BY idx ASC
+                LIMIT 1
+                                 """ , (payload.get('job_opening_id'),),pluck=True ) or []
+            typed_names = cast(List[str] , step_names)
+            if len(typed_names) == 0:
+                raise frappe.ValidationError("Please set valid pipeline steps to the job opening")
+            step_name = typed_names[0]
+
         create_update_params : JobApplicant = {
             "name": str(personal_info.get("email")),
             "email_id":str(personal_info.get("email")),

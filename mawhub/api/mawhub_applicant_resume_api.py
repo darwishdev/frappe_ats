@@ -28,7 +28,6 @@ def applicant_resume_parse(path: str,job_opening_id: str, pipeline_step_id: str)
                     except Exception as e:
                         raise frappe.ValidationError(f"error creating the applicant on db {str(e)
                     } with data {json.dumps(data)}")
-                    print(event['data'])
                 yield f"data: {json.dumps(event)}\n\n"
         except Exception as e:
             # Final SSE error event
