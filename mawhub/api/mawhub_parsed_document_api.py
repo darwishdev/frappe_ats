@@ -1,4 +1,5 @@
 
+import json
 from mawhub.sqltypes.table_models import JobOpening
 import frappe
 from werkzeug.wrappers import Response
@@ -37,7 +38,10 @@ def parsed_document_parse(path: str,parent_type: str, parent_id: str):
                 "publish_salary_range": job_event.get("publish_salary_range", 1),
                 "publish_applications_received": job_event.get("publish_applications_received", 1),
             }
-            job_create_req = app_container.job_usecase.job_opening.job_opening_create_update(job_opening_create_params)
+            try:
+                job_create_req = app_container.job_usecase.job_opening.job_opening_create_update(job_opening_create_params)
+            except Exception as e:
+                raise Exception(f"body: {json.dumps(job_opening_create_params)} error :{str(e)}")
             print(f"final event is hapening here")
             print(f"final event is hapening here")
             print(f"final event is hapening here {str(job_create_req.name)}")
@@ -53,7 +57,7 @@ def parsed_document_parse(path: str,parent_type: str, parent_id: str):
 
         except Exception as e:
             frappe.log_error(f"JobOpening creation failed: {str(e)}", "parsed_document_parse")
-            raise Exception(f"Failed to save the job {str(e)}")
+            raise Exception(f"Failed to save the job with body : {str(e)}")
     response = Response(app_container.job_usecase.parsed_document.parse_document(payload,save_parent_callback=final_event_callback), mimetype="text/event-stream")
     response.headers.update({
         "Cache-Control": "no-cache",
