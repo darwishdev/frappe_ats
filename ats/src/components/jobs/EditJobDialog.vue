@@ -195,11 +195,10 @@
                     <label class="block text-sm font-medium text-gray-700 mb-1">
                         Custom Pipeline
                     </label>
-                    <TextInput
+                    <Select
                         v-model="formData.custom_pipeline"
-                        type="text"
-                        placeholder="Enter pipeline name"
-                        size="md"
+                        :options="pipelineOptions"
+                        placeholder="Select pipeline"
                     />
                 </div>
 
@@ -384,6 +383,7 @@ const isLoading = ref(false);
 const isSaving = ref(false);
 const loadError = ref(null);
 const mode = ref('job'); // 'job' or 'parsed-document'
+const pipelines = ref([]);
 
 // Form data
 const formData = ref({
@@ -446,14 +446,37 @@ const salaryPerOptions = [
     { label: 'Hour', value: 'Hour' },
 ];
 
+// Pipeline options
+const pipelineOptions = computed(() => [
+    ...pipelines.value.map((pipeline) => ({ 
+        label: pipeline.name, 
+        value: pipeline.name 
+    })),
+]);
+
 // Form validation
 const isFormValid = computed(() => {
     return formData.value.job_title && formData.value.vacancies > 0;
 });
 
+// Load pipelines from Job Pipeline doctype
+async function loadPipelines() {
+    try {
+        const pipelineList = await JobDetailsAPI.getDocList('Job Pipeline', {
+            fields: ['name'],
+            order_by: 'name asc',
+        });
+        pipelines.value = pipelineList || [];
+    } catch (error) {
+        console.error('Failed to load pipelines:', error);
+        pipelines.value = [];
+    }
+}
+
 // Watch for dialog open and job name changes
 watch([() => props.modelValue, () => props.jobName], ([isOpen, jobName]) => {
     if (isOpen && jobName) {
+        loadPipelines();
         loadJobData(jobName);
     }
 });
