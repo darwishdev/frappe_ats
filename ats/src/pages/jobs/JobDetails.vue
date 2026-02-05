@@ -18,14 +18,20 @@
                 <div>
                     <div class="jd-title-row">
                         <h2 class="jd-title">{{ job?.title || "Job Details" }}</h2>
-                        <Button size="sm" @click="editJob">
-                            <Edit2 :size="16" class="button-icon" />
-                            Edit
-                        </Button>
+                        <div style="display: flex; gap: 8px;">
+                            <Button size="sm" @click="showJobDescription">
+                                <Eye :size="16" class="button-icon" />
+                                Show
+                            </Button>
+                            <Button size="sm" @click="editJob">
+                                <Edit2 :size="16" class="button-icon" />
+                                Edit
+                            </Button>
+                        </div>
                     </div>
-                    <div class="jd-subtitle">
+                    <!-- <div class="jd-subtitle">
                         {{ job?.department }} · {{ job?.work_mode }} · {{ job?.location }}
-                    </div>
+                    </div> -->
                 </div>
 
                 <div class="jd-header-actions">
@@ -160,7 +166,7 @@
                                         {{ activeCandidate.name?.charAt(0).toUpperCase() }}
                                     </div>
                                     <div>
-                                        <h3 class="jd-detail-name">{{ activeCandidate.name }}</h3>
+                                        <h3 class="jd-detail-name">{{ activeCandidate.name.split(' ').length > 1 ? activeCandidate.name.split(' ')[0] +  ' ' + activeCandidate.name.split(' ')[1] : activeCandidate.name }}</h3>
                                         <div class="jd-detail-meta">
                                             <a
                                                 class="underline"
@@ -263,6 +269,11 @@
                 :job-name="jobId"
                 @saved="reloadJobDetails"
             />
+            <JobDescriptionDialog
+                v-model="showJobDescriptionDialog"
+                :parsed-data="transformedParsedData"
+                :is-loading="false"
+            />
 
             <BulkMoveDialog
                 v-model="showBulkMoveDialog"
@@ -323,6 +334,7 @@ import {
     Trash2,
     Edit,
     Settings,
+    Eye,
 } from "lucide-vue-next";
 import AddCandidateDialog from "../../components/jobs/AddCandidateDialog.vue";
 import AssignInterviewDialog from "../../components/jobs/AssignInterviewDialog.vue";
@@ -335,6 +347,7 @@ import ApplicantCommunication from "../../components/jobs/ApplicantCommunication
 import ApplicantReview from "../../components/jobs/ApplicantReview.vue";
 import ApplicantComments from "../../components/jobs/ApplicantComments.vue";
 import EditJobDialog from "../../components/jobs/EditJobDialog.vue";
+import JobDescriptionDialog from "../../components/jobs/JobDescriptionDialog.vue";
 import EditPipelineDialog from "../../components/jobs/EditPipelineDialog.vue";
 
 const toast = useToast();
@@ -398,6 +411,7 @@ const showAssignInterviewDialog = ref(false);
 const showBulkMoveDialog = ref(false);
 const showProfileDialog = ref(false);
 const showSendEmailDialog = ref(false);
+const showJobDescriptionDialog = ref(false);
 const showEditPipelineDialog = ref(false);
 const parsingProfile = ref(null);
 
@@ -652,6 +666,7 @@ function transformJobData(rawJob) {
         pipeline_name: rawJob.pipeline_name || rawJob.pipeline || "Main",
         steps: steps,
         candidates: allCandidates,
+        parsed_documents : rawJob.parsed_documents || [],
         pipelineData: pipelineInfo,
     };
 }
@@ -728,6 +743,48 @@ function formatDate(dateStr) {
 function editJob() {
     showEditDialog.value = true;
 }
+
+function showJobDescription() {
+    showJobDescriptionDialog.value = true;
+}
+
+// Transform parsed documents from API to JobDescriptionDialog format
+const transformedParsedData = computed(() => {
+    if (!job.value || !job.value?.parsed_documents || job.value.parsed_documents.length === 0) {
+        return {};
+    }
+    const parsedDoc = job.value.parsed_documents[0];
+    const transformed = {};
+    // Transform sections to the expected format
+    if (parsedDoc.sections && Array.isArray(parsedDoc.sections)) {
+        parsedDoc.sections.forEach((section) => {
+            // Create a key from the title (convert to snake_case)
+            const key = section.title
+                .toLowerCase()
+                .replace(/[^a-z0-9]+/g, '_')
+                .replace(/^_+|_+$/g, '');
+
+            // Parse bullet points if they're a JSON string
+            let bulletPoints = [];
+            if (section.pullet_points) {
+                try {
+                    bulletPoints = typeof section.pullet_points === 'string'
+                        ? JSON.parse(section.pullet_points)
+                        : section.pullet_points;
+                } catch (e) {
+                    console.error('Failed to parse bullet points:', e);
+                    bulletPoints = [];
+                }
+            }
+
+            transformed[key] = {
+                description: section.description || '',
+                bullet_points: Array.isArray(bulletPoints) ? bulletPoints : [],
+            };
+        });
+    }
+    return transformed;
+});
 
 function editPipeline() {
     if (!job.value) return;
@@ -1184,17 +1241,17 @@ async function handleSendEmail(formData) {
 }
 
 async function handleEditPipeline(pipelineDoc) {
-    if (!pipelineDoc.name || !pipelineDoc.steps || pipelineDoc.steps.length === 0) {
-        toast.warning("Please provide pipeline name and at least one step");
+    if (!pipelineDoc.steps || pipelineDoc.steps.length === 0) {
+        toast.warning("Please provide at least one step");
         throw new Error("Required fields missing");
     }
 
     try {
         // Transform pipelineDoc to the required payload format
         const payload = {
-            name: pipelineDoc.name,
-            description: pipelineDoc.description || "",
-            steps: pipelineDoc.steps.map((step) => ({
+            name: job.value.name,
+            custom_pipeline_steps: pipelineDoc.steps.map((step) => ({
+                ...(step.name ? { name: typeof step.name == "string" ? step.name : step.name.toString() } : {}),
                 step_code: step.step_code,
                 step_name: step.step_name,
                 step_type: step.step_type,
@@ -1255,7 +1312,7 @@ watch(
 
 <style>
 .jd-page {
-    padding: 2rem;
+    padding: 1rem 2rem;
 }
 
 .jd-header {
@@ -1263,7 +1320,7 @@ watch(
     justify-content: space-between;
     gap: 16px;
     align-items: flex-start;
-    margin-bottom: 12px;
+    margin-bottom: 8px;
 }
 
 .jd-header-actions {
@@ -1335,7 +1392,7 @@ watch(
     display: grid;
     grid-template-columns: 350px 1fr 190px;
     gap: 14px;
-    min-height: 520px;
+    min-height: calc(100vh - 215px);
 }
 
 .jd-left,
@@ -1470,11 +1527,11 @@ watch(
     align-items: flex-start;
     padding-bottom: 16px;
     border-bottom: 1px solid var(--border-color, #e6e6e6);
-    margin-bottom: 16px;
+    margin-bottom: 4px;
 }
 
 .jd-detail-name {
-    font-size: 22px;
+    font-size: 18px;
     font-weight: 900;
     margin: 0;
     color: #111827;

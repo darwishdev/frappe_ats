@@ -235,7 +235,7 @@ function formatProfileDate(dateStr) {
 }
 
 .profile-container {
-  max-height: calc(100vh - 480px);
+  max-height: calc(100vh - 400px);
   padding: 8px;
   overflow-y: auto;
 }
@@ -306,7 +306,7 @@ function formatProfileDate(dateStr) {
 }
 
 .profile-section {
-  margin-bottom: 32px;
+  margin-bottom: 18px;
 }
 
 .profile-section-title {

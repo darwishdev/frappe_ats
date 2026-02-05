@@ -3,17 +3,17 @@
         <template #body-content>
             <div class="space-y-4">
                 <!-- Pipeline Name -->
-                <div>
+                <!-- <div>
                     <label class="block text-sm font-medium mb-1">Pipeline Name</label>
                     <TextInput
                         v-model="formData.name"
                         type="text"
                         placeholder="Enter pipeline name"
                     />
-                </div>
+                </div> -->
 
                 <!-- Pipeline Description -->
-                <div>
+                <!-- <div>
                     <label class="block text-sm font-medium mb-1">Description</label>
                     <textarea
                         v-model="formData.description"
@@ -21,7 +21,7 @@
                         rows="3"
                         placeholder="Enter pipeline description"
                     />
-                </div>
+                </div> -->
 
                 <!-- Pipeline Steps -->
                 <div>
@@ -189,23 +189,13 @@ function initializeFormData() {
                       idx: step.idx || index + 1,
                       doctype: "Pipeline Step",
                   }))
-                : [
-                      {
-                          name: "SC",
-                          step_name: "Initial Screening",
-                          step_type: "Screening",
-                          step_code: "SC",
-                          idx: 1,
-                          doctype: "Pipeline Step",
-                      },
-                  ],
+                : []
     };
 }
 
 function addStep() {
     const newIdx = formData.value.steps.length + 1;
     formData.value.steps.push({
-        name: `new-pipeline-step-${Date.now()}`,
         step_name: "",
         step_type: "Other",
         step_code: "",
@@ -223,10 +213,10 @@ function removeStep(index) {
 
 async function handleSubmit() {
     // Validate form
-    if (!formData.value.name.trim()) {
-        return;
-    }
-    console.log(formData.value);
+    // if (!formData.value.name.trim()) {
+    //     return;
+    // }
+    // console.log(formData.value);
     
 
     // Check if all steps have names and codes
@@ -253,9 +243,7 @@ async function handleSubmit() {
         const now = new Date().toISOString().replace('T', ' ').split('.')[0];
         
         const pipelineDoc = {
-            name: formData.value.name,
             doctype: "Job Pipeline",
-            description: formData.value.description || "",
             is_primary: pipeline.is_primary || 0,
             docstatus: 0,
             idx: 0,
@@ -270,7 +258,7 @@ async function handleSubmit() {
                 );
                 
                 return {
-                    name: step.name || step.step_code,
+                    name: step.name,
                     doctype: "Pipeline Step",
                     step_code: step.step_code.toString() || step.name,
                     step_name: step.step_name,

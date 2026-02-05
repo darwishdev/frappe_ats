@@ -680,7 +680,7 @@ export const JobDetailsAPI = {
         }
 
         const resource = _createResource({
-            url: "mawhub.job_pipeline_create_update",
+            url: "mawhub.job_opening_create_update",
             params: {
                 payload: payload,
             },

@@ -2,7 +2,7 @@
     <Dialog
         v-model="isOpen"
         :options="{
-            title: `Send Email to  || ''}`,
+            title: `Send Email to `,
             size: 'xl',
         }"
     >
@@ -184,14 +184,16 @@ const props = defineProps({
         default: false,
     },
     candidate: {
-        default: "",
+        type: Object,
+        required: true,
     },
     step: {
         type: String,
-        default: "",
+        required: true,
     },
     job: {
-        default: "",
+        type: Object,
+        required: true,
     },
     onSubmit: {
         type: Function,
