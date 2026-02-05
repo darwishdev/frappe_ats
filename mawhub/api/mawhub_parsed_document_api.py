@@ -29,6 +29,7 @@ def parsed_document_parse(path: str,parent_type: str, parent_id: str):
                 "job_title": job_event["job_title"] or "Untitled",
                 "designation": job_event.get("designation") or job_event["job_title"],
                 "custom_customer": job_event.get("customer") or "",
+                "custom_pipeline": "Main",
                 "location": job_event.get("location") or "",
                 "planned_vacancies": job_event.get("planned_vacancies", 1),
                 "vacancies": job_event.get("vacancies", 1),
