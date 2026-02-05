@@ -14,6 +14,68 @@
                 </div>
 
                 <div v-else-if="Object.keys(parsedData).length > 0" class="jdd-sections">
+                    <!-- Job Details Card from props -->
+                    <div v-if="props.jobDetails" class="jdd-details-card">
+                        <h3 class="jdd-details-title">Job Details</h3>
+                        
+                        <div class="jdd-details-grid">
+                            <!-- Job Title -->
+                            <div class="jdd-detail-item jdd-detail-full">
+                                <div class="jdd-detail-icon">
+                                    <Briefcase :size="24" />
+                                </div>
+                                <div class="jdd-detail-content">
+                                    <div class="jdd-detail-label">Job Title</div>
+                                    <div class="jdd-detail-value jdd-detail-highlight">{{ props.jobDetails.title }}</div>
+                                </div>
+                            </div>
+
+                            <!-- Department -->
+                            <div class="jdd-detail-item">
+                                <div class="jdd-detail-icon">
+                                    <Users :size="24" />
+                                </div>
+                                <div class="jdd-detail-content">
+                                    <div class="jdd-detail-label">Department</div>
+                                    <div class="jdd-detail-value">{{ props.jobDetails.department }}</div>
+                                </div>
+                            </div>
+
+                            <!-- Location -->
+                            <div class="jdd-detail-item">
+                                <div class="jdd-detail-icon">
+                                    <MapPin :size="24" />
+                                </div>
+                                <div class="jdd-detail-content">
+                                    <div class="jdd-detail-label">Location</div>
+                                    <div class="jdd-detail-value">{{ props.jobDetails.location }}</div>
+                                </div>
+                            </div>
+
+                            <!-- Work Mode -->
+                            <div class="jdd-detail-item">
+                                <div class="jdd-detail-icon">
+                                    <Briefcase :size="24" />
+                                </div>
+                                <div class="jdd-detail-content">
+                                    <div class="jdd-detail-label">Work Mode</div>
+                                    <div class="jdd-detail-value">{{ props.jobDetails.work_mode }}</div>
+                                </div>
+                            </div>
+
+                            <!-- Pipeline -->
+                            <div class="jdd-detail-item">
+                                <div class="jdd-detail-icon">
+                                    <FileText :size="24" />
+                                </div>
+                                <div class="jdd-detail-content">
+                                    <div class="jdd-detail-label">Pipeline</div>
+                                    <div class="jdd-detail-value">{{ props.jobDetails.pipeline_name }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div v-for="(section, sectionKey) in parsedData" :key="sectionKey">
                         <!-- Special handling for job_opening_details -->
                          <!-- {{ section }} -->
@@ -111,7 +173,13 @@
 
         <template #actions>
             <div class="w-full flex justify-end">
-                <Button 
+                <Button v-if="props.jobDetails"
+                    variant="solid" 
+                    @click="close" 
+                >
+                    Close
+                </Button>
+                <Button v-else
                     variant="solid" 
                     @click="createJob" 
                     :disabled="isLoading || Object.keys(parsedData).length === 0"
@@ -126,7 +194,7 @@
 <script setup>
 import { ref, watch } from 'vue';
 import { Dialog, Button } from 'frappe-ui';
-import { Briefcase, MapPin, Banknote, FileText } from 'lucide-vue-next';
+import { Briefcase, MapPin, Banknote, FileText, Users } from 'lucide-vue-next';
 
 const props = defineProps({
     modelValue: {
@@ -140,6 +208,10 @@ const props = defineProps({
     isLoading: {
         type: Boolean,
         default: false
+    },
+    jobDetails: {
+        type: Object,
+        default: null
     }
 });
 

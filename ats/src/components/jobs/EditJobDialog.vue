@@ -90,6 +90,18 @@
                     />
                 </div>
 
+                <!-- Customer -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                        Customer
+                    </label>
+                    <Select
+                        v-model="formData.customer"
+                        :options="customerOptions"
+                        placeholder="Select customer"
+                    />
+                </div>
+
                 <!-- Description -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">
@@ -384,6 +396,7 @@ const isSaving = ref(false);
 const loadError = ref(null);
 const mode = ref('job'); // 'job' or 'parsed-document'
 const pipelines = ref([]);
+const customers = ref([]);
 
 // Form data
 const formData = ref({
@@ -393,6 +406,7 @@ const formData = ref({
     status: 'Open',
     description: '',
     department: '',
+    customer: '',
     employment_type: 'Full-time',
     location: '',
     staffing_plan: '',
@@ -454,6 +468,15 @@ const pipelineOptions = computed(() => [
     })),
 ]);
 
+// Customer options
+const customerOptions = computed(() => [
+    { label: 'Select Customer', value: '' },
+    ...customers.value.map((customer) => ({ 
+        label: customer.customer_name || customer.name, 
+        value: customer.name 
+    })),
+]);
+
 // Form validation
 const isFormValid = computed(() => {
     return formData.value.job_title && formData.value.vacancies > 0;
@@ -473,10 +496,25 @@ async function loadPipelines() {
     }
 }
 
+// Load customers from Customer doctype
+async function loadCustomers() {
+    try {
+        const customerList = await JobDetailsAPI.getDocList('Customer', {
+            fields: ['name', 'customer_name'],
+            order_by: 'customer_name asc',
+        });
+        customers.value = customerList || [];
+    } catch (error) {
+        console.error('Failed to load customers:', error);
+        customers.value = [];
+    }
+}
+
 // Watch for dialog open and job name changes
 watch([() => props.modelValue, () => props.jobName], ([isOpen, jobName]) => {
     if (isOpen && jobName) {
         loadPipelines();
+        loadCustomers();
         loadJobData(jobName);
     }
 });
@@ -501,6 +539,7 @@ async function loadJobData(jobName) {
                 status: 'Open', // Not in response, keeping default
                 description: extractDescription(job.parsed_documents),
                 department: job.department || '',
+                customer: job.customer || '',
                 employment_type: job.employment_type || 'Full-time',
                 location: job.location || '',
                 staffing_plan: '', // Not in response
@@ -586,6 +625,7 @@ async function handleSave() {
             status: formData.value.status,
             description: formData.value.description,
             department: formData.value.department,
+            customer: formData.value.customer,
             employment_type: formData.value.employment_type,
             location: formData.value.location,
             staffing_plan: formData.value.staffing_plan,

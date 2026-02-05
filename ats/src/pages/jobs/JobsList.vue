@@ -36,6 +36,15 @@
                     label="Include draft jobs"
                     @change="applyFilters"
                 />
+
+                <Button
+                    size="sm"
+                    theme="gray"
+                    @click="clearFilters"
+                    v-if="filters.customer || filters.owner || filters.search"
+                >
+                    Clear Filters
+                </Button>
             </div>
         </div>
 
@@ -563,6 +572,14 @@ function handleJobSaved(updatedJob) {
 // Reload function (can be called externally)
 function reload() {
     loadJobOpenings();
+}
+
+// Clear all filters
+function clearFilters() {
+    filters.value.search = "";
+    filters.value.customer = "";
+    filters.value.owner = "";
+    reload();
 }
 
 // Expose reload function

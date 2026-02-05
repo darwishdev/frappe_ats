@@ -273,6 +273,7 @@
                 v-model="showJobDescriptionDialog"
                 :parsed-data="transformedParsedData"
                 :is-loading="false"
+                :job-details="job"
             />
 
             <BulkMoveDialog
