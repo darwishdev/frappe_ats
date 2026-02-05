@@ -691,6 +691,31 @@ export const JobDetailsAPI = {
     },
 
     /**
+     * Get job openings list with optional filters
+     * @param {Object} filters - Filter parameters (customer, owner, etc.)
+     * @returns {Promise} Promise that resolves with job openings data
+     */
+    getJobOpeningList: async function (filters = {}) {
+        if (!_createResource) {
+            throw new Error(
+                "JobDetailsAPI not initialized. Call JobDetailsAPI.init(createResource) first.",
+            );
+        }
+
+        const params = {};
+        params.customer = filters.customer || '';
+        params.owner = filters.owner || '';
+
+        const resource = _createResource({
+            url: "mawhub.job_opening_list",
+            params: params,
+            auto: true,
+        });
+
+        return resource.promise;
+    },
+
+    /**
      * Save or update a job pipeline
      * @param {Object} -frappe document with all fields
      * @returns {Promise<Object>} Saved document

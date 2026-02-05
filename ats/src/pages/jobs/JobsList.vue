@@ -19,7 +19,7 @@
                     placeholder="Select Customer"
                     v-model="filters.customer"
                     :options="customerOptions"
-                    @change="applyFilters"
+                    @update:model-value="reload"
                 />
 
                 <Select
@@ -27,7 +27,7 @@
                     placeholder="Select Owner"
                     v-model="filters.owner"
                     :options="ownerOptions"
-                    @change="applyFilters"
+                    @update:model-value="reload"
                 />
 
                 <Checkbox
@@ -198,6 +198,7 @@ const owners = ref([]);
 
 const allJobs = ref([]);
 const filteredJobs = ref([]);
+const jobsResource = ref({ loading: false, error: null });
 
 // File upload and parsing state
 const jobFileInput = ref(null);
@@ -213,19 +214,27 @@ const selectedJobName = ref(null);
 
 loadCustomers();
 loadOwners();
+
 // Fetch jobs from API
-const jobsResource = createResource({
-    url: "mawhub.job_opening_list",
-    auto: true,
-    params: {
-            customer: filters.value.customer || '',
-            owner: filters.value.owner || '',
-    },
-    onSuccess(data) {
+const loadJobOpenings = async () => {
+    try {
+        jobsResource.value.loading = true;
+        jobsResource.value.error = null;
+        const data = await JobDetailsAPI.getJobOpeningList({
+            customer: filters.value.customer,
+            owner: filters.value.owner,
+        });
         allJobs.value = transformJobData(data || []);
         applyFilters();
-    },
-});
+    } catch (error) {
+        console.error('Failed to load job openings:', error);
+        jobsResource.value.error = error.message || 'Failed to load jobs';
+    } finally {
+        jobsResource.value.loading = false;
+    }
+};
+
+loadJobOpenings();
 
 // Load customers from Customer doctype
 async function loadCustomers() {
@@ -326,12 +335,6 @@ const ownerOptions = computed(() => [
 function applyFilters() {
     const f = filters.value;
     
-    // If customer or owner filter changed, reload from API
-    if (f.customer || f.owner) {
-        jobsResource.fetch();
-        return;
-    }
-
     // Otherwise, filter client-side
     filteredJobs.value = allJobs.value.filter((j) => {
         // Filter drafts
@@ -559,7 +562,7 @@ function handleJobSaved(updatedJob) {
 
 // Reload function (can be called externally)
 function reload() {
-    jobsResource.fetch();
+    loadJobOpenings();
 }
 
 // Expose reload function
