@@ -87,8 +87,9 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue';
+import { ref, watch, onMounted } from 'vue';
 import { Dialog, Button, Select, TextInput } from 'frappe-ui';
+import { JobDetailsAPI } from '../../api/apiClient.js';
 
 const props = defineProps({
   modelValue: {
@@ -112,10 +113,12 @@ const props = defineProps({
 const emit = defineEmits(['update:modelValue']);
 
 const isOpen = ref(props.modelValue);
+const interviewRoundOptions = ref([]);
+const isLoadingRounds = ref(false);
 
 const formData = ref({
-  interview_round: 'HR Screening',
-  status: 'Scheduled',
+  interview_round: '',
+  status: 'Pending',
   scheduled_on: '',
   from_time: '',
   to_time: '',
@@ -123,26 +126,55 @@ const formData = ref({
   interview_summary: '',
 });
 
-const interviewRoundOptions = [
-  { label: 'HR Screening', value: 'HR Screening' },
-  { label: 'Technical Screening', value: 'Technical Screening' },
-  { label: 'Technical Interview', value: 'Technical Interview' },
-  { label: 'Manager Round', value: 'Manager Round' },
-  { label: 'Final Round', value: 'Final Round' },
-  { label: 'Cultural Fit', value: 'Cultural Fit' },
-];
-
 const interviewStatusOptions = [
   { label: 'Pending', value: 'Pending' },
-  { label: 'Scheduled', value: 'Scheduled' },
-  { label: 'Completed', value: 'Completed' },
+  { label: 'Under Review', value: 'Under Review' },
   { label: 'Cleared', value: 'Cleared' },
   { label: 'Rejected', value: 'Rejected' },
   { label: 'Cancelled', value: 'Cancelled' },
 ];
 
+// Fetch interview rounds on component mount
+onMounted(async () => {
+  await fetchInterviewRounds();
+});
+
+// Fetch interview rounds dynamically
+async function fetchInterviewRounds() {
+  try {
+    isLoadingRounds.value = true;
+    const rounds = await JobDetailsAPI.getDocList('Interview Round', {
+      fields: ['name', 'round_name'],
+      order_by: 'idx asc'
+    });
+    
+    interviewRoundOptions.value = rounds.map(round => ({
+      label: round.round_name || round.name,
+      value: round.name
+    }));
+    
+    // Set default value to first option if available
+    if (interviewRoundOptions.value.length > 0 && !formData.value.interview_round) {
+      formData.value.interview_round = interviewRoundOptions.value[0].value;
+    }
+  } catch (error) {
+    console.error('Error fetching interview rounds:', error);
+    // Fallback to basic options if fetch fails
+    interviewRoundOptions.value = [
+      { label: 'HR Screening', value: 'HR Screening' },
+      { label: 'Technical Interview', value: 'Technical Interview' },
+    ];
+  } finally {
+    isLoadingRounds.value = false;
+  }
+}
+
 watch(() => props.modelValue, (newVal) => {
   isOpen.value = newVal;
+  if (newVal && interviewRoundOptions.value.length === 0) {
+    // Fetch rounds if dialog opens and rounds not yet loaded
+    fetchInterviewRounds();
+  }
 });
 
 watch(isOpen, (newVal) => {
@@ -154,8 +186,8 @@ watch(isOpen, (newVal) => {
 
 function resetForm() {
   formData.value = {
-    interview_round: 'HR Screening',
-    status: 'Scheduled',
+    interview_round: interviewRoundOptions.value.length > 0 ? interviewRoundOptions.value[0].value : '',
+    status: 'Pending',
     scheduled_on: '',
     from_time: '',
     to_time: '',

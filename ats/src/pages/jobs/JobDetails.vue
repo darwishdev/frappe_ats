@@ -1057,7 +1057,11 @@ async function fetchApplicantProfile(applicantId) {
         const profile = await JobDetailsAPI.jobApplicantFind(applicantId);
         console.log(profile);
 
-        return profile.resume;
+        return {
+            resume: profile.resume,
+            interviews: profile.interviews || [],
+            applicant: profile.applicant
+        };
     } catch (error) {
         toast.error("Failed to load profile");
         console.error(error);

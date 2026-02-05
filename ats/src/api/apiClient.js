@@ -561,14 +561,15 @@ export const JobDetailsAPI = {
     },
 
     /**
-     * Fetch a pipeline document
-     * @param {string} pipelineName - Pipeline name
-     * @returns {Promise<Object>} Pipeline document
+     * Generic function to fetch a single document from any doctype
+     * @param {string} doctype - DocType name
+     * @param {string} name - Document name/ID
+     * @returns {Promise<Object>} Document data
      */
-    getPipeline: async function (pipelineName) {
+    getDoc: async function (doctype, name) {
         try {
             const response = await fetch(
-                `/api/method/frappe.client.get?doctype=Job Pipeline&name=${encodeURIComponent(pipelineName)}`,
+                `/api/method/frappe.client.get?doctype=${encodeURIComponent(doctype)}&name=${encodeURIComponent(name)}`,
                 {
                     method: "GET",
                     headers: {
@@ -580,15 +581,84 @@ export const JobDetailsAPI = {
 
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({}));
-                throw new Error(errorData.exception || errorData.message || "Failed to fetch pipeline");
+                throw new Error(errorData.exception || errorData.message || `Failed to fetch ${doctype}`);
             }
 
             const result = await response.json();
             return result.message;
         } catch (error) {
-            console.error("Pipeline fetch error:", error);
+            console.error(`${doctype} fetch error:`, error);
             throw error;
         }
+    },
+
+    /**
+     * Generic function to fetch list of documents from any doctype
+     * @param {string} doctype - DocType name
+     * @param {Object} options - Query options
+     * @param {Array<string>} options.fields - Fields to fetch (default: ['name'])
+     * @param {Object} options.filters - Filters to apply
+     * @param {number} options.limit - Limit number of records
+     * @param {string} options.order_by - Order by field
+     * @returns {Promise<Array>} List of documents
+     */
+    getDocList: async function (doctype, options = {}) {
+        try {
+            const params = new URLSearchParams({
+                doctype: doctype,
+            });
+
+            // Add fields
+            if (options.fields && Array.isArray(options.fields)) {
+                params.append('fields', JSON.stringify(options.fields));
+            }
+
+            // Add filters
+            if (options.filters) {
+                params.append('filters', JSON.stringify(options.filters));
+            }
+
+            // Add limit
+            if (options.limit) {
+                params.append('limit_page_length', options.limit);
+            }
+
+            // Add order_by
+            if (options.order_by) {
+                params.append('order_by', options.order_by);
+            }
+
+            const response = await fetch(
+                `/api/method/frappe.client.get_list?${params.toString()}`,
+                {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-Frappe-CSRF-Token": window.frappe?.csrf_token || "",
+                    },
+                }
+            );
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.exception || errorData.message || `Failed to fetch ${doctype} list`);
+            }
+
+            const result = await response.json();
+            return result.message || [];
+        } catch (error) {
+            console.error(`${doctype} list fetch error:`, error);
+            throw error;
+        }
+    },
+
+    /**
+     * Fetch a pipeline document
+     * @param {string} pipelineName - Pipeline name
+     * @returns {Promise<Object>} Pipeline document
+     */
+    getPipeline: async function (pipelineName) {
+        return this.getDoc('Job Pipeline', pipelineName);
     },
 
     /**
