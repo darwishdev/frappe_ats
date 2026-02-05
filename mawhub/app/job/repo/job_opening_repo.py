@@ -37,6 +37,7 @@ class JobOpeningRepo(AppRepo[JobOpening]):
                 "custom_pipeline",
             ],
             child_tables={
+                "custom_pipeline_steps" : "custom_pipeline_steps",
             },
         )
     def job_opening_list(self,filters: Dict[str, Any] | None = None)->List[JobView]:

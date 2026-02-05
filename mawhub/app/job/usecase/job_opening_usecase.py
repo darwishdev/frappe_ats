@@ -1,3 +1,4 @@
+from warnings import filters
 from annotated_types import LowerCase
 from frappe import Any, LinkValidationError, _
 from typing import  Dict, List, Protocol
@@ -61,20 +62,35 @@ class JobOpeningUsecase:
         create the Location and retry.
         """
         try:
-            designation = frappe.get_doc("Designation" , payload.get("designation" , ""))
-            if not designation:
+            payload["company"] = "Mawhub"
+            designation_name = payload.get("designation", "")
+            steps = payload.get("custom_pipeline_steps" , [])
+            pipeline = payload.get("custom_pipeline")
+            name = payload.get("name" , "")
+            if len(steps) == 0 and len(name) == 0 and pipeline:
+                steps_docs = frappe.get_all(
+                        "Pipeline Step" ,
+                        filters={"parent" : pipeline},
+                        fields=[
+                            "step_code",
+                            "step_name",
+                            "step_type"
+                            ]
+                )
+                payload["custom_pipeline_steps"] = steps_docs
+            if designation_name and not frappe.db.exists("Designation", designation_name):
                 try:
                     frappe.get_doc({
                         "doctype": "Designation",
-                        "designation_name": payload.get("designation" , "")
+                        "designation_name": designation_name
                     }).insert(ignore_permissions=True)
                     frappe.db.commit()  # commit so it exists before retry
                 except Exception as designation_error:
                     frappe.log_error(
-                        f"Failed to create missing designation '{payload.get("location")}': {designation_error}",
+                        f"Failed to create missing designation '{designation_name}': {designation_error}",
                         "job_opening_create_update"
                     )
-                    raise designation_error  # re-raise if we cannot create
+                    raise
             return self.repo.job_opening.create_or_update(payload)
 
         except LinkValidationError as e:

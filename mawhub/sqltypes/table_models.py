@@ -3,7 +3,7 @@
 # Contains TypedDicts for $['tabParsed Document Section', 'tabParsed Document', 'tabJob Opening', 'tabJob Applicant', 'tabInterview', 'tabInterview Feedback', 'tabJob Pipeline']* tables
 # Do not edit manually
 
-from typing import TypedDict, NotRequired
+from typing import Dict, List, TypedDict, NotRequired
 from datetime import date, datetime
 
 class ParsedDocumentSection(TypedDict):
@@ -80,6 +80,7 @@ class JobOpening(TypedDict):
     _liked_by: NotRequired[str]
     custom_pipeline: NotRequired[str]
     custom_customer: NotRequired[str]
+    custom_pipeline_steps: NotRequired[List[Dict]]
 
 class JobApplicant(TypedDict):
     name: NotRequired[str]
