@@ -1,6 +1,6 @@
 import json
 import re
-from typing import Iterator, List, cast
+from typing import Iterator, List, NotRequired, cast
 import frappe
 from werkzeug.wrappers import Response
 from mawhub.app.job.dto.job_opening import JobOpeningDTO
@@ -10,7 +10,7 @@ from mawhub.pkg.pdfconvertor.pdfconvertor import extract_text_from_pdf
 import asyncio
 import json
 from typing import Iterator, List, cast
-from frappe import _
+from frappe import Optional, _
 import frappe
 from mawhub.bootstrap import app_container
 from werkzeug.wrappers import Response
@@ -120,8 +120,11 @@ def job_opening_parse(path: str):
     return response
 
 @frappe.whitelist(methods=["GET" , "POST"], allow_guest=True)
-def job_opening_list()->List[JobOpeningDTO]:
-    return app_container.job_usecase.job_opening.job_opening_list("Administrator")
+def job_opening_list(
+        customer:str,
+        owner:str,
+)->List[JobOpeningDTO]:
+    return app_container.job_usecase.job_opening.job_opening_list({"customer" : customer,"owner" : owner})
 
 
 @frappe.whitelist(methods=["GET" , "POST"], allow_guest=True)

@@ -453,6 +453,7 @@ SELECT
   j.currency,
   j.lower_range,
   j.upper_range,
+  j.owner,
   j.posted_on,
   j.closes_on,
   COUNT(DISTINCT s.step_id) AS step_count,

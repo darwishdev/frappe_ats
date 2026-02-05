@@ -1,6 +1,6 @@
 from annotated_types import LowerCase
-from frappe import LinkValidationError, _
-from typing import  List, Protocol
+from frappe import Any, LinkValidationError, _
+from typing import  Dict, List, Protocol
 
 import frappe
 from frappe.model.document import Document
@@ -15,7 +15,7 @@ from mawhub.sqltypes.table_models import JobOpening
 class JobOpeningUsecaseInterface(Protocol):
     def job_opening_list(
         self,
-        user_name: str,
+        filters: Dict[str,Any],
     ) -> List[JobOpeningDTO]: ...
     def job_opening_create_update(
         self,
@@ -45,9 +45,9 @@ class JobOpeningUsecase:
 
     def job_opening_list(
         self,
-        user_name: str,
+        filters: Dict[str,Any],
     ) -> List[JobOpeningDTO]:
-        db_rows = self.repo.job_opening.job_opening_list(user_name)
+        db_rows = self.repo.job_opening.job_opening_list(filters)
         return job_opening_list_sql_to_dto(db_rows)
 
 
@@ -61,17 +61,17 @@ class JobOpeningUsecase:
         create the Location and retry.
         """
         try:
-            designation = frappe.get_doc("Designation" , payload.get("designation"))
+            designation = frappe.get_doc("Designation" , payload.get("designation" , ""))
             if not designation:
                 try:
                     frappe.get_doc({
-                        "doctype": "Branch",
-                        "branch": missing_location
+                        "doctype": "Designation",
+                        "designation_name": payload.get("designation" , "")
                     }).insert(ignore_permissions=True)
                     frappe.db.commit()  # commit so it exists before retry
                 except Exception as designation_error:
                     frappe.log_error(
-                        f"Failed to create missing designation '{missing_designation}': {designation_error}",
+                        f"Failed to create missing designation '{payload.get("location")}': {designation_error}",
                         "job_opening_create_update"
                     )
                     raise designation_error  # re-raise if we cannot create
@@ -127,38 +127,3 @@ class JobOpeningUsecase:
         db_rows = self.repo.job_opening.job_opening_find(job)
         return job_opening_sql_to_dto(db_rows)
 
-    # def _sse_events(
-    #     self,
-    #     resume_text: str,
-    # ) -> Iterator[JobAgentEvent]:
-    #     if not resume_text.strip():
-    #         raise ValueError("cant parse the resume text")
-    #     final_resume: JobOpeningAgentDTO | None = None
-    #     for update in self.job_agent.run(resume_text):
-    #         yield update
-    #         if isinstance(update, dict) and "data" in update:
-    #             final_resume = cast(JobOpeningAgentDTO, update["data"])
-    #
-    #     if not final_resume:
-    #         raise ValueError("resume parsing finished without final result")
-    #
-    #     yield {
-    #         "event": "final",
-    #         "data": final_resume,
-    #     }
-    # def job_opening_parse(
-    #     self,
-    #     path:str,
-    # )->Iterator[JobAgentEvent]:
-    #     txt = extract_text_from_pdf(path)
-    #     try:
-    #         for event in self._sse_events(
-    #             txt,
-    #         ):
-    #             yield event
-    #     except Exception as e:
-    #         error_event: JobAgentEvent = {
-    #             "event": "error",
-    #             "data":  str(e),
-    #         }
-    #         yield error_event
