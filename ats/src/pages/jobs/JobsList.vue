@@ -1,12 +1,6 @@
 <template>
     <div class="jc-page">
-        <!-- Toolbar with search and filters -->
 
-        <!-- <div class="flex justify-end w-full my-4 px-1">
-      <Button theme="gray" variant="solid" size="md" class="w-48" @click="createNewJob">
-        + New Job
-      </Button>
-    </div> -->
         <div class="jc-toolbar">
             <div class="jc-search">
                 <TextInput
@@ -22,25 +16,17 @@
             <div class="jc-filters">
                 <Select
                     class="w-48"
-                    placeholder="Select Department"
-                    v-model="filters.department"
-                    :options="departmentOptions"
+                    placeholder="Select Customer"
+                    v-model="filters.customer"
+                    :options="customerOptions"
                     @change="applyFilters"
                 />
 
                 <Select
                     class="w-48"
-                    placeholder="Select Location"
-                    v-model="filters.location"
-                    :options="locationOptions"
-                    @change="applyFilters"
-                />
-
-                <Select
-                    class="w-48"
-                    placeholder="Select Group"
-                    v-model="filters.group"
-                    :options="groupOptions"
+                    placeholder="Select Owner"
+                    v-model="filters.owner"
+                    :options="ownerOptions"
                     @change="applyFilters"
                 />
 
@@ -50,10 +36,6 @@
                     label="Include draft jobs"
                     @change="applyFilters"
                 />
-                <!--
-      <Button theme="gray" variant="solid" size="md" class="w-32" @click="createNewJob">
-        New Job
-      </Button> -->
             </div>
         </div>
 
@@ -202,11 +184,17 @@ JobDetailsAPI.init(createResource);
 // State
 const filters = ref({
     search: "",
+    customer: "",
+    owner: "",
     department: "",
     location: "",
     group: "",
     includeDrafts: true,
 });
+
+// Dynamic filter data
+const customers = ref([]);
+const owners = ref([]);
 
 const allJobs = ref([]);
 const filteredJobs = ref([]);
@@ -223,15 +211,50 @@ const parsedJobData = ref(null);
 const showEditDialog = ref(false);
 const selectedJobName = ref(null);
 
+loadCustomers();
+loadOwners();
 // Fetch jobs from API
 const jobsResource = createResource({
     url: "mawhub.job_opening_list",
     auto: true,
+    params: {
+            customer: filters.value.customer || '',
+            owner: filters.value.owner || '',
+    },
     onSuccess(data) {
         allJobs.value = transformJobData(data || []);
         applyFilters();
     },
 });
+
+// Load customers from Customer doctype
+async function loadCustomers() {
+    try {
+        const customerList = await JobDetailsAPI.getDocList('Customer', {
+            fields: ['name', 'customer_name'],
+            order_by: 'customer_name asc',
+        });
+        customers.value = customerList || [];
+    } catch (error) {
+        console.error('Failed to load customers:', error);
+        customers.value = [];
+    }
+}
+
+// Load owners from User doctype
+async function loadOwners() {
+    try {
+        const userList = await JobDetailsAPI.getDocList('User', {
+            fields: ['name', 'full_name'],
+            filters: { enabled: 1 },
+            order_by: 'full_name asc',
+        });
+        owners.value = userList || [];
+    } catch (error) {
+        console.error('Failed to load owners:', error);
+        owners.value = [];
+    }
+}
 
 // Transform API response to UI format
 function transformJobData(rawJobs) {
@@ -266,7 +289,8 @@ function transformJobData(rawJobs) {
             name: job.name,
             title: job.designation || "Untitled Position",
             department: job.department || "General",
-            customer : job.customer,
+            customer: job.customer,
+            owner: job.owner,
             location: job.location,
             work_mode: job.employment_type || "Full-time",
             is_published: isPublished,
@@ -281,57 +305,43 @@ function transformJobData(rawJobs) {
     });
 }
 
-// Computed properties for filter options
-const departments = computed(() => {
-    return [...new Set(allJobs.value.map((j) => j.department).filter(Boolean))].sort();
-});
-
-const locations = computed(() => {
-    return [...new Set(allJobs.value.map((j) => j.location).filter(Boolean))].sort();
-});
-
-const groups = computed(() => {
-    return [...new Set(allJobs.value.map((j) => j.group).filter(Boolean))].sort();
-});
-
 // Format options for Select components
-const departmentOptions = computed(() => [
-    { label: "All departments", value: "" },
-    ...departments.value.map((dept) => ({ label: dept, value: dept })),
+const customerOptions = computed(() => [
+    { label: "All customers", value: "" },
+    ...customers.value.map((customer) => ({ 
+        label: customer.customer_name || customer.name, 
+        value: customer.name 
+    })),
 ]);
 
-const locationOptions = computed(() => [
-    { label: "All locations", value: "" },
-    ...locations.value.map((loc) => ({ label: loc, value: loc })),
-]);
-
-const groupOptions = computed(() => [
-    { label: "No group applied", value: "" },
-    ...groups.value.map((grp) => ({ label: grp, value: grp })),
+const ownerOptions = computed(() => [
+    { label: "All owners", value: "" },
+    ...owners.value.map((owner) => ({ 
+        label: owner.full_name || owner.name, 
+        value: owner.name 
+    })),
 ]);
 
 // Apply filters
 function applyFilters() {
     const f = filters.value;
+    
+    // If customer or owner filter changed, reload from API
+    if (f.customer || f.owner) {
+        jobsResource.fetch();
+        return;
+    }
 
+    // Otherwise, filter client-side
     filteredJobs.value = allJobs.value.filter((j) => {
         // Filter drafts
         if (!f.includeDrafts && j.is_draft) return false;
-
-        // Filter by department
-        if (f.department && j.department !== f.department) return false;
-
-        // Filter by location
-        if (f.location && j.location !== f.location) return false;
-
-        // Filter by group
-        if (f.group && j.group !== f.group) return false;
 
         // Filter by search query
         if (f.search) {
             const query = f.search.toLowerCase();
             const searchText =
-                `${j.title} ${j.department} ${j.location} ${j.work_mode}`.toLowerCase();
+                `${j.title} ${j.customer || ''} ${j.department} ${j.location} ${j.work_mode}`.toLowerCase();
             if (!searchText.includes(query)) return false;
         }
 
