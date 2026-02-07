@@ -94,19 +94,26 @@ class CandidateDTO(TypedDict):
     appointment_letters: Optional[List[AppointmentLetterDTO]]
     job_offers: Optional[List[JobOfferDTO]]
     interviews: Optional[List[InterviewDTO]]
+
+class JobPipelineStepCandidateDTO(TypedDict):
+    name: str
+    job_applicant: str
+    applicant_resume: str
+    comment: str
+    candidate_count: int
 class JobPipelineStepDTO(TypedDict):
-    step_id: int
+    step_id: str
     step_name: str
     step_type: str
     step_idx: int
-    candidates: List[CandidateDTO]
+    candidates: List[JobPipelineStepCandidateDTO]
     candidate_count: int
 class JobOpeningDTO(TypedDict):
     name: str
     designation: str
     department: Optional[str]
     pipeline: Optional[str]
-    parsed_documents:List
+    parsed_documents:List[Any]
     employment_type: str
     location: str
     customer: str
@@ -163,6 +170,19 @@ def job_opening_sql_to_dto(job: JobView) -> JobOpeningDTO:
 
     steps = cast(list[JobPipelineStepDTO], steps)
 
+    all_steps = []
+    for step in steps:
+        for step_applicant in step["candidates"]:
+            all_steps.append(step_applicant)
+
+    steps.insert(0,{
+        "candidates" : all_steps,
+        "step_id" : "All",
+        "step_name" : "All",
+        "step_type" : "All",
+        "candidate_count" : len(all_steps),
+        "step_idx" : 1
+        })
     parsed_documents  : str = cast(str,get(job, "parsed_documents", "[]"))
     dto: JobOpeningDTO = {
         "name": get(job, "name", ""),

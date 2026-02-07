@@ -66,8 +66,16 @@
       </div>
     </template>
     <template #actions>
-      <Button @click="close">Cancel</Button>
-      <Button theme="gray" :variant="'solid'" @click="submit">Add Candidate</Button>
+      <Button @click="close">
+        Cancel
+      </Button>
+      <Button
+        theme="gray"
+        :variant="'solid'"
+        @click="submit"
+      >
+        Add Candidate
+      </Button>
     </template>
   </Dialog>
 </template>

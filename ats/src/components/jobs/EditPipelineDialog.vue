@@ -1,9 +1,12 @@
 <template>
-    <Dialog v-model="show" :options="{ title: 'Edit Pipeline', size: '3xl' }">
-        <template #body-content>
-            <div class="space-y-4">
-                <!-- Pipeline Name -->
-                <!-- <div>
+  <Dialog
+    v-model="show"
+    :options="{ title: 'Edit Pipeline', size: '3xl' }"
+  >
+    <template #body-content>
+      <div class="space-y-4">
+        <!-- Pipeline Name -->
+        <!-- <div>
                     <label class="block text-sm font-medium mb-1">Pipeline Name</label>
                     <TextInput
                         v-model="formData.name"
@@ -12,8 +15,8 @@
                     />
                 </div> -->
 
-                <!-- Pipeline Description -->
-                <!-- <div>
+        <!-- Pipeline Description -->
+        <!-- <div>
                     <label class="block text-sm font-medium mb-1">Description</label>
                     <textarea
                         v-model="formData.description"
@@ -23,82 +26,93 @@
                     />
                 </div> -->
 
-                <!-- Pipeline Steps -->
-                <div>
-                    <div class="flex justify-between items-center mb-2">
-                        <label class="block text-sm font-medium">Pipeline Steps</label>
-                        <Button size="sm" @click="addStep">
-                            <Plus :size="16" class="button-icon" />
-                            Add Step
-                        </Button>
-                    </div>
+        <!-- Pipeline Steps -->
+        <div>
+          <div class="flex justify-between items-center mb-2">
+            <label class="block text-sm font-medium">Pipeline Steps</label>
+            <Button
+              size="sm"
+              @click="addStep"
+            >
+              <Plus
+                :size="16"
+                class="button-icon"
+              />
+              Add Step
+            </Button>
+          </div>
 
-                    <div class="space-y-3">
-                        <div
-                            v-for="(step, index) in formData.steps"
-                            :key="index"
-                            class="pipeline-step-item"
-                        >
-                            <div class="step-number">{{ index + 1 }}</div>
-                            <div class="step-fields">
-                                <div class="step-field">
-                                    <label class="text-xs font-medium mb-1 block"
-                                        >Step Code</label
-                                    >
-                                    <TextInput
-                                        v-model="step.step_code"
-                                        type="text"
-                                        size="sm"
-                                        placeholder="e.g., SC"
-                                    />
-                                </div>
-                                <div class="step-field">
-                                    <label class="text-xs font-medium mb-1 block"
-                                        >Step Name</label
-                                    >
-                                    <TextInput
-                                        v-model="step.step_name"
-                                        type="text"
-                                        size="sm"
-                                        placeholder="e.g., Resume Review"
-                                    />
-                                </div>
-                                <div class="step-field">
-                                    <label class="text-xs font-medium mb-1 block"
-                                        >Step Type</label
-                                    >
-                                    <Select
-                                        v-model="step.step_type"
-                                        :options="stepTypeOptions"
-                                        size="sm"
-                                        placeholder="Select type"
-                                    />
-                                </div>
-                            </div>
-                            <Button
-                                size="sm"
-                                theme="gray"
-                                variant="ghost"
-                                @click="removeStep(index)"
-                                :disabled="formData.steps.length === 1"
-                            >
-                                <Trash2 :size="16" />
-                            </Button>
-                        </div>
-                    </div>
+          <div class="space-y-3">
+            <div
+              v-for="(step, index) in formData.steps"
+              :key="index"
+              class="pipeline-step-item"
+            >
+              <div class="step-number">
+                {{ index + 1 }}
+              </div>
+              <div class="step-fields">
+                <div class="step-field">
+                  <label class="text-xs font-medium mb-1 block">Step Code</label>
+                  <TextInput
+                    v-model="step.step_code"
+                    type="text"
+                    size="sm"
+                    placeholder="e.g., SC"
+                  />
                 </div>
+                <div class="step-field">
+                  <label class="text-xs font-medium mb-1 block">Step Name</label>
+                  <TextInput
+                    v-model="step.step_name"
+                    type="text"
+                    size="sm"
+                    placeholder="e.g., Resume Review"
+                  />
+                </div>
+                <div class="step-field">
+                  <label class="text-xs font-medium mb-1 block">Step Type</label>
+                  <Select
+                    v-model="step.step_type"
+                    :options="stepTypeOptions"
+                    size="sm"
+                    placeholder="Select type"
+                  />
+                </div>
+              </div>
+              <Button
+                size="sm"
+                theme="gray"
+                variant="ghost"
+                :disabled="formData.steps.length === 1"
+                @click="removeStep(index)"
+              >
+                <Trash2 :size="16" />
+              </Button>
             </div>
-        </template>
+          </div>
+        </div>
+      </div>
+    </template>
 
-        <template #actions>
-            <div class="flex w-full justify-between items-center">
-                <Button variant="outline" @click="show = false">Cancel</Button>
-                <Button variant="solid" @click="handleSubmit" :loading="isSubmitting">
-                    Save Changes
-                </Button>
-            </div>
-        </template>
-    </Dialog>
+    <template #actions>
+      <div class="flex w-full justify-between items-center">
+        <Button
+          variant="outline"
+          @click="show = false"
+        >
+          Cancel
+        </Button>
+        <Button
+          variant="solid"
+          :loading="isSubmitting"
+          @click="handleSubmit"
+        >
+          Save Changes
+        </Button>
+      </div>
+    </template>
+  </Dialog>
 </template>
 
 <script setup>

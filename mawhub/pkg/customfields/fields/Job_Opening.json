@@ -14,21 +14,27 @@
     "fieldname": "custom_pipeline_steps",
     "label": "Pipeline Steps",
     "fieldtype": "Table",
-    "insert_after": "custom_pipeline",
+    "insert_after": "job_pipeline",
     "options": "Pipeline Step",
-    "in_list_view": 1,
-    "default": "Main",
     "in_standard_filter": 1,
     "reqd": 0
   },
   {
-    "fieldname": "custom_customer",
-    "label": "Customer",
-    "fieldtype": "Link",
-    "insert_after": "customer",
-    "options": "Customer",
-    "in_list_view": 1,
-    "in_standard_filter": 1,
-    "reqd": 0
+   "fieldname": "custom_applicants",
+   "label": "Applicants",
+   "fieldtype": "Table",
+   "insert_after": "custom_pipeline_steps",
+   "options": "Job Opening Applicant",
+   "reqd": 0
+  },
+  {
+   "fieldname": "custom_customer",
+   "label": "Customer",
+   "fieldtype": "Link",
+   "insert_after": "customer",
+   "options": "Customer",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "reqd": 0
   }
 ]

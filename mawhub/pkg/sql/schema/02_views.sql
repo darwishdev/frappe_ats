@@ -403,21 +403,19 @@ WITH
       COUNT(a.name) AS candidate_count,
       IF(COUNT(a.name) = 0, JSON_ARRAY(), JSON_ARRAYAGG(
         JSON_OBJECT(
-          'applicant_id', a.name,
-          'applicant_name', a.applicant_name,
-          'applicant_email', a.email_id,
-          'applicant_status', a.status,
-          'applicant_rating', a.applicant_rating,
-          "applicant_source" , a.source,
-          "applicant_phone" , a.phone_number,
-          "applicant_country" , a.country,
-          "applicant_designation" , a.designation
+          'applicant_resume', a.applicant_resume,
+          'owner', a.job_applicant,
+          'job_applicant', a.job_applicant,
+          'name', a.name,
+          'comment' , a.comment
         )
       )) AS candidates
     FROM job_structure js
-    LEFT JOIN `tabJob Applicant` a ON (
-      js.step_id = a.custom_pipeline_step
-      AND a.job_title = js.job_name
+    LEFT JOIN `tabJob Opening Applicant` a ON (
+      js.step_id = a.step
+      AND a.parent = js.job_name
+      AND a.parenttype = 'Job Opening'
+      AND a.invalidated_at IS NULL
     )
     GROUP BY js.job_name, js.step_id, js.step_name, js.step_type, js.step_idx
   ),

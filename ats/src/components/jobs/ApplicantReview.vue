@@ -1,6 +1,8 @@
 <template>
   <div class="applicant-review">
-    <div class="text-muted">Review details coming soon...</div>
+    <div class="text-muted">
+      Review details coming soon...
+    </div>
   </div>
 </template>
 

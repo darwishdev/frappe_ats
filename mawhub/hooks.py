@@ -7,6 +7,10 @@ app_license = "mit"
 after_install = "mawhub.pkg.installer.installer.after_install"
 after_migrate = "mawhub.pkg.installer.installer.after_migrate"
 
+
+override_doctype_class = {
+    "Job Opening": "mawhub.pkg.docoverrides.job_opening.CustomJobOpening",
+}
 cli_commands = {
     "sqlgen": "mawhub.commands.sqlgen.sqlgen",
 }

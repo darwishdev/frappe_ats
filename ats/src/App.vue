@@ -1,3 +1,74 @@
+<script setup lang="ts">
+import { Sidebar, Breadcrumbs } from 'frappe-ui'
+import { session } from './data/session'
+import { useRoute } from 'vue-router'
+import { computed } from 'vue'
+
+const route = useRoute()
+
+// Route metadata mapping for breadcrumbs
+const routeMetadata = {
+  '/': {
+    label: 'Dashboard',
+    icon: 'lucide-home',
+  },
+  '/jobs-pipeline': {
+    label: 'Job Openings',
+    icon: 'lucide-briefcase',
+  },
+  '/candidates': {
+    label: 'Candidates',
+    icon: 'lucide-users',
+  },
+  '/interviews': {
+    label: 'Interviews',
+    icon: 'lucide-calendar',
+  },
+}
+
+// Dynamically generate breadcrumb items based on current route
+const breadcrumbItems = computed(() => {
+  const items = [
+    {
+      label: 'Home',
+      icon: 'lucide-home',
+      route: '/',
+    },
+  ]
+
+  const currentPath = route.path
+
+  // Handle job details page
+  if (currentPath.startsWith('/jobs/') || currentPath === '/job-details') {
+    items.push({
+      label: 'Job Openings',
+      icon: 'lucide-briefcase',
+      route: '/jobs-pipeline',
+    })
+    items.push({
+      label: 'Job Details',
+      icon: 'lucide-file-text',
+      route: currentPath,
+    })
+    return items
+  }
+
+  // If we're not on home page, add the current page
+  if (currentPath !== '/' && routeMetadata[currentPath]) {
+    items.push({
+      label: routeMetadata[currentPath].label,
+      icon: routeMetadata[currentPath].icon,
+      route: currentPath,
+    })
+  }
+
+  return items
+})
+
+function showHelp() {
+  alert('Help documentation coming soon!')
+}
+</script>
 <template>
   <div class="flex h-screen w-full">
     <Sidebar
@@ -63,80 +134,8 @@
   </div>
 </template>
 
-<script setup>
-import { Sidebar, Breadcrumbs } from "frappe-ui";
-import { session } from "./data/session";
-import { useRoute } from "vue-router";
-import { computed } from "vue";
-
-const route = useRoute();
-
-// Route metadata mapping for breadcrumbs
-const routeMetadata = {
-  "/": {
-    label: "Dashboard",
-    icon: "lucide-home",
-  },
-  "/jobs-pipeline": {
-    label: "Job Openings",
-    icon: "lucide-briefcase",
-  },
-  "/candidates": {
-    label: "Candidates",
-    icon: "lucide-users",
-  },
-  "/interviews": {
-    label: "Interviews",
-    icon: "lucide-calendar",
-  },
-};
-
-// Dynamically generate breadcrumb items based on current route
-const breadcrumbItems = computed(() => {
-  const items = [
-    {
-      label: "Home",
-      icon: "lucide-home",
-      route: "/",
-    },
-  ];
-
-  const currentPath = route.path;
-  
-  // Handle job details page
-  if (currentPath.startsWith("/jobs/") || currentPath === "/job-details") {
-    items.push({
-      label: "Job Openings",
-      icon: "lucide-briefcase",
-      route: "/jobs-pipeline",
-    });
-    items.push({
-      label: "Job Details",
-      icon: "lucide-file-text",
-      route: currentPath,
-    });
-    return items;
-  }
-  
-  // If we're not on home page, add the current page
-  if (currentPath !== "/" && routeMetadata[currentPath]) {
-    items.push({
-      label: routeMetadata[currentPath].label,
-      icon: routeMetadata[currentPath].icon,
-      route: currentPath,
-    });
-  }
-
-  return items;
-});
-
-function showHelp() {
-  alert("Help documentation coming soon!");
-}
-</script>
 <style>
-
-  .app-container{
-    background: linear-gradient(120deg, #7700bc0b, #7700bc07 60%, #ffffff05 82%) !important;
-  }
+.app-container {
+  background: linear-gradient(120deg, #7700bc0b, #7700bc07 60%, #ffffff05 82%) !important;
+}
 </style>

@@ -1,13 +1,21 @@
 <template>
   <div class="applicant-timeline">
-    <div v-if="loading" class="loading-state">
-      <div class="loading-spinner"></div>
+    <div
+      v-if="loading"
+      class="loading-state"
+    >
+      <div class="loading-spinner" />
       <p>Loading interviews...</p>
     </div>
     
-    <div v-else-if="interviews && interviews.length > 0" class="timeline-content">
+    <div
+      v-else-if="interviews && interviews.length > 0"
+      class="timeline-content"
+    >
       <div class="timeline-header">
-        <h3 class="timeline-title">Interview History</h3>
+        <h3 class="timeline-title">
+          Interview History
+        </h3>
         <span class="interview-count">{{ interviews.length }} interview{{ interviews.length > 1 ? 's' : '' }}</span>
       </div>
       
@@ -18,14 +26,16 @@
           class="timeline-item"
         >
           <div class="timeline-marker">
-            <div :class="['timeline-dot', getStatusClass(interview.status)]"></div>
-            <div class="timeline-line"></div>
+            <div :class="['timeline-dot', getStatusClass(interview.status)]" />
+            <div class="timeline-line" />
           </div>
           
           <div class="timeline-card">
             <div class="interview-header">
               <div>
-                <h4 class="interview-round">{{ interview.interview_round }}</h4>
+                <h4 class="interview-round">
+                  {{ interview.interview_round }}
+                </h4>
                 <div class="interview-meta">
                   <span class="interview-id">{{ interview.name }}</span>
                   <span class="interview-designation">{{ interview.designation }}</span>
@@ -39,46 +49,90 @@
             <div class="interview-details">
               <div class="interview-detail-row">
                 <div class="interview-detail-item">
-                  <Calendar :size="20" class="detail-icon" />
+                  <Calendar
+                    :size="20"
+                    class="detail-icon"
+                  />
                   <div>
-                    <div class="detail-label">Scheduled Date</div>
-                    <div class="detail-value">{{ formatDate(interview.scheduled_on) }}</div>
+                    <div class="detail-label">
+                      Scheduled Date
+                    </div>
+                    <div class="detail-value">
+                      {{ formatDate(interview.scheduled_on) }}
+                    </div>
                   </div>
                 </div>
                 
                 <div class="interview-detail-item">
-                  <Clock :size="20" class="detail-icon" />
+                  <Clock
+                    :size="20"
+                    class="detail-icon"
+                  />
                   <div>
-                    <div class="detail-label">Time</div>
-                    <div class="detail-value">{{ formatTime(interview.from_time) }} - {{ formatTime(interview.to_time) }}</div>
+                    <div class="detail-label">
+                      Time
+                    </div>
+                    <div class="detail-value">
+                      {{ formatTime(interview.from_time) }} - {{ formatTime(interview.to_time) }}
+                    </div>
                   </div>
                 </div>
                 
-                <div v-if="interview.expected_average_rating" class="interview-detail-item">
-                  <Star :size="20" class="detail-icon" />
+                <div
+                  v-if="interview.expected_average_rating"
+                  class="interview-detail-item"
+                >
+                  <Star
+                    :size="20"
+                    class="detail-icon"
+                  />
                   <div>
-                    <div class="detail-label">Expected Rating</div>
-                    <div class="detail-value">{{ interview.expected_average_rating }}/5</div>
+                    <div class="detail-label">
+                      Expected Rating
+                    </div>
+                    <div class="detail-value">
+                      {{ interview.expected_average_rating }}/5
+                    </div>
                   </div>
                 </div>
                 
-                <div v-if="interview.average_rating" class="interview-detail-item">
-                  <Sparkles :size="20" class="detail-icon" />
+                <div
+                  v-if="interview.average_rating"
+                  class="interview-detail-item"
+                >
+                  <Sparkles
+                    :size="20"
+                    class="detail-icon"
+                  />
                   <div>
-                    <div class="detail-label">Actual Rating</div>
-                    <div class="detail-value">{{ interview.average_rating }}/5</div>
+                    <div class="detail-label">
+                      Actual Rating
+                    </div>
+                    <div class="detail-value">
+                      {{ interview.average_rating }}/5
+                    </div>
                   </div>
                 </div>
               </div>
               
-              <div v-if="interview.interview_summary" class="interview-summary">
-                <div class="summary-label">Summary</div>
-                <p class="summary-text">{{ interview.interview_summary }}</p>
+              <div
+                v-if="interview.interview_summary"
+                class="interview-summary"
+              >
+                <div class="summary-label">
+                  Summary
+                </div>
+                <p class="summary-text">
+                  {{ interview.interview_summary }}
+                </p>
               </div>
               
               <div class="interview-footer">
                 <span class="interview-timestamp">Created: {{ formatDateTime(interview.creation) }}</span>
-                <span v-if="interview.modified !== interview.creation" class="interview-timestamp">Modified: {{ formatDateTime(interview.modified) }}</span>
+                <span
+                  v-if="interview.modified !== interview.creation"
+                  class="interview-timestamp"
+                >Modified: {{ formatDateTime(interview.modified) }}</span>
               </div>
             </div>
           </div>
@@ -86,13 +140,28 @@
       </div>
     </div>
     
-    <div v-else class="empty-state">
+    <div
+      v-else
+      class="empty-state"
+    >
       <div class="empty-state-icon">
-        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M8 2v4m8-4v4M3 10h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="64"
+          height="64"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M8 2v4m8-4v4M3 10h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z" />
         </svg>
       </div>
-      <h3 class="empty-state-title">No Interviews Yet</h3>
+      <h3 class="empty-state-title">
+        No Interviews Yet
+      </h3>
       <p class="empty-state-description">
         Interviews will appear here once they are scheduled for this applicant.
       </p>

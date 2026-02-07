@@ -2,22 +2,44 @@
   <div class="applicant-communication">
     <div class="empty-state">
       <div class="empty-state-icon">
-        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-          <rect width="20" height="16" x="2" y="4" rx="2"/>
-          <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="64"
+          height="64"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <rect
+            width="20"
+            height="16"
+            x="2"
+            y="4"
+            rx="2"
+          />
+          <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
         </svg>
       </div>
-      <h3 class="empty-state-title">No Communications Yet</h3>
+      <h3 class="empty-state-title">
+        No Communications Yet
+      </h3>
       <p class="empty-state-description">
         Email communications with this applicant will appear here. Click "Send Email" to start a conversation.
       </p>
-    <Button class="p-4 px-7 mt-3"
+      <Button
+        class="p-4 px-7 mt-3"
         theme="gray"
         :variant="'solid'"
-        @click="showSendEmailDialog = true"
         :disabled="!candidate"
+        @click="showSendEmailDialog = true"
       >
-        <Mail :size="16" class="button-icon" />
+        <Mail
+          :size="16"
+          class="button-icon"
+        />
         Send Email
       </Button>
     </div>

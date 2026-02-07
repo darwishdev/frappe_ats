@@ -1,7 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "field:job_applicant",
+ "autoname": "prompt",
  "creation": "2026-01-19 15:43:15.345081",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -10,11 +10,11 @@
   "skills",
   "summary",
   "raw_resume_text",
-  "raw_resume_json",
   "experience",
   "education",
   "projects",
-  "links"
+  "links",
+  "resume_hash"
  ],
  "fields": [
   {
@@ -23,8 +23,7 @@
    "in_list_view": 1,
    "label": "Job Applicant",
    "options": "Job Applicant",
-   "reqd": 1,
-   "unique": 1
+   "reqd": 1
   },
   {
    "fieldname": "skills",
@@ -37,14 +36,15 @@
    "label": "Summary"
   },
   {
+   "fieldname": "resume_hash",
+   "fieldtype": "Data",
+   "label": "Resume Hash",
+   "unique": 1
+  },
+  {
    "fieldname": "raw_resume_text",
    "fieldtype": "Long Text",
    "label": "Raw Resume Text"
-  },
-  {
-   "fieldname": "raw_resume_json",
-   "fieldtype": "Long Text",
-   "label": "Raw Resume Json"
   },
   {
    "fieldname": "experience",
@@ -74,11 +74,11 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-01-21 14:10:44.428104",
- "modified_by": "ahmed@mawhub.io",
+ "modified": "2026-02-07 01:49:38.229223",
+ "modified_by": "Administrator",
  "module": "Mawhub",
  "name": "Applicant Resume",
- "naming_rule": "By fieldname",
+ "naming_rule": "Set by user",
  "owner": "Administrator",
  "permissions": [
   {

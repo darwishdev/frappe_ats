@@ -6,18 +6,28 @@
       size: '5xl' 
     }"
   >
-  <template #body-content>
-      <div v-if="loading && !applicantProfile" class="profile-loading">
-        <div class="text-center py-8 text-gray-500">Loading profile...</div>
+    <template #body-content>
+      <div
+        v-if="loading && !applicantProfile"
+        class="profile-loading"
+      >
+        <div class="text-center py-8 text-gray-500">
+          Loading profile...
+        </div>
       </div>
-      <div v-else-if="applicantProfile || isLoading" class="profile-container">
+      <div
+        v-else-if="applicantProfile || isLoading"
+        class="profile-container"
+      >
         <!-- Header Section -->
         <div class="profile-header">
           <div class="profile-avatar-large">
-            {{ applicantProfile?.personal?.name?.charAt(0).toUpperCase() || applicantProfile.applicant_name?.charAt(0).toUpperCase()}}
+            {{ applicantProfile?.personal?.name?.charAt(0).toUpperCase() || applicantProfile.applicant_name?.charAt(0).toUpperCase() }}
           </div>
           <div class="profile-header-info">
-            <h2 class="profile-name">{{ applicantProfile?.personal?.name || applicantProfile.applicant_name || candidateName }}</h2>
+            <h2 class="profile-name">
+              {{ applicantProfile?.personal?.name || applicantProfile.applicant_name || candidateName }}
+            </h2>
             <div class="profile-contact-links">
               <a
                 v-for="link in applicantProfile.links"
@@ -34,127 +44,234 @@
 
         <!-- Personal Information Section -->
         <div class="profile-section">
-          <h3 class="profile-section-title">Personal Information</h3>
-          <div v-if="isLoading && !applicantProfile?.personal" class="profile-loading-state">
-            <div class="loading-spinner"></div>
+          <h3 class="profile-section-title">
+            Personal Information
+          </h3>
+          <div
+            v-if="isLoading && !applicantProfile?.personal"
+            class="profile-loading-state"
+          >
+            <div class="loading-spinner" />
             <span class="loading-text">Parsing personal information...</span>
           </div>
-          <div v-else-if="applicantProfile?.personal" class="profile-personal-grid">
-            <div v-if="applicantProfile.personal.name" class="profile-personal-item">
+          <div
+            v-else-if="applicantProfile?.personal"
+            class="profile-personal-grid"
+          >
+            <div
+              v-if="applicantProfile.personal.name"
+              class="profile-personal-item"
+            >
               <span class="profile-personal-icon">👤</span>
               <div>
-                <div class="profile-personal-label">Name</div>
-                <div class="profile-personal-value">{{ applicantProfile.personal.name }}</div>
+                <div class="profile-personal-label">
+                  Name
+                </div>
+                <div class="profile-personal-value">
+                  {{ applicantProfile.personal.name }}
+                </div>
               </div>
             </div>
-            <div v-if="applicantProfile.personal.email" class="profile-personal-item">
+            <div
+              v-if="applicantProfile.personal.email"
+              class="profile-personal-item"
+            >
               <span class="profile-personal-icon">📧</span>
               <div>
-                <div class="profile-personal-label">Email</div>
-                <div class="profile-personal-value">{{ applicantProfile.personal.email }}</div>
+                <div class="profile-personal-label">
+                  Email
+                </div>
+                <div class="profile-personal-value">
+                  {{ applicantProfile.personal.email }}
+                </div>
               </div>
             </div>
-            <div v-if="applicantProfile.personal.phone" class="profile-personal-item">
+            <div
+              v-if="applicantProfile.personal.phone"
+              class="profile-personal-item"
+            >
               <span class="profile-personal-icon">📱</span>
               <div>
-                <div class="profile-personal-label">Phone</div>
-                <div class="profile-personal-value">{{ applicantProfile.personal.phone }}</div>
+                <div class="profile-personal-label">
+                  Phone
+                </div>
+                <div class="profile-personal-value">
+                  {{ applicantProfile.personal.phone }}
+                </div>
               </div>
             </div>
-            <div v-if="applicantProfile.personal.location" class="profile-personal-item">
+            <div
+              v-if="applicantProfile.personal.location"
+              class="profile-personal-item"
+            >
               <span class="profile-personal-icon">📍</span>
               <div>
-                <div class="profile-personal-label">Location</div>
-                <div class="profile-personal-value">{{ applicantProfile.personal.location }}</div>
+                <div class="profile-personal-label">
+                  Location
+                </div>
+                <div class="profile-personal-value">
+                  {{ applicantProfile.personal.location }}
+                </div>
               </div>
             </div>
           </div>
-          <p v-else class="profile-empty-state">No personal information available</p>
+          <p
+            v-else
+            class="profile-empty-state"
+          >
+            No personal information available
+          </p>
         </div>
 
         <!-- Summary Section -->
         <div class="profile-section">
-          <h3 class="profile-section-title">Summary</h3>
-          <div v-if="isLoading && !applicantProfile?.summary" class="profile-loading-state">
-            <div class="loading-spinner"></div>
+          <h3 class="profile-section-title">
+            Summary
+          </h3>
+          <div
+            v-if="isLoading && !applicantProfile?.summary"
+            class="profile-loading-state"
+          >
+            <div class="loading-spinner" />
             <span class="loading-text">Parsing summary...</span>
           </div>
-          <p v-else-if="applicantProfile.summary" class="profile-summary-text">{{ applicantProfile.summary }}</p>
-          <p v-else class="profile-empty-state">No summary available</p>
+          <p
+            v-else-if="applicantProfile.summary"
+            class="profile-summary-text"
+          >
+            {{ applicantProfile.summary }}
+          </p>
+          <p
+            v-else
+            class="profile-empty-state"
+          >
+            No summary available
+          </p>
         </div>
 
         <!-- Experience Section -->
         <div class="profile-section">
-          <h3 class="profile-section-title">Experience</h3>
-          <div v-if="isLoading && (!applicantProfile?.experience || applicantProfile?.experience?.length === 0)" class="profile-loading-state">
-            <div class="loading-spinner"></div>
+          <h3 class="profile-section-title">
+            Experience
+          </h3>
+          <div
+            v-if="isLoading && (!applicantProfile?.experience || applicantProfile?.experience?.length === 0)"
+            class="profile-loading-state"
+          >
+            <div class="loading-spinner" />
             <span class="loading-text">Parsing experience...</span>
           </div>
-          <div v-else-if="applicantProfile.experience?.length" class="profile-timeline">
+          <div
+            v-else-if="applicantProfile.experience?.length"
+            class="profile-timeline"
+          >
             <div
               v-for="(exp, idx) in applicantProfile.experience"
               :key="idx"
               class="profile-timeline-item"
             >
-              <div class="profile-timeline-dot"></div>
+              <div class="profile-timeline-dot" />
               <div class="profile-timeline-content">
                 <div class="profile-exp-header">
                   <div>
-                    <h4 class="profile-exp-role">{{ exp.role }}</h4>
-                    <div class="profile-exp-company">{{ exp.company }}</div>
+                    <h4 class="profile-exp-role">
+                      {{ exp.role }}
+                    </h4>
+                    <div class="profile-exp-company">
+                      {{ exp.company }}
+                    </div>
                   </div>
                   <div class="profile-exp-duration">
                     {{ formatProfileDate(exp.from_date) }} - {{ formatProfileDate(exp.to_date) }}
                   </div>
                 </div>
-                <p class="profile-exp-description" v-if="exp.description">{{ exp.description }}</p>
+                <p
+                  v-if="exp.description"
+                  class="profile-exp-description"
+                >
+                  {{ exp.description }}
+                </p>
               </div>
             </div>
           </div>
-          <p v-else class="profile-empty-state">No experience available</p>
+          <p
+            v-else
+            class="profile-empty-state"
+          >
+            No experience available
+          </p>
         </div>
 
         <!-- Education Section -->
         <div class="profile-section">
-          <h3 class="profile-section-title">Education</h3>
-          <div v-if="isLoading && (!applicantProfile?.education || applicantProfile?.education?.length === 0)" class="profile-loading-state">
-            <div class="loading-spinner"></div>
+          <h3 class="profile-section-title">
+            Education
+          </h3>
+          <div
+            v-if="isLoading && (!applicantProfile?.education || applicantProfile?.education?.length === 0)"
+            class="profile-loading-state"
+          >
+            <div class="loading-spinner" />
             <span class="loading-text">Parsing education...</span>
           </div>
-          <div v-else-if="applicantProfile.education?.length" class="profile-education-list">
+          <div
+            v-else-if="applicantProfile.education?.length"
+            class="profile-education-list"
+          >
             <div
               v-for="(edu, idx) in applicantProfile.education"
               :key="idx"
               class="profile-education-item"
             >
-              <div class="profile-edu-icon">🎓</div>
+              <div class="profile-edu-icon">
+                🎓
+              </div>
               <div>
-                <h4 class="profile-edu-degree">{{ edu.degree }}</h4>
-                <div class="profile-edu-institution">{{ edu.institution }}</div>
+                <h4 class="profile-edu-degree">
+                  {{ edu.degree }}
+                </h4>
+                <div class="profile-edu-institution">
+                  {{ edu.institution }}
+                </div>
                 <div class="profile-edu-duration">
                   {{ formatProfileDate(edu.from_date) }} - {{ formatProfileDate(edu.to_date) }}
                 </div>
               </div>
             </div>
           </div>
-          <p v-else class="profile-empty-state">No education available</p>
+          <p
+            v-else
+            class="profile-empty-state"
+          >
+            No education available
+          </p>
         </div>
 
         <!-- Projects Section -->
         <div class="profile-section">
-          <h3 class="profile-section-title">Projects</h3>
-          <div v-if="isLoading && (!applicantProfile?.projects || applicantProfile?.projects?.length === 0)" class="profile-loading-state">
-            <div class="loading-spinner"></div>
+          <h3 class="profile-section-title">
+            Projects
+          </h3>
+          <div
+            v-if="isLoading && (!applicantProfile?.projects || applicantProfile?.projects?.length === 0)"
+            class="profile-loading-state"
+          >
+            <div class="loading-spinner" />
             <span class="loading-text">Parsing projects...</span>
           </div>
-          <div v-else-if="applicantProfile.projects?.length" class="profile-projects-grid">
+          <div
+            v-else-if="applicantProfile.projects?.length"
+            class="profile-projects-grid"
+          >
             <div
               v-for="(project, idx) in applicantProfile.projects"
               :key="idx"
               class="profile-project-card"
             >
               <div class="profile-project-header">
-                <h4 class="profile-project-title">{{ project.title }}</h4>
+                <h4 class="profile-project-title">
+                  {{ project.title }}
+                </h4>
                 <a
                   v-if="project.link"
                   :href="project.link"
@@ -164,20 +281,35 @@
                   🔗
                 </a>
               </div>
-              <p class="profile-project-description">{{ project.description }}</p>
+              <p class="profile-project-description">
+                {{ project.description }}
+              </p>
             </div>
           </div>
-          <p v-else class="profile-empty-state">No projects available</p>
+          <p
+            v-else
+            class="profile-empty-state"
+          >
+            No projects available
+          </p>
         </div>
 
         <!-- Skills Section -->
         <div class="profile-section">
-          <h3 class="profile-section-title">Skills</h3>
-          <div v-if="isLoading && (!applicantProfile?.skills || applicantProfile?.skills?.length === 0)" class="profile-loading-state">
-            <div class="loading-spinner"></div>
+          <h3 class="profile-section-title">
+            Skills
+          </h3>
+          <div
+            v-if="isLoading && (!applicantProfile?.skills || applicantProfile?.skills?.length === 0)"
+            class="profile-loading-state"
+          >
+            <div class="loading-spinner" />
             <span class="loading-text">Parsing skills...</span>
           </div>
-          <div v-else-if="applicantProfile?.skills && Array.isArray(applicantProfile.skills) && applicantProfile.skills.length > 0" class="profile-skills-grid">
+          <div
+            v-else-if="applicantProfile?.skills && Array.isArray(applicantProfile.skills) && applicantProfile.skills.length > 0"
+            class="profile-skills-grid"
+          >
             <span
               v-for="(skill, idx) in applicantProfile.skills"
               :key="idx"
@@ -186,13 +318,25 @@
               {{ skill }}
             </span>
           </div>
-          <p v-else-if="applicantProfile?.skills && typeof applicantProfile.skills === 'string'" class="profile-skills-text">{{ applicantProfile.skills }}</p>
-          <p v-else class="profile-empty-state">No skills available</p>
+          <p
+            v-else-if="applicantProfile?.skills && typeof applicantProfile.skills === 'string'"
+            class="profile-skills-text"
+          >
+            {{ applicantProfile.skills }}
+          </p>
+          <p
+            v-else
+            class="profile-empty-state"
+          >
+            No skills available
+          </p>
         </div>
       </div>
     </template>
     <template #actions>
-      <Button @click="close">Close</Button>
+      <Button @click="close">
+        Close
+      </Button>
     </template>
   </Dialog>
 </template>

@@ -1,6 +1,6 @@
 from typing import List, TypedDict
 
-from mawhub.app.job.dto.applicant_resume import ApplicantResumeDTO
+from mawhub.app.job.dto.applicant_resume_dto import ApplicantResumeDTO
 
 class JobApplicantCreateWithResume(TypedDict):
     applicant_resume: ApplicantResumeDTO

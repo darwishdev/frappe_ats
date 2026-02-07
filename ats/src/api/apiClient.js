@@ -172,7 +172,7 @@ export const JobDetailsAPI = {
      * @param {string} applicantId - Job applicant ID/email
      * @returns {Promise<Object>} Job applicant details (ApplicantResumeDTO)
      */
-    jobApplicantFind: function (applicantId) {
+    jobApplicantFind: function (applicantId, jobId) {
         if (!_createResource) {
             throw new Error(
                 "JobDetailsAPI not initialized. Call JobDetailsAPI.init(createResource) first.",
@@ -184,6 +184,7 @@ export const JobDetailsAPI = {
             method: "GET",
             params: {
                 name: applicantId,
+                job: jobId,
             },
             auto: true,
         });
@@ -347,8 +348,8 @@ export const JobDetailsAPI = {
             // Build query parameters
             const params = new URLSearchParams({
                 ...jobData,
-                parent_type : 'job_opening',
-                parent_id : 'job_opening'
+                parent_type: "job_opening",
+                parent_id: "job_opening",
             });
 
             // Construct the URL
@@ -576,12 +577,14 @@ export const JobDetailsAPI = {
                         "Content-Type": "application/json",
                         "X-Frappe-CSRF-Token": window.frappe?.csrf_token || "",
                     },
-                }
+                },
             );
 
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({}));
-                throw new Error(errorData.exception || errorData.message || `Failed to fetch ${doctype}`);
+                throw new Error(
+                    errorData.exception || errorData.message || `Failed to fetch ${doctype}`,
+                );
             }
 
             const result = await response.json();
@@ -610,22 +613,22 @@ export const JobDetailsAPI = {
 
             // Add fields
             if (options.fields && Array.isArray(options.fields)) {
-                params.append('fields', JSON.stringify(options.fields));
+                params.append("fields", JSON.stringify(options.fields));
             }
 
             // Add filters
             if (options.filters) {
-                params.append('filters', JSON.stringify(options.filters));
+                params.append("filters", JSON.stringify(options.filters));
             }
 
             // Add limit
             if (options.limit) {
-                params.append('limit_page_length', options.limit);
+                params.append("limit_page_length", options.limit);
             }
 
             // Add order_by
             if (options.order_by) {
-                params.append('order_by', options.order_by);
+                params.append("order_by", options.order_by);
             }
 
             const response = await fetch(
@@ -636,12 +639,14 @@ export const JobDetailsAPI = {
                         "Content-Type": "application/json",
                         "X-Frappe-CSRF-Token": window.frappe?.csrf_token || "",
                     },
-                }
+                },
             );
 
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({}));
-                throw new Error(errorData.exception || errorData.message || `Failed to fetch ${doctype} list`);
+                throw new Error(
+                    errorData.exception || errorData.message || `Failed to fetch ${doctype} list`,
+                );
             }
 
             const result = await response.json();
@@ -658,7 +663,7 @@ export const JobDetailsAPI = {
      * @returns {Promise<Object>} Pipeline document
      */
     getPipeline: async function (pipelineName) {
-        return this.getDoc('Job Pipeline', pipelineName);
+        return this.getDoc("Job Pipeline", pipelineName);
     },
 
     /**
@@ -703,8 +708,8 @@ export const JobDetailsAPI = {
         }
 
         const params = {};
-        params.customer = filters.customer || '';
-        params.owner = filters.owner || '';
+        params.customer = filters.customer || "";
+        params.owner = filters.owner || "";
 
         const resource = _createResource({
             url: "mawhub.job_opening_list",
@@ -738,7 +743,9 @@ export const JobDetailsAPI = {
 
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({}));
-                throw new Error(errorData.exception || errorData.message || "Failed to save document");
+                throw new Error(
+                    errorData.exception || errorData.message || "Failed to save document",
+                );
             }
 
             const result = await response.json();

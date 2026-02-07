@@ -1,7 +1,7 @@
 from typing import Any, Dict, List, Protocol, cast
 import frappe
 
-from mawhub.app.job.dto.applicant_resume import ApplicantResumeDTO
+from mawhub.app.job.dto.applicant_resume_dto import ApplicantResumeDTO
 from mawhub.pkg.baseclasses.app_repo import AppRepo, AppRepoInterface
 from mawhub.sqltypes.table_models import JobOpening
 from mawhub.sqltypes.tal_models import JobView
@@ -38,6 +38,7 @@ class JobOpeningRepo(AppRepo[JobOpening]):
             ],
             child_tables={
                 "custom_pipeline_steps" : "custom_pipeline_steps",
+                "custom_applicants" : "custom_applicants",
             },
         )
     def job_opening_list(self,filters: Dict[str, Any] | None = None)->List[JobView]:
