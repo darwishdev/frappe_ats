@@ -11,6 +11,7 @@ after_migrate = "mawhub.pkg.installer.installer.after_migrate"
 override_doctype_class = {
     "Job Opening": "mawhub.pkg.docoverrides.job_opening.CustomJobOpening",
 }
+app_include_js = "/assets/mawhub/js/job_applicant.js"
 cli_commands = {
     "sqlgen": "mawhub.commands.sqlgen.sqlgen",
 }

@@ -1,3 +1,0 @@
-yarn run v1.22.22
-$ eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx --fix --ignore-path .gitignore -selection clip
-info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command.
