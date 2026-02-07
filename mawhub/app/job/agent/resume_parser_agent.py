@@ -1,43 +1,130 @@
-import json
 from typing import Dict,  Iterator, List, Literal, Type, TypedDict, cast, Callable, Optional
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from frappe.utils import hashlib
+from frappe import Union
 from pydantic import BaseModel, Field
 from google import genai
 from google.genai import types
 
-# Import your DTOs
-from mawhub.app.job.dto.applicant_resume import (
-    ApplicantEducation, ApplicantExperience,
-    ApplicantProject, ApplicantResumeDTO, PersonalInfo
-)
+class ApplicantExperience(BaseModel):
+    company: str = Field(
+        description="Company or organization name exactly as written in the resume. Do not normalize."
+    )
+    role: str = Field(
+        description="Job title or role exactly as written. Do not merge multiple roles."
+    )
+    from_date: str = Field(
+        description="Start date exactly as written (no normalization or inference)."
+    )
+    to_date: str = Field(
+        description="End date exactly as written. If ongoing, return the literal text such as 'Present'."
+    )
+    description: str = Field(
+        description="Responsibilities and achievements exactly as written. Preserve wording."
+    )
 
-# --- 1. Wrapper Models (REQUIRED for Gemini Lists) ---
-# The SDK cannot handle List[Model] directly, so we wrap them.
+class ApplicantEducation(BaseModel):
+    institution: str = Field(
+        description="Institution or university name exactly as written."
+    )
+    degree: str = Field(
+        description="Degree or certification exactly as written. Do not infer level."
+    )
+    from_date: str = Field(
+        description="Start date exactly as written."
+    )
+    to_date: str = Field(
+        description="End or graduation date exactly as written."
+    )
+
+class ApplicantProject(BaseModel):
+    title: str = Field(
+        description="Project name exactly as written."
+    )
+    description: str = Field(
+        description="Project description exactly as written. Do not summarize."
+    )
+    link: str = Field(
+        description="Project URL if present. Otherwise return empty string."
+    )
+
+class ApplicantLink(BaseModel):
+    label: str = Field(
+        description="Link label such as GitHub, LinkedIn, Portfolio exactly as written."
+    )
+    url: str = Field(
+        description="Full URL exactly as written."
+    )
+
 class ExperienceList(BaseModel):
-    items: List[ApplicantExperience]
+    items: List[ApplicantExperience] = Field(
+        description="List of distinct work experience roles. Do not merge roles."
+    )
 
 class ProjectList(BaseModel):
-    items: List[ApplicantProject]
+    items: List[ApplicantProject] = Field(
+        description="List of projects. Each item must represent one project only."
+    )
 
 class EducationList(BaseModel):
-    items: List[ApplicantEducation]
+    items: List[ApplicantEducation] = Field(
+        description="List of education records. One record per degree or program."
+    )
 
+SectionNames = Literal["personal" , "summary" , "skills" , "experience" , "projects" , "education"]
 class ResumeSection(BaseModel):
-    name: str = Field(description="One of: 'personal', 'summary', 'skills', 'experience', 'projects', 'education'")
-    content: str
+    name: SectionNames = Field(
+        description="One of exactly: personal, summary, skills, experience, projects, education"
+    )
+    content: str = Field(
+        description="Original resume text belonging to this section only. Do not rewrite."
+    )
 
 class ChunkedResume(BaseModel):
-    sections: List[ResumeSection]
+    sections: List[ResumeSection] = Field(
+        description="Resume text split into the predefined section names only."
+    )
 class SkillList(BaseModel):
     items: List[str] = Field(description="A list of technical and soft skills extracted from the text")
 # --- 2. Workflow Logic ---
-class AgentSection(TypedDict):
-    name: str
-    content: str
-class AgentEvent(TypedDict):
-    event: Literal["update" , "final" , "error"]
-    data: ApplicantResumeDTO | AgentSection | str
+
+class PersonalInfo(BaseModel):
+    name: str = Field(description="Full candidate name as written in the resume")
+
+    email: str = Field(
+        description="Email address from the resume. Return empty string if not found"
+    )
+
+    phone: str = Field(
+        description="Phone number as written. Return empty string if missing"
+    )
+
+    location: str = Field(
+        description="City/country or location text from the resume"
+    )
+
+    links: List[str] = Field(
+        description="List of profile or portfolio URLs (LinkedIn, GitHub, website). Empty list if none"
+    )
+
+AgentSection = Union[PersonalInfo ,str, SkillList,ExperienceList,ProjectList,EducationList]
+class AgentSectionEvent(TypedDict):
+    name: SectionNames
+    content: AgentSection
+
+class ResumeParserUpdateEvent(TypedDict):
+    event: Literal["update"]
+    data: AgentSectionEvent
+
+
+class ResumeParserErrorEvent(TypedDict):
+    event: Literal["error"]
+    data: str
+
+
+ResumeParserEvent = Union[
+        ResumeParserUpdateEvent,
+        ResumeParserErrorEvent
+]
 
 
 # ... (Wrapper Models: ExperienceList, ProjectList, EducationList, SkillList stay same)
@@ -46,18 +133,10 @@ class ResumeWorkflow:
     def __init__(
         self,
         client: genai.Client,
-        model_name: str,
-        get_cache_fn: Callable[[str, str], Optional[str]],
-        set_cache_fn: Callable[[str, str, dict], None]
+        model_name: str
     ):
         self.client = client
         self.default_model = model_name
-        self.get_cache_fn = get_cache_fn
-        self.set_cache_fn = set_cache_fn
-
-    def get_text_hash(self, text: str) -> str:
-        clean_text = text.strip().encode('utf-8')
-        return hashlib.sha256(clean_text).hexdigest()
 
     def agent_meta_labeler(self, raw_text: str, model_id: str) -> ChunkedResume:
         SYSTEM_INSTRUCTION = """
@@ -101,67 +180,25 @@ class ResumeWorkflow:
         )
         return cast(ChunkedResume, response.parsed)
 
-    def extraction_worker(self, section_name: str, text_chunk: str, schema: Type, model_id: str):
+    def extraction_worker(self, section_name: str, text_chunk: str, schema: Type, model_id:str)->AgentSection:
         is_plain_text = (schema is str)
         GLOBAL_EXTRACTOR_INSTRUCTIONS = """
         You are a resume information extraction engine.
 
-
         Rules:
-        - Extract information ONLY from the provided text
-        - Do not infer or fabricate missing values
-        - Preserve original wording exactly
-        - If required information is missing, return an empty value
-        - Output MUST strictly follow the provided schema
+        - Extract ONLY from provided text
+        - Do not infer missing values
+        - Preserve original wording
+        - Follow the schema field descriptions strictly
+        - Return empty values if missing
         """
-        SECTION_INSTRUCTIONS = {
-            "personal": """
-        Extract personal information.
-
-        Requirements:
-        - Always attempt to extract the candidate's email address
-        - Email is REQUIRED; if not found, return an empty string
-        - Include name, job title, phone, location, and links if present
-        """,
-
-            "experience": """
-        Extract work experience entries.
-
-        Requirements:
-        - Each item must represent a distinct role
-        - Do not merge multiple roles into one
-        - Preserve date ranges exactly as written
-        """,
-
-            "skills": """
-        Extract technical skills only.
-
-        Requirements:
-        - Do not include soft skills
-        - Normalize skill names (no descriptions)
-        """,
-
-            "education": """
-        Extract education history.
-
-        Requirements:
-        - Include degrees, institutions, and dates
-        - Do not infer GPA if not present
-        """
-        }
-        section_rules = SECTION_INSTRUCTIONS.get(section_name, "")
-        system_instruction = (
-        GLOBAL_EXTRACTOR_INSTRUCTIONS.strip()
-        + "\n\n"
-        + section_rules.strip()
-        )
         prompt = f"Extract the {section_name} from the following text.\n\nText:\n{text_chunk}"
 
         config_args = {
             "model": model_id,
             "contents": prompt,
             "config": types.GenerateContentConfig(
-                system_instruction=system_instruction,
+                system_instruction=GLOBAL_EXTRACTOR_INSTRUCTIONS,
                 response_mime_type="text/plain" if is_plain_text else "application/json",
                 response_schema=None if is_plain_text else schema,
                 temperature=0.0,
@@ -170,27 +207,14 @@ class ResumeWorkflow:
         }
 
         response = self.client.models.generate_content(**config_args)
+        return cast(AgentSection,response.parsed)
 
-        if is_plain_text:
-            return response.text.strip() if response.text else ""
 
-        res = response.parsed
-        items = None
-        if res is not None:
-            if hasattr(res, 'items'):
-                items = getattr(res, 'items')
-            elif isinstance(res, dict) and 'items' in res:
-                items = res['items']
-
-        if items is not None and isinstance(items, list):
-            return [item.model_dump() if isinstance(item, BaseModel) else item for item in items]
-
-        if isinstance(res, BaseModel):
-            return res.model_dump()
-
-        return res
-
-    def run(self, resume_text: str, model_overrides: Optional[Dict[str, str]] = None) ->Iterator[AgentEvent]:
+    def run(
+            self,
+            resume_text: str,
+            model_overrides: Optional[Dict[str, str]] = None
+        )->Iterator[ResumeParserEvent]:
         """
         model_overrides: Dict where key is step_id ('labeler', 'experience', etc.)
                          and value is the model name.
@@ -201,27 +225,14 @@ class ResumeWorkflow:
         def get_model(step_id: str) -> str:
             return overrides.get(step_id, self.default_model)
 
-        text_hash = self.get_text_hash(resume_text)
-
-        # Cache key includes the override dict string to ensure unique caches per configuration
-        config_hash = hashlib.md5(json.dumps(overrides, sort_keys=True).encode()).hexdigest()
-
-        # # 1. Check Cache
-        # if self.get_cache_fn:
-        #     cached = self.get_cache_fn(f"{text_hash}_{config_hash}", self.default_model)
-        #     if cached:
-        #         final_res = json.loads(cached) if isinstance(cached, str) else cached
-        #         yield {"event": "update", "data": final_res}
-        #         return final_res
-        #
-        # 2. Step 1: Labeling
         labeler_model = get_model("labeler")
         chunked_data = self.agent_meta_labeler(resume_text, labeler_model)
+
         mapping = {
             "personal": PersonalInfo,
-            "summary": str,
             "skills": SkillList,
             "experience": ExperienceList,
+            "summary" : str,
             "projects": ProjectList,
             "education": EducationList
         }
@@ -235,7 +246,6 @@ class ResumeWorkflow:
                 section_model = get_model(clean_name)
                 tasks.append((clean_name, section.content, schema, section_model))
 
-        results = {}
         with ThreadPoolExecutor() as executor:
             future_to_section = {
                 executor.submit(self.extraction_worker, name, text, schema, m_id): name
@@ -246,13 +256,9 @@ class ResumeWorkflow:
                 section_name = future_to_section[future]
                 try:
                     section_data = future.result()
-                    if section_name == 'skills' and isinstance(section_data , list):
-                        results[section_name] = ','.join(cast(list,section_data))
-                    else:
-                        results[section_name] = section_data
-                    res_section : AgentSection = {
+                    res_section : AgentSectionEvent = {
                         "name" : section_name,
-                        "content": json.dumps(section_data),
+                        "content": section_data,
                     }
                     yield {
                         "event": "update",
@@ -260,8 +266,3 @@ class ResumeWorkflow:
                     }
                 except Exception as e:
                     yield {"event": "error", "data": str(e)}
-
-        # 4. Finalize
-        # if self.set_cache_fn:
-        #     self.set_cache_fn(f"{text_hash}_{config_hash}", self.default_model, results)
-        yield {"event" : "final" , "data" : cast(ApplicantResumeDTO , results)}

@@ -1,8 +1,8 @@
-from typing import List, NotRequired, TypedDict
+from typing import List, NotRequired, Required, TypedDict
 
 class PersonalInfo(TypedDict, total=False):
     name: str
-    email: str
+    email: Required[str]
     phone: str
     location: str
     links: List[str]
@@ -34,12 +34,12 @@ class ApplicantLink(TypedDict, total=False):
 
 
 class ApplicantResumeDTO(TypedDict, total=False):
-    job_applicant: str
-    personal: PersonalInfo
+    job_applicant: Required[str]
+    personal: Required[PersonalInfo]
     skills: NotRequired[str]
     summary: NotRequired[str]
     raw_resume_text: NotRequired[str]
-    raw_resume_json: NotRequired[str]
+    resume_hash: NotRequired[str]
     experience: NotRequired[List[ApplicantExperience]]
     education: NotRequired[List[ApplicantEducation]]
     projects: NotRequired[List[ApplicantProject]]

@@ -1,5 +1,5 @@
 from typing import  Protocol
-from mawhub.app.job.dto.applicant_resume import ApplicantResumeDTO
+from mawhub.app.job.dto.applicant_resume_dto import ApplicantResumeDTO
 from mawhub.pkg.baseclasses.app_repo import AppRepo, AppRepoInterface
 
 
@@ -17,7 +17,7 @@ class ApplicantResumeRepo(AppRepo[ApplicantResumeDTO]):
                 "skills",
                 "summary",
                 "raw_resume_text",
-                "raw_resume_json",
+                "resume_hash",
             ],
             child_tables={
                 "experience": "experience",

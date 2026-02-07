@@ -9,7 +9,6 @@ from mawhub.api.mawhub_job_opening_api import (
         job_opening_create_update,
         job_opening_list,
         job_opening_find,
-        job_opening_parse,
 )
 
 from mawhub.api.mawhub_applicant_resume_api import (
@@ -38,7 +37,6 @@ __all__ = [
     "generate_applicant_email",
     "job_applicant_create_with_resume",
     "job_applicant_find",
-    "job_opening_parse",
 
     "parsed_document_create_update",
     "parsed_document_parse",

@@ -3,7 +3,9 @@
 
 # import frappe
 from frappe.model.document import Document
+from frappe.model.naming import make_autoname
 
 
 class ApplicantResume(Document):
-	pass
+    def autoname(self):
+        self.name = make_autoname(f"{str(self.get("job_applicant")).replace('@' , '--')}-.####")

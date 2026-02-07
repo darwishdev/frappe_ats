@@ -48,7 +48,7 @@ class JobUseCase:
         job_repo: JobRepoInterface,
     ):
         model_name = 'gemini-2.5-flash-lite'
-        resume_agent = ResumeWorkflow(client=gemini_api_client,model_name=model_name , get_cache_fn=get_ai_cache ,set_cache_fn=set_ai_cache)
+        resume_agent = ResumeWorkflow(client=gemini_api_client,model_name=model_name)
         communication_workflow = CommunicationWorkflow(client=gemini_api_client,model_name=model_name)
         job_agent = JobOpeningParserWorkflow(client=gemini_api_client,model_name=model_name)
         doc_parser = DocumentParserWorkflow(client=gemini_api_client,model_name=model_name , get_cache_fn=get_ai_cache ,set_cache_fn=set_ai_cache)

@@ -8,7 +8,7 @@ from mawhub.sqltypes.table_models import JobApplicant
 
 class JobApplicantRepoInterface(AppRepoInterface[JobApplicant] , Protocol):
     def job_applicant_bulk_update(self, payload: JobApplicantBulkUpdateRequest)->List[str]: ...
-    def job_applicant_find(self, name: str)->dict: ...
+    def job_applicant_find(self, name: str,job: str)->dict: ...
 
 
 class JobApplicantRepo(AppRepo[JobApplicant]):
@@ -50,9 +50,8 @@ class JobApplicantRepo(AppRepo[JobApplicant]):
 
 
 
-    def job_applicant_find(self, name: str)->dict:
+    def job_applicant_find(self, name: str,job: str)->dict:
         applicant_doc = frappe.get_doc("Job Applicant" , name)
-        resume_doc = frappe.get_doc("Applicant Resume" , name)
         interviews = frappe.get_all(
                 "Interview" ,
                 filters={"job_applicant" : name} ,
@@ -79,11 +78,36 @@ class JobApplicantRepo(AppRepo[JobApplicant]):
                     "amended_from"
                     ]
                 )
-        return {
+        response = {
                 "applicant" : applicant_doc.as_dict(),
-                "resume" : resume_doc.as_dict(),
                 "interviews" : interviews,
                 }
+
+        applicant_resume = frappe.db.sql("""
+                                select a.applicant_resume from `tabJob Opening Applicant` a
+                                where a.parent = %(job)s
+                                AND a.parenttype = 'Job Opening'
+                                AND a.job_applicant = %(applicant)s
+                                AND a.invalidated_at IS NULL
+                                LIMIT 1
+                                """ , {"job" : job , "applicant" : name} , pluck=True)
+        if not applicant_resume:
+            print(f"""can't find the active resume for this candidate : {name} on this
+                                         job : {job}""")
+            return response
+        if not isinstance(applicant_resume , list):
+            return response
+        if len(applicant_resume) == 0:
+            return response
+        applicant_resume = applicant_resume[0]
+        resume_doc = frappe.get_doc("Applicant Resume" , str(applicant_resume))
+        return {
+            "applicant" : applicant_doc.as_dict(),
+            "resume" : resume_doc.as_dict(),
+            "interviews" : interviews,
+        }
+
+        return response
     def job_applicant_bulk_update(self, payload: JobApplicantBulkUpdateRequest)->List[str]:
         sql_stmt = """
         UPDATE `tabJob Applicant` a

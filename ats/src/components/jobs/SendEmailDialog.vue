@@ -1,172 +1,199 @@
 <template>
-    <Dialog
-        v-model="isOpen"
-        :options="{
-            title: `Send Email to `,
-            size: 'xl',
-        }"
-    >
-        <template #body-content>
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-sm font-medium mb-1">To *</label>
-                    <TextInput
-                        v-model="formData.to"
-                        type="email"
-                        placeholder="Recipient email"
-                        :disabled="true"
-                    />
-                </div>
+  <Dialog
+    v-model="isOpen"
+    :options="{
+      title: `Send Email to `,
+      size: 'xl',
+    }"
+  >
+    <template #body-content>
+      <div class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium mb-1">To *</label>
+          <TextInput
+            v-model="formData.to"
+            type="email"
+            placeholder="Recipient email"
+            :disabled="true"
+          />
+        </div>
 
-                <div>
-                    <label class="block text-sm font-medium mb-1">Subject *</label>
-                    <TextInput
-                        v-model="formData.subject"
-                        type="text"
-                        placeholder="Email subject"
-                    />
-                </div>
+        <div>
+          <label class="block text-sm font-medium mb-1">Subject *</label>
+          <TextInput
+            v-model="formData.subject"
+            type="text"
+            placeholder="Email subject"
+          />
+        </div>
 
-                <div>
-                    <div class="flex justify-between items-center mb-1">
-                        <label class="block text-sm font-medium">Message *</label>
-                        <div class="flex gap-2">
-                            <Button
-                                size="sm"
-                                class="p-4"
-                                @click="togglePromptInput"
-                                :disabled="isGenerating"
-                            >
-                                <div class="flex w-full items-center">
-                                    <Settings :size="14" class="mr-1" />
-                                    Custom Instructions
-                                </div>
-                            </Button>
-                            <Button
-                                size="sm"
-                                class="p-4"
-                                theme="gray"
-                                :variant="'solid'"
-                                @click="generateEmailContent"
-                                :loading="isGenerating"
-                            >
-                                <div class="flex w-full items-center">
-                                    <Sparkles :size="14" class="mr-1" v-if="!isGenerating" />
-                                    {{ isGenerating ? "Generating..." : "Generate with AI" }}
-                                </div>
-                            </Button>
-                        </div>
-                    </div>
-
-                    <!-- Custom Prompt Input (collapsible) -->
-                    <div v-if="showPromptInput" class="prompt-input-container">
-                        <textarea
-                            v-model="customPrompt"
-                            class="form-control prompt-textarea"
-                            rows="3"
-                            placeholder="Enter custom instructions for the AI (e.g., 'Keep it formal and brief', 'Mention the interview date'...)"
-                        ></textarea>
-                    </div>
-
-                    <textarea
-                        v-model="formData.message"
-                        class="form-control mt-1"
-                        rows="8"
-                        placeholder="Write your email message here or generate with AI..."
-                    ></textarea>
+        <div>
+          <div class="flex justify-between items-center mb-1">
+            <label class="block text-sm font-medium">Message *</label>
+            <div class="flex gap-2">
+              <Button
+                size="sm"
+                class="p-4"
+                :disabled="isGenerating"
+                @click="togglePromptInput"
+              >
+                <div class="flex w-full items-center">
+                  <Settings
+                    :size="14"
+                    class="mr-1"
+                  />
+                  Custom Instructions
                 </div>
-
-                <div>
-                    <label class="block text-sm font-medium mb-1">CC</label>
-                    <TextInput
-                        v-model="formData.cc"
-                        type="text"
-                        placeholder="CC emails (comma separated)"
-                    />
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium mb-1">BCC</label>
-                    <TextInput
-                        v-model="formData.bcc"
-                        type="text"
-                        placeholder="BCC emails (comma separated)"
-                    />
-                </div>
-
-                <div class="flex items-center gap-2">
-                    <input
-                        id="send-copy"
-                        v-model="formData.send_me_a_copy"
-                        type="checkbox"
-                        class="checkbox"
-                    />
-                    <label for="send-copy" class="text-sm cursor-pointer"> Send me a copy </label>
-                </div>
-            </div>
-        </template>
-        <template #actions>
-            <div class="flex justify-between w-full gap-2">
-                <Button @click="close">Cancel</Button>
-                <div class="flex items-center gap-3">
-                    <Button
-                        @click="saveAsTemplate"
-                        :disabled="!formData.message || isSavingTemplate"
-                        :loading="isSavingTemplate"
-                    >
-                        <div class="flex items-center gap-1">
-                            <Save :size="15" class="mr-1" v-if="!isSavingTemplate" />
-                            {{ isSavingTemplate ? "Saving..." : "Save as Template" }}
-                        </div>
-                    </Button>
-                    <Button theme="gray" :variant="'solid'" @click="submit">Send Email</Button>
-                </div>
-            </div>
-        </template>
-    </Dialog>
-
-    <!-- Template Name Dialog -->
-    <Dialog
-        v-model="showTemplateNameDialog"
-        :options="{
-            title: 'Save Email Template',
-            size: 'sm',
-        }"
-    >
-        <template #body-content>
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-sm font-medium mb-2">Template Name *</label>
-                    <TextInput
-                        v-model="templateName"
-                        type="text"
-                        placeholder="e.g., Interview Confirmation, Rejection, Offer"
-                        @keyup.enter="confirmSaveTemplate"
-                    />
-                </div>
-                <div>
-                    <label class="block text-sm font-medium mb-2">Description (Optional)</label>
-                    <textarea
-                        v-model="templateDescription"
-                        class="form-control"
-                        rows="3"
-                        placeholder="Add notes about when to use this template..."
-                    ></textarea>
-                </div>
-            </div>
-        </template>
-        <template #actions>
-            <Button @click="closeTemplateDialog">Cancel</Button>
-            <Button
+              </Button>
+              <Button
+                size="sm"
+                class="p-4"
                 theme="gray"
                 :variant="'solid'"
-                @click="confirmSaveTemplate"
-                :disabled="!templateName || !templateName.trim()"
-            >
-                Save Template
-            </Button>
-        </template>
-    </Dialog>
+                :loading="isGenerating"
+                @click="generateEmailContent"
+              >
+                <div class="flex w-full items-center">
+                  <Sparkles
+                    v-if="!isGenerating"
+                    :size="14"
+                    class="mr-1"
+                  />
+                  {{ isGenerating ? "Generating..." : "Generate with AI" }}
+                </div>
+              </Button>
+            </div>
+          </div>
+
+          <!-- Custom Prompt Input (collapsible) -->
+          <div
+            v-if="showPromptInput"
+            class="prompt-input-container"
+          >
+            <textarea
+              v-model="customPrompt"
+              class="form-control prompt-textarea"
+              rows="3"
+              placeholder="Enter custom instructions for the AI (e.g., 'Keep it formal and brief', 'Mention the interview date'...)"
+            />
+          </div>
+
+          <textarea
+            v-model="formData.message"
+            class="form-control mt-1"
+            rows="8"
+            placeholder="Write your email message here or generate with AI..."
+          />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium mb-1">CC</label>
+          <TextInput
+            v-model="formData.cc"
+            type="text"
+            placeholder="CC emails (comma separated)"
+          />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium mb-1">BCC</label>
+          <TextInput
+            v-model="formData.bcc"
+            type="text"
+            placeholder="BCC emails (comma separated)"
+          />
+        </div>
+
+        <div class="flex items-center gap-2">
+          <input
+            id="send-copy"
+            v-model="formData.send_me_a_copy"
+            type="checkbox"
+            class="checkbox"
+          >
+          <label
+            for="send-copy"
+            class="text-sm cursor-pointer"
+          > Send me a copy </label>
+        </div>
+      </div>
+    </template>
+    <template #actions>
+      <div class="flex justify-between w-full gap-2">
+        <Button @click="close">
+          Cancel
+        </Button>
+        <div class="flex items-center gap-3">
+          <Button
+            :disabled="!formData.message || isSavingTemplate"
+            :loading="isSavingTemplate"
+            @click="saveAsTemplate"
+          >
+            <div class="flex items-center gap-1">
+              <Save
+                v-if="!isSavingTemplate"
+                :size="15"
+                class="mr-1"
+              />
+              {{ isSavingTemplate ? "Saving..." : "Save as Template" }}
+            </div>
+          </Button>
+          <Button
+            theme="gray"
+            :variant="'solid'"
+            @click="submit"
+          >
+            Send Email
+          </Button>
+        </div>
+      </div>
+    </template>
+  </Dialog>
+
+  <!-- Template Name Dialog -->
+  <Dialog
+    v-model="showTemplateNameDialog"
+    :options="{
+      title: 'Save Email Template',
+      size: 'sm',
+    }"
+  >
+    <template #body-content>
+      <div class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium mb-2">Template Name *</label>
+          <TextInput
+            v-model="templateName"
+            type="text"
+            placeholder="e.g., Interview Confirmation, Rejection, Offer"
+            @keyup.enter="confirmSaveTemplate"
+          />
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-2">Description (Optional)</label>
+          <textarea
+            v-model="templateDescription"
+            class="form-control"
+            rows="3"
+            placeholder="Add notes about when to use this template..."
+          />
+        </div>
+      </div>
+    </template>
+    <template #actions>
+      <Button @click="closeTemplateDialog">
+        Cancel
+      </Button>
+      <Button
+        theme="gray"
+        :variant="'solid'"
+        :disabled="!templateName || !templateName.trim()"
+        @click="confirmSaveTemplate"
+      >
+        Save Template
+      </Button>
+    </template>
+  </Dialog>
 </template>
 
 <script setup>

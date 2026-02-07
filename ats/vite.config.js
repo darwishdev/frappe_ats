@@ -19,6 +19,11 @@ export default defineConfig({
         }),
         vue(),
     ],
+    resolve: {
+        alias: {
+            "@": path.resolve(__dirname, "./"),
+        },
+    },
     build: {
         chunkSizeWarningLimit: 1500,
         outDir: "../mawhub/public/ats2",

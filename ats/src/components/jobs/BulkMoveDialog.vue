@@ -21,12 +21,21 @@
             placeholder="Select status"
           />
         </div>
-        <p class="text-muted text-sm">Moving {{ candidateCount }} candidate(s)</p>
+        <p class="text-muted text-sm">
+          Moving {{ candidateCount }} candidate(s)
+        </p>
       </div>
     </template>
     <template #actions>
-      <Button @click="close">Cancel</Button>
-      <Button theme="primary" @click="submit">Move Candidates</Button>
+      <Button @click="close">
+        Cancel
+      </Button>
+      <Button
+        theme="primary"
+        @click="submit"
+      >
+        Move Candidates
+      </Button>
     </template>
   </Dialog>
 </template>

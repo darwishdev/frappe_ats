@@ -1,354 +1,387 @@
 <template>
-    <Dialog v-model="show" :options="{ title: mode === 'job' ? 'Edit Job' : 'Edit Job Parsed Document', size: '3xl' }">
-        <template #body-content>
-            <div v-if="isLoading" class="text-center py-8">
-                <div class="text-gray-500">Loading job details...</div>
-            </div>
+  <Dialog
+    v-model="show"
+    :options="{ title: mode === 'job' ? 'Edit Job' : 'Edit Job Parsed Document', size: '3xl' }"
+  >
+    <template #body-content>
+      <div
+        v-if="isLoading"
+        class="text-center py-8"
+      >
+        <div class="text-gray-500">
+          Loading job details...
+        </div>
+      </div>
 
-            <div v-else-if="loadError" class="text-center py-8">
-                <div class="text-red-500">Error loading job: {{ loadError }}</div>
-            </div>
+      <div
+        v-else-if="loadError"
+        class="text-center py-8"
+      >
+        <div class="text-red-500">
+          Error loading job: {{ loadError }}
+        </div>
+      </div>
 
-            <div v-else-if="mode === 'job'" class="space-y-6 overflow-y-auto h-[70vh]">
-                <!-- Job Title -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">
-                        Job Title <span class="text-red-500">*</span>
-                    </label>
-                    <TextInput
-                        v-model="formData.job_title"
-                        type="text"
-                        placeholder="Enter job title"
-                        size="md"
-                    />
-                </div>
+      <div
+        v-else-if="mode === 'job'"
+        class="space-y-6 overflow-y-auto h-[70vh]"
+      >
+        <!-- Job Title -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">
+            Job Title <span class="text-red-500">*</span>
+          </label>
+          <TextInput
+            v-model="formData.job_title"
+            type="text"
+            placeholder="Enter job title"
+            size="md"
+          />
+        </div>
 
-                <div class="grid grid-cols-2 gap-4">
-                    <!-- Department -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">
-                            Department
-                        </label>
-                        <TextInput
-                            v-model="formData.department"
-                            type="text"
-                            placeholder="Enter department"
-                            size="md"
-                        />
-                    </div>
+        <div class="grid grid-cols-2 gap-4">
+          <!-- Department -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">
+              Department
+            </label>
+            <TextInput
+              v-model="formData.department"
+              type="text"
+              placeholder="Enter department"
+              size="md"
+            />
+          </div>
 
-                    <!-- Vacancies -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">
-                            Vacancies <span class="text-red-500">*</span>
-                        </label>
-                        <TextInput
-                            v-model.number="formData.vacancies"
-                            type="number"
-                            placeholder="Number of vacancies"
-                            size="md"
-                        />
-                    </div>
-                </div>
+          <!-- Vacancies -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">
+              Vacancies <span class="text-red-500">*</span>
+            </label>
+            <TextInput
+              v-model.number="formData.vacancies"
+              type="number"
+              placeholder="Number of vacancies"
+              size="md"
+            />
+          </div>
+        </div>
 
-                <div class="grid grid-cols-2 gap-4">
-                    <!-- Employment Type -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">
-                            Employment Type
-                        </label>
-                        <Select
-                            v-model="formData.employment_type"
-                            :options="employmentTypeOptions"
-                            placeholder="Select employment type"
-                        />
-                    </div>
+        <div class="grid grid-cols-2 gap-4">
+          <!-- Employment Type -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">
+              Employment Type
+            </label>
+            <Select
+              v-model="formData.employment_type"
+              :options="employmentTypeOptions"
+              placeholder="Select employment type"
+            />
+          </div>
 
-                    <!-- Status -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">
-                            Status
-                        </label>
-                        <Select
-                            v-model="formData.status"
-                            :options="statusOptions"
-                            placeholder="Select status"
-                        />
-                    </div>
-                </div>
+          <!-- Status -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">
+              Status
+            </label>
+            <Select
+              v-model="formData.status"
+              :options="statusOptions"
+              placeholder="Select status"
+            />
+          </div>
+        </div>
 
-                <!-- Location -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">
-                        Location
-                    </label>
-                    <TextInput
-                        v-model="formData.location"
-                        type="text"
-                        placeholder="Enter location"
-                        size="md"
-                    />
-                </div>
+        <!-- Location -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">
+            Location
+          </label>
+          <TextInput
+            v-model="formData.location"
+            type="text"
+            placeholder="Enter location"
+            size="md"
+          />
+        </div>
 
-                <!-- Description -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">
-                        Description
-                    </label>
-                    <textarea
-                        v-model="formData.description"
-                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        rows="4"
-                        placeholder="Enter job description"
-                    ></textarea>
-                </div>
+        <!-- Description -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">
+            Description
+          </label>
+          <textarea
+            v-model="formData.description"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            rows="4"
+            placeholder="Enter job description"
+          />
+        </div>
 
-                <div class="grid grid-cols-2 gap-4">
-                    <!-- Staffing Plan -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">
-                            Staffing Plan
-                        </label>
-                        <TextInput
-                            v-model="formData.staffing_plan"
-                            type="text"
-                            placeholder="Enter staffing plan"
-                            size="md"
-                        />
-                    </div>
+        <div class="grid grid-cols-2 gap-4">
+          <!-- Staffing Plan -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">
+              Staffing Plan
+            </label>
+            <TextInput
+              v-model="formData.staffing_plan"
+              type="text"
+              placeholder="Enter staffing plan"
+              size="md"
+            />
+          </div>
 
-                    <!-- Planned Vacancies -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">
-                            Planned Vacancies
-                        </label>
-                        <TextInput
-                            v-model.number="formData.planned_vacancies"
-                            type="number"
-                            placeholder="Number of planned vacancies"
-                            size="md"
-                        />
-                    </div>
-                </div>
+          <!-- Planned Vacancies -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">
+              Planned Vacancies
+            </label>
+            <TextInput
+              v-model.number="formData.planned_vacancies"
+              type="number"
+              placeholder="Number of planned vacancies"
+              size="md"
+            />
+          </div>
+        </div>
 
-                <!-- Salary Range -->
-                <div class="border-t pt-4">
-                    <h3 class="text-sm font-semibold text-gray-900 mb-3">Salary Range</h3>
+        <!-- Salary Range -->
+        <div class="border-t pt-4">
+          <h3 class="text-sm font-semibold text-gray-900 mb-3">
+            Salary Range
+          </h3>
                     
-                    <div class="grid grid-cols-3 gap-4">
-                        <!-- Currency -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">
-                                Currency
-                            </label>
-                            <Select
-                                v-model="formData.currency"
-                                :options="currencyOptions"
-                                placeholder="Select currency"
-                            />
-                        </div>
-
-                        <!-- Lower Range -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">
-                                Lower Range
-                            </label>
-                            <TextInput
-                                v-model.number="formData.lower_range"
-                                type="number"
-                                placeholder="Min salary"
-                                size="md"
-                            />
-                        </div>
-
-                        <!-- Upper Range -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">
-                                Upper Range
-                            </label>
-                            <TextInput
-                                v-model.number="formData.upper_range"
-                                type="number"
-                                placeholder="Max salary"
-                                size="md"
-                            />
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-3 gap-4 mt-4">
-                        <!-- Salary Per -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">
-                                Salary Per
-                            </label>
-                            <Select
-                                v-model="formData.salary_per"
-                                :options="salaryPerOptions"
-                                placeholder="Select period"
-                            />
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Pipeline -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">
-                        Custom Pipeline
-                    </label>
-                    <Select
-                        v-model="formData.custom_pipeline"
-                        :options="pipelineOptions"
-                        placeholder="Select pipeline"
-                    />
-                </div>
-
-                <!-- Checkboxes -->
-                <div class="border-t flex gap-5 items-center pt-4">
-                    <Checkbox
-                        v-model="formData.publish"
-                        label="Publish on careers page"
-                        size="sm"
-                    />
-                    <Checkbox
-                        v-model="formData.publish_salary_range"
-                        label="Publish salary range"
-                        size="sm"
-                    />
-                    <Checkbox
-                        v-model="formData.publish_applications_received"
-                        label="Publish applications received"
-                        size="sm"
-                    />
-                </div>
+          <div class="grid grid-cols-3 gap-4">
+            <!-- Currency -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">
+                Currency
+              </label>
+              <Select
+                v-model="formData.currency"
+                :options="currencyOptions"
+                placeholder="Select currency"
+              />
             </div>
 
-            <!-- Parsed Document Form -->
-            <div v-else-if="mode === 'parsed-document'" class="space-y-6 overflow-y-auto h-[70vh]">
-                <!-- Sections -->
-                <div class="border-t pt-4">
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-sm font-semibold text-gray-900">Sections</h3>
-                        <Button
-                            variant="outline"
-                            @click="addSection"
-                            size="sm"
-                        >
-                            Add Section
-                        </Button>
-                    </div>
-
-                    <div v-for="(section, index) in parsedDocFormData.sections" :key="index" class="mb-6 p-4 border rounded-lg">
-                        <div class="flex justify-between items-start mb-3">
-                            <h4 class="text-sm font-medium text-gray-900">Section {{ index + 1 }}</h4>
-                            <Button
-                                variant="ghost"
-                                @click="removeSection(index)"
-                                size="sm"
-                            >
-                                Remove
-                            </Button>
-                        </div>
-
-                        <!-- Section Title -->
-                        <div class="mb-3">
-                            <label class="block text-sm font-medium text-gray-700 mb-1">
-                                Title
-                            </label>
-                            <TextInput
-                                v-model="section.title"
-                                type="text"
-                                placeholder="Section title"
-                                size="md"
-                            />
-                        </div>
-
-                        <!-- Section Description -->
-                        <div class="mb-3">
-                            <label class="block text-sm font-medium text-gray-700 mb-1">
-                                Description
-                            </label>
-                            <textarea
-                                v-model="section.description"
-                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                rows="3"
-                                placeholder="Section description"
-                            ></textarea>
-                        </div>
-
-                        <!-- Bullet Points -->
-                        <div>
-                            <div class="flex justify-between items-center mb-2">
-                                <label class="block text-sm font-medium text-gray-700">
-                                    Bullet Points
-                                </label>
-                                <Button
-                                    variant="ghost"
-                                    @click="addBulletPoint(index)"
-                                    size="sm"
-                                >
-                                    Add Point
-                                </Button>
-                            </div>
-                            <div v-for="(point, pointIndex) in section.pullet_points" :key="pointIndex" class="flex gap-2 mb-2">
-                                <TextInput
-                                    v-model="section.pullet_points[pointIndex]"
-                                    type="text"
-                                    placeholder="Bullet point"
-                                    size="md"
-                                    class="flex-1"
-                                />
-                                <Button
-                                    variant="ghost"
-                                    @click="removeBulletPoint(index, pointIndex)"
-                                    size="sm"
-                                >
-                                    ×
-                                </Button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <!-- Lower Range -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">
+                Lower Range
+              </label>
+              <TextInput
+                v-model.number="formData.lower_range"
+                type="number"
+                placeholder="Min salary"
+                size="md"
+              />
             </div>
-        </template>
 
-        <template #actions>
-            <div class="flex justify-between items-center w-full">
-                <div class="flex gap-2">
-                    <Button
-                        variant="solid"
-                        @click="show = false"
-                        :disabled="isSaving"
-                    >
-                        Cancel
-                    </Button>
-                    <Button
-                        v-if="mode === 'job'"
-                        variant="outline"
-                        @click="switchToParsedDocMode"
-                        :disabled="isSaving"
-                    >
-                        Edit Parsed Document
-                    </Button>
-                    <Button
-                        v-else
-                        variant="outline"
-                        @click="mode = 'job'"
-                        :disabled="isSaving"
-                    >
-                        Back to Job Edit
-                    </Button>
-                </div>
+            <!-- Upper Range -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">
+                Upper Range
+              </label>
+              <TextInput
+                v-model.number="formData.upper_range"
+                type="number"
+                placeholder="Max salary"
+                size="md"
+              />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-3 gap-4 mt-4">
+            <!-- Salary Per -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">
+                Salary Per
+              </label>
+              <Select
+                v-model="formData.salary_per"
+                :options="salaryPerOptions"
+                placeholder="Select period"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- Pipeline -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">
+            Custom Pipeline
+          </label>
+          <Select
+            v-model="formData.custom_pipeline"
+            :options="pipelineOptions"
+            placeholder="Select pipeline"
+          />
+        </div>
+
+        <!-- Checkboxes -->
+        <div class="border-t flex gap-5 items-center pt-4">
+          <Checkbox
+            v-model="formData.publish"
+            label="Publish on careers page"
+            size="sm"
+          />
+          <Checkbox
+            v-model="formData.publish_salary_range"
+            label="Publish salary range"
+            size="sm"
+          />
+          <Checkbox
+            v-model="formData.publish_applications_received"
+            label="Publish applications received"
+            size="sm"
+          />
+        </div>
+      </div>
+
+      <!-- Parsed Document Form -->
+      <div
+        v-else-if="mode === 'parsed-document'"
+        class="space-y-6 overflow-y-auto h-[70vh]"
+      >
+        <!-- Sections -->
+        <div class="border-t pt-4">
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="text-sm font-semibold text-gray-900">
+              Sections
+            </h3>
+            <Button
+              variant="outline"
+              size="sm"
+              @click="addSection"
+            >
+              Add Section
+            </Button>
+          </div>
+
+          <div
+            v-for="(section, index) in parsedDocFormData.sections"
+            :key="index"
+            class="mb-6 p-4 border rounded-lg"
+          >
+            <div class="flex justify-between items-start mb-3">
+              <h4 class="text-sm font-medium text-gray-900">
+                Section {{ index + 1 }}
+              </h4>
+              <Button
+                variant="ghost"
+                size="sm"
+                @click="removeSection(index)"
+              >
+                Remove
+              </Button>
+            </div>
+
+            <!-- Section Title -->
+            <div class="mb-3">
+              <label class="block text-sm font-medium text-gray-700 mb-1">
+                Title
+              </label>
+              <TextInput
+                v-model="section.title"
+                type="text"
+                placeholder="Section title"
+                size="md"
+              />
+            </div>
+
+            <!-- Section Description -->
+            <div class="mb-3">
+              <label class="block text-sm font-medium text-gray-700 mb-1">
+                Description
+              </label>
+              <textarea
+                v-model="section.description"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                rows="3"
+                placeholder="Section description"
+              />
+            </div>
+
+            <!-- Bullet Points -->
+            <div>
+              <div class="flex justify-between items-center mb-2">
+                <label class="block text-sm font-medium text-gray-700">
+                  Bullet Points
+                </label>
                 <Button
-                    variant="solid"
-                    @click="mode === 'job' ? handleSave() : handleSaveParsedDoc()"
-                    :loading="isSaving"
-                    :disabled="mode === 'job' ? !isFormValid : false"
+                  variant="ghost"
+                  size="sm"
+                  @click="addBulletPoint(index)"
                 >
-                    {{ isSaving ? 'Saving...' : 'Save Changes' }}
+                  Add Point
                 </Button>
+              </div>
+              <div
+                v-for="(point, pointIndex) in section.pullet_points"
+                :key="pointIndex"
+                class="flex gap-2 mb-2"
+              >
+                <TextInput
+                  v-model="section.pullet_points[pointIndex]"
+                  type="text"
+                  placeholder="Bullet point"
+                  size="md"
+                  class="flex-1"
+                />
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  @click="removeBulletPoint(index, pointIndex)"
+                >
+                  ×
+                </Button>
+              </div>
             </div>
-        </template>
-    </Dialog>
+          </div>
+        </div>
+      </div>
+    </template>
+
+    <template #actions>
+      <div class="flex justify-between items-center w-full">
+        <div class="flex gap-2">
+          <Button
+            variant="solid"
+            :disabled="isSaving"
+            @click="show = false"
+          >
+            Cancel
+          </Button>
+          <Button
+            v-if="mode === 'job'"
+            variant="outline"
+            :disabled="isSaving"
+            @click="switchToParsedDocMode"
+          >
+            Edit Parsed Document
+          </Button>
+          <Button
+            v-else
+            variant="outline"
+            :disabled="isSaving"
+            @click="mode = 'job'"
+          >
+            Back to Job Edit
+          </Button>
+        </div>
+        <Button
+          variant="solid"
+          :loading="isSaving"
+          :disabled="mode === 'job' ? !isFormValid : false"
+          @click="mode === 'job' ? handleSave() : handleSaveParsedDoc()"
+        >
+          {{ isSaving ? 'Saving...' : 'Save Changes' }}
+        </Button>
+      </div>
+    </template>
+  </Dialog>
 </template>
 
 <script setup>

@@ -1,6 +1,8 @@
 <template>
   <div class="applicant-files">
-    <div class="text-muted">Files coming soon...</div>
+    <div class="text-muted">
+      Files coming soon...
+    </div>
   </div>
 </template>
 

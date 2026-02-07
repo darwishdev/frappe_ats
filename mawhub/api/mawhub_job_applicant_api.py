@@ -17,8 +17,8 @@ def job_applicant_create_update(payload:JobApplicant)->Document:
     return app_container.job_usecase.job_applicant.job_applicant_create_update(payload)
 
 @frappe.whitelist(methods=["GET"] , allow_guest=True)
-def job_applicant_find(name:str)->dict:
-    return app_container.job_usecase.job_applicant.job_applicant_find(name)
+def job_applicant_find(name:str,job:str)->dict:
+    return app_container.job_usecase.job_applicant.job_applicant_find(name,job)
 
 @frappe.whitelist(methods=["PUT","POST"])
 def job_applicant_create_with_resume(payload:JobApplicantCreateWithResume)->Document:

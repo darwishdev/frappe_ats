@@ -34,7 +34,7 @@
               v-model="formData.scheduled_on"
               type="date"
               class="form-control"
-            />
+            >
           </div>
           <div>
             <label class="block text-sm font-medium mb-1">From Time *</label>
@@ -42,7 +42,7 @@
               v-model="formData.from_time"
               type="time"
               class="form-control"
-            />
+            >
           </div>
           <div>
             <label class="block text-sm font-medium mb-1">To Time *</label>
@@ -50,7 +50,7 @@
               v-model="formData.to_time"
               type="time"
               class="form-control"
-            />
+            >
           </div>
         </div>
 
@@ -73,14 +73,22 @@
             class="form-control"
             rows="3"
             placeholder="Optional notes or summary"
-          ></textarea>
+          />
         </div>
       </div>
     </template>
     <template #actions>
       <div class="flex justify-between w-full">
-        <Button @click="close">Cancel</Button>
-        <Button theme="gray" :variant="'solid'" @click="submit">Assign Interview</Button>
+        <Button @click="close">
+          Cancel
+        </Button>
+        <Button
+          theme="gray"
+          :variant="'solid'"
+          @click="submit"
+        >
+          Assign Interview
+        </Button>
       </div>
     </template>
   </Dialog>

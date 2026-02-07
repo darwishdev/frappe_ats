@@ -1,5 +1,5 @@
 from typing import  Protocol
-from mawhub.app.job.dto.applicant_resume import ApplicantResumeDTO
+from mawhub.app.job.dto.applicant_resume_dto import ApplicantResumeDTO
 from mawhub.pkg.baseclasses.app_repo import AppRepo, AppRepoInterface
 
 

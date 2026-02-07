@@ -1,6 +1,8 @@
 <template>
   <div class="applicant-comments">
-    <div class="text-muted">Comments coming soon...</div>
+    <div class="text-muted">
+      Comments coming soon...
+    </div>
   </div>
 </template>
 
