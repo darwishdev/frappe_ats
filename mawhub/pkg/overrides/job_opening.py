@@ -1,10 +1,8 @@
-import json
 from frappe import _
 import frappe
 from frappe.utils import now_datetime
-from google.auth import default
 from hrms.hr.doctype.job_opening.job_opening import JobOpening
-from typing import TYPE_CHECKING, Callable
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from frappe.model.document import Document

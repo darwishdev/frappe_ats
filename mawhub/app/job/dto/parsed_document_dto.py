@@ -1,8 +1,15 @@
 import json
+import re
 from typing import List, NotRequired, TypedDict
 
 from mawhub.app.job.agent.document_parser_agent import ParsedDocumentFinalEvent
 from mawhub.sqltypes.table_models import ParsedDocument, ParsedDocumentSection
+
+class ParsedSection(TypedDict, total=False):
+    name: str
+    description: NotRequired[str]
+    bullet_points: NotRequired[List[str]]
+    footer: NotRequired[List[str]]
 
 class ParsedDocumentSectionDTO(TypedDict, total=False):
     title: str
@@ -69,3 +76,78 @@ def parsed_document_agent_to_dto(
         "meta_data": final_event_data["metadata"],
         "sections": dto_sections
     }
+
+
+def parse_to_sections(raw_text:str)->List[ParsedSection]:
+
+    lines = [l.strip() for l in raw_text.split('\n') if l.strip()]
+    sections = []
+
+    # Initialize state
+    current_section = None
+    state = "START" # START, HEADER, DESCRIPTION, BULLETS, FOOTER
+
+    bullet_regex = r"^[●○•\-\*]|^\d+[\.\)]"
+
+    for i in range(len(lines)):
+        line = lines[i]
+
+        # --- 1. Detect if this line is a NEW HEADER ---
+        # Logic: Short, no period, and NOT a bullet
+        is_new_header = (len(line) < 55 and
+                         not line.endswith(('.', ':', ';')) and
+                         not re.match(bullet_regex, line))
+
+        if is_new_header:
+            if current_section:
+                sections.append(current_section)
+
+            current_section = {"name": line, "description": "", "bullet_points": [], "footer": ""}
+            state = "HEADER"
+            continue
+
+        # If we haven't even found the first header yet, skip or put in a 'General' section
+        if not current_section:
+            current_section = {"name": "General", "description": line, "bullet_points": [], "footer": ""}
+            state = "DESCRIPTION"
+            continue
+
+        # --- 2. State Management ---
+
+        # Is it a bullet?
+        if re.match(bullet_regex, line):
+            clean_bullet = re.sub(r"^[●○•\-\*]|^\d+[\.\)]\s*", "", line).strip()
+            current_section["bullet_points"].append(clean_bullet)
+            state = "BULLETS"
+
+        # If not a bullet, where does it go?
+        else:
+            if state in ["HEADER", "DESCRIPTION"]:
+                # Still in description phase
+                if current_section["description"]:
+                    current_section["description"] += " " + line
+                else:
+                    current_section["description"] = line
+                state = "DESCRIPTION"
+
+            elif state == "BULLETS":
+                # Text appearing after bullets started is either a continuation or Footer
+                # If it's short and the previous line didn't end in a period, it's a continuation
+                prev_line = lines[i-1] if i > 0 else ""
+                if not prev_line.endswith('.'):
+                    current_section["bullet_points"][-1] += " " + line
+                else:
+                    # It's a Footer
+                    if current_section["footer"]:
+                        current_section["footer"] += " " + line
+                    else:
+                        current_section["footer"] = line
+                    state = "FOOTER"
+
+            elif state == "FOOTER":
+                current_section["footer"] += " " + line
+
+    if current_section:
+        sections.append(current_section)
+
+    return sections

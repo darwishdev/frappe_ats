@@ -17,18 +17,140 @@
    "show_arrow": 0,
    "type": "Link"
   },
-  {
-   "child": 0,
-   "collapsible": 1,
-   "icon": "google",
-   "indent": 0,
-   "keep_closed": 0,
-   "label": "Candidates",
-   "link_to": "candidates",
-   "link_type": "Page",
-   "show_arrow": 0,
-   "type": "Link"
-  }
+        {
+            "type": "Link",
+            "label": "Jobs",
+            "link_to": "Job Opening",
+            "link_type": "DocType",
+            "icon": "briefcase",
+            "indent": 0
+        },
+        {
+            "type": "Link",
+            "label": "Applicants",
+            "link_to": "Job Applicant",
+            "link_type": "DocType",
+            "icon": "users",
+            "indent": 0
+        },
+        {
+            "type": "Link",
+            "label": "Interviews",
+            "link_to": "Interview",
+            "link_type": "DocType",
+            "icon": "video",
+            "indent": 0
+        },
+        {
+            "type": "Link",
+            "label": "Email Sequences",
+            "link_to": "Email Campaign",
+            "link_type": "DocType",
+            "icon": "mail",
+            "indent": 0
+        },
+        {
+            "type": "Link",
+            "label": "Projects",
+            "link_to": "Project",
+            "link_type": "DocType",
+            "icon": "folder",
+            "indent": 0
+        },
+        {
+            "type": "Link",
+            "label": "Companies",
+            "link_to": "Customer",
+            "link_type": "DocType",
+            "icon": "building",
+            "indent": 0
+        },
+        {
+            "type": "Link",
+            "label": "Tasks",
+            "link_to": "Task",
+            "link_type": "DocType",
+            "icon": "check-square",
+            "indent": 0
+        },
+        {
+            "type": "Link",
+            "label": "Emails",
+            "link_to": "Communication",
+            "link_type": "DocType",
+            "icon": "inbox",
+            "indent": 0
+        },
+        {
+            "type": "Section Break",
+            "label": "Setup",
+            "icon": "settings",
+            "indent": 0,
+            "collapsible": 1,
+            "keep_closed": 1
+        },
+        {
+            "type": "Link",
+            "label": "Interview Round",
+            "link_to": "Interview Round",
+            "link_type": "DocType",
+            "icon": "",
+            "indent": 1,
+            "child": 1
+        },
+        {
+            "type": "Link",
+            "label": "Job Pipeline",
+            "link_to": "Job Opening",
+            "link_type": "DocType",
+            "icon": "",
+            "indent": 1,
+            "child": 1
+        },
+        {
+            "type": "Link",
+            "label": "Project Template",
+            "link_to": "Project Template",
+            "link_type": "DocType",
+            "icon": "",
+            "indent": 1,
+            "child": 1
+        },
+        {
+            "type": "Link",
+            "label": "Email Setup",
+            "link_to": "Email Account",
+            "link_type": "DocType",
+            "icon": "",
+            "indent": 1,
+            "child": 1
+        },
+        {
+            "type": "Section Break",
+            "label": "Reports",
+            "icon": "bar-chart",
+            "indent": 0,
+            "collapsible": 1,
+            "keep_closed": 1
+        },
+        {
+            "type": "Link",
+            "label": "Recruitment Analytics",
+            "link_to": "Recruitment Analytics",
+            "link_type": "Report",
+            "icon": "",
+            "indent": 1,
+            "child": 1
+        },
+        {
+            "type": "Link",
+            "label": "Job Applicant Source",
+            "link_to": "Job Applicant Source",
+            "link_type": "Report",
+            "icon": "",
+            "indent": 1,
+            "child": 1
+        }
  ],
  "modified": "2026-02-07 23:57:18.964405",
  "modified_by": "Administrator",

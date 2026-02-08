@@ -8,28 +8,33 @@ after_install = "mawhub.pkg.installer.installer.after_install"
 after_migrate = "mawhub.pkg.installer.installer.after_migrate"
 
 
+
 override_doctype_class = {
-    "Job Opening": "mawhub.pkg.docoverrides.job_opening.CustomJobOpening",
+    "Job Opening": "mawhub.pkg.overrides.job_opening.CustomJobOpening"
 }
-app_include_js = "/assets/mawhub/js/job_applicant.js"
 cli_commands = {
     "sqlgen": "mawhub.commands.sqlgen.sqlgen",
 }
 # Apps
 # ------------------
-
+override_whitelisted_methods = {
+    "frappe.desk.reportview.get": "mawhub.pkg.overrides.reportview.get"
+}
+doctype_list_js = {
+    "Job Opening": "public/js/job_opening_list.js"
+}
 # required_apps = []
 
 # Each item in the list will be shown as an app in the apps page
-# add_to_apps_screen = [
-# 	{
-# 		"name": "mawhub",
-# 		"logo": "/assets/mawhub/logo.png",
-# 		"title": "Mawhub",
-# 		"route": "/mawhub",
-# 		"has_permission": "mawhub.api.permission.has_app_permission"
-# 	}
-# ]
+add_to_apps_screen = [
+	{
+		"name": "mawhub",
+		"logo": "/assets/mawhub/images/logo.webp",
+		"title": "Mawhub",
+		"route": "/mawhub",
+		"has_permission": "mawhub.api.permission.has_app_permission"
+	}
+]
 
 # Includes in <head>
 # ------------------

@@ -1,0 +1,21 @@
+{
+ "app": "mawhub",
+ "bg_color": "blue",
+ "creation": "2026-02-08 02:43:10.309488",
+ "docstatus": 0,
+ "doctype": "Desktop Icon",
+ "hidden": 0,
+ "icon_type": "App",
+ "idx": 0,
+ "label": "Mawhub",
+ "link": "/desk/mawhub",
+ "link_type": "External",
+ "logo_url": "/assets/mawhub/images/logo.webp",
+ "modified": "2026-02-08 02:43:10.309488",
+ "modified_by": "Administrator",
+ "name": "Mawhub",
+ "owner": "Administrator",
+ "restrict_removal": 0,
+ "roles": [],
+ "standard": 1
+}
