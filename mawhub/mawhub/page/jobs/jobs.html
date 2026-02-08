@@ -2,11 +2,15 @@
 	<!-- Header -->
 	<div class="jd-header">
 		<div>
+			{% if job %}
 			<div class="jd-title-row">
-				<h2 class="jd-title" id="jd-job-title">Job Title</h2>
+				<!-- <h2 class="jd-title" id="jd-job-title">{{ job.title or 'Job Title' }}</h2> -->
 				<a class="btn btn-default btn-xs" id="jd-edit-job">Edit</a>
 			</div>
-			<div class="jd-subtitle" id="jd-job-subtitle"></div>
+			<div class="jd-subtitle" id="jd-job-subtitle">
+					{{ job.department }} · {{ job.work_mode }} · {{ job.location }}
+			</div>
+			{% endif %}
 		</div>
 
 		<div class="jd-header-actions">
@@ -15,7 +19,15 @@
 	</div>
 
 	<!-- Pipeline tabs -->
-	<div class="jd-pipeline" id="jd-pipeline"></div>
+	<div class="jd-pipeline" id="jd-pipeline">
+		{% if job and job.pipeline_steps %}
+			{% for step in job.pipeline_steps %}
+				<div class="jd-step {% if step.key == active_step %}active{% endif %}" data-step="{{ step.key }}">
+					{{ step.label }}
+				</div>
+			{% endfor %}
+		{% endif %}
+	</div>
 
 	<!-- Body -->
 	<div class="jd-body">
@@ -25,16 +37,54 @@
 				<input
 					class="form-control"
 					id="jd-search"
-					placeholder="Search by name, skills, tags..."
+					placeholder="Search by name, skills, tags"
 				/>
 			</div>
-			<div class="jd-candidate-list" id="jd-candidate-list"></div>
+			<div class="jd-candidate-list" id="jd-candidate-list">
+				{% if candidates %}
+					{% for c in candidates %}
+						<div class="jd-item {% if c.id == active_candidate_id %}active{% endif %}" data-candidate="{{ c.id }}">
+							<div class="jd-avatar">{{ c.name[0] }}</div>
+							<div>
+								<div class="jd-item-name">{{ c.name }}</div>
+							<div class="jd-item-sub">via <b>{{ c.source }}</b> · {{ c.applied_ago }}</div>
+							</div>
+						</div>
+					{% endfor %}
+				{% else %}
+					<div class="text-muted" style="padding:10px;">No candidates</div>
+				{% endif %}
+			</div>
 		</div>
 
 		<!-- Right: details -->
 		<div class="jd-right">
 			<div class="jd-detail-card" id="jd-detail-card">
-				<div class="text-muted">Select a candidate from the list.</div>
+				{% if active_candidate %}
+					<div class="jd-detail-head">
+						<div>
+							<h3 class="jd-detail-name">{{ active_candidate.name }}</h3>
+							<div class="jd-detail-meta">{% if active_candidate.headline %}{{ active_candidate.headline }}{% endif %}</div>
+							<div class="jd-badges">
+								<span class="jd-badge">📍 {{ active_candidate.location }}</span>
+								<span class="jd-badge">☎ {{ active_candidate.phone }}</span>
+							<span class="jd-badge">Score: {{ active_candidate.score }}</span>
+							</div>
+							<div class="jd-badges" style="margin-top:10px;">
+								{% if active_candidate.tags %}
+									{% for tag in active_candidate.tags %}
+										<span class="jd-badge">{{ tag }}</span>
+									{% endfor %}
+								{% endif %}
+							</div>
+						</div>
+						<div>
+							<button class="btn btn-default btn-sm" id="jd-move-next">Move to next step</button>
+						</div>
+					</div>
+				{% else %}
+					<div class="text-muted">Select a candidate from the list.</div>
+				{% endif %}
 			</div>
 		</div>
 	</div>

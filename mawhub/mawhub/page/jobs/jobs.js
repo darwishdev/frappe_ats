@@ -5,8 +5,6 @@ frappe.pages["jobs"].on_page_load = function (wrapper) {
 		single_column: true,
 	});
 
-	$(page.main).html(frappe.render_template("jobs", {}));
-
 	// ---- route options ----
 	const opts = frappe.route_options || {};
 	frappe.route_options = null;
@@ -89,49 +87,11 @@ frappe.pages["jobs"].on_page_load = function (wrapper) {
 	let activeCandidateId = null;
 
 	// ---- Render helpers ----
-	const esc = frappe.utils.escape_html;
-
 	function getCountsByStep() {
 		const counts = {};
 		for (const c of candidates) counts[c.stage] = (counts[c.stage] || 0) + 1;
 		counts.all = candidates.length;
 		return counts;
-	}
-
-	function renderHeader() {
-		$("#jd-job-title").text(job.title);
-		$("#jd-job-subtitle").text(`${job.department} · ${job.work_mode} · ${job.location}`);
-
-		$("#jd-edit-job")
-			.off("click")
-			.on("click", () => {
-				// later: route to actual Job Opening doc
-				frappe.msgprint(`Mock: edit ${job.name}`);
-			});
-
-		$("#jd-add-candidate")
-			.off("click")
-			.on("click", () => {
-				frappe.msgprint("Mock: Add candidates");
-			});
-	}
-
-	function renderPipeline() {
-		const counts = getCountsByStep();
-
-		$("#jd-pipeline").html(
-			job.pipeline_steps
-				.map((s) => {
-					const cnt = counts[s.key] || 0;
-					const active = s.key === activeStep ? "active" : "";
-					return `
-          <div class="jd-step ${active}" data-step="${esc(s.key)}">
-            ${esc(s.label)} <span class="count">${cnt ? cnt : "–"}</span>
-          </div>
-        `;
-				})
-				.join(""),
-		);
 	}
 
 	function filteredCandidates() {
@@ -148,96 +108,71 @@ frappe.pages["jobs"].on_page_load = function (wrapper) {
 		});
 	}
 
-	function renderCandidateList() {
-		const list = filteredCandidates();
-
-		$("#jd-candidate-list").html(
-			list
-				.map(
-					(c) => `
-        <div class="jd-item ${c.id === activeCandidateId ? "active" : ""}" data-candidate="${esc(c.id)}">
-          <div class="jd-avatar">${esc(c.name.split(" ").slice(0, 1)[0].slice(0, 1))}</div>
-          <div>
-            <div class="jd-item-name">${esc(c.name)}</div>
-            <div class="jd-item-sub">via <b>${esc(c.source)}</b> · ${esc(c.applied_ago)}</div>
-          </div>
-        </div>
-      `,
-				)
-				.join("") || `<div class="text-muted" style="padding:10px;">No candidates</div>`,
-		);
+	function renderPage() {
+		const filtered = filteredCandidates();
+		const activeCand = filtered.find((c) => c.id === activeCandidateId) || null;
+		
+		// Render the entire template with Jinja
+		const context = {
+			job: job,
+			active_step: activeStep,
+			step_counts: getCountsByStep(),
+			candidates: filtered,
+			active_candidate_id: activeCandidateId,
+			active_candidate: activeCand,
+		};
+		
+		$(page.main).html(frappe.render_template("jobs", context));
+		
+		// Re-attach event handlers after re-render
+		attachEventHandlers();
 	}
 
-	function renderCandidateDetails() {
-		const c = candidates.find((x) => x.id === activeCandidateId);
-		if (!c) {
-			$("#jd-detail-card").html(
-				`<div class="text-muted">Select a candidate from the list.</div>`,
-			);
-			return;
-		}
+	function attachEventHandlers() {
+		$("#jd-edit-job")
+			.off("click")
+			.on("click", () => {
+				frappe.msgprint(`Mock: edit ${job.name}`);
+			});
 
-		$("#jd-detail-card").html(`
-      <div class="jd-detail-head">
-        <div>
-          <h3 class="jd-detail-name">${esc(c.name)}</h3>
-          <div class="jd-detail-meta">${esc(c.headline || "")}</div>
-          <div class="jd-badges">
-            <span class="jd-badge">📍 ${esc(c.location)}</span>
-            <span class="jd-badge">☎ ${esc(c.phone)}</span>
-            <span class="jd-badge">Score: ${esc(String(c.score))}</span>
-          </div>
-          <div class="jd-badges" style="margin-top:10px;">
-            ${(c.tags || []).map((t) => `<span class="jd-badge">${esc(t)}</span>`).join("")}
-          </div>
-        </div>
-
-        <div>
-          <button class="btn btn-default btn-sm" id="jd-move-next">Move to next step</button>
-        </div>
-      </div>
-    `);
+		$("#jd-add-candidate")
+			.off("click")
+			.on("click", () => {
+				frappe.msgprint("Mock: Add candidates");
+			});
 
 		$("#jd-move-next")
 			.off("click")
 			.on("click", () => {
 				frappe.msgprint("Mock: move candidate to next step");
 			});
-	}
 
-	function renderAll() {
-		renderHeader();
-		renderPipeline();
-		renderCandidateList();
-		renderCandidateDetails();
-	}
-
-	// ---- Events ----
-	$(page.main).on("click", ".jd-step", function () {
-		activeStep = $(this).attr("data-step");
-		// reset selection if it disappears from filter
-		const list = filteredCandidates();
-		if (!list.some((x) => x.id === activeCandidateId)) activeCandidateId = list[0]?.id || null;
-		renderAll();
-	});
-
-	$(page.main).on(
-		"input",
-		"#jd-search",
-		frappe.utils.debounce(() => {
+		$(page.main).off("click", ".jd-step").on("click", ".jd-step", function () {
+			activeStep = $(this).attr("data-step");
 			const list = filteredCandidates();
-			if (!list.some((x) => x.id === activeCandidateId))
+			if (!list.some((x) => x.id === activeCandidateId)) {
 				activeCandidateId = list[0]?.id || null;
-			renderCandidateList();
-			renderCandidateDetails();
-		}, 200),
-	);
+			}
+			renderPage();
+		});
 
-	$(page.main).on("click", ".jd-item", function () {
-		activeCandidateId = $(this).attr("data-candidate");
-		renderCandidateList();
-		renderCandidateDetails();
-	});
+		$(page.main).off("input", "#jd-search").on(
+			"input",
+			"#jd-search",
+			frappe.utils.debounce(() => {
+				const list = filteredCandidates();
+				if (!list.some((x) => x.id === activeCandidateId)) {
+					activeCandidateId = list[0]?.id || null;
+				}
+				renderPage();
+			}, 200),
+		);
+
+		$(page.main).off("click", ".jd-item").on("click", ".jd-item", function () {
+			activeCandidateId = $(this).attr("data-candidate");
+			renderPage();
+		});
+	}
 
 	// ---- Init ----
 	(async function init() {
@@ -249,7 +184,7 @@ frappe.pages["jobs"].on_page_load = function (wrapper) {
 		activeStep = "all";
 		activeCandidateId = candidates[0]?.id || null;
 
-		renderAll();
+		renderPage();
 		page.clear_indicator();
 	})();
 };

@@ -1,0 +1,42 @@
+
+div[data-page-route="List/Job Opening/List"] .frappe-list header.list-row-head {
+    display: none !important;
+}
+div[data-page-route="List/Job Opening/List"] .frappe-list .list-row {
+    padding: 20px 0px;
+}
+
+/* Pipeline Steps in Description Field */
+.job-pipeline-steps {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    padding: 4px 0;
+}
+
+.pipeline-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    min-width: 80px;
+}
+
+.pipeline-step .step-count {
+    font-size: 24px;
+    font-weight: 600;
+    /* color: #caccd0; */
+    line-height: 1;
+}
+
+.pipeline-step .step-label {
+    font-size: 12px;
+    color: #6b7280;
+    text-align: center;
+    line-height: 1.2;
+}
+
+/* Make sure the description column has enough space */
+.frappe-list[data-doctype="Job Opening"] .list-row-col[data-field="description"] {
+    min-width: 500px;
+}

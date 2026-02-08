@@ -24,13 +24,27 @@ frappe.listview_settings['Job Opening'] = {
     },
     formatters: {
         description(value, field, doc) {
-            console.log("filedis" , field)
-            console.log("filedis" , doc)
-            if (doc.status === "Open") {
-                return `<span style="color:green;font-weight:bold">Hola</span>`;
-            }
+            console.log(field);
+            console.log(value);
+            console.log(doc);
+            
+            // Static pipeline steps for now - will be dynamic later
+            const pipeline_steps = [
+                { label: "Online Interview", count: 0 },
+                { label: "Offer", count: 0 },
+                { label: "Final Interview", count: 0 },
+                { label: "Screening", count: 0 },
+                { label: "Hired", count: 0 }
+            ];
 
-            return value;
+            const stepsHtml = pipeline_steps.map(step => `
+                <div class="pipeline-step">
+                    <span class="step-count">${step.count}</span>
+                    <span class="step-label">${step.label}</span>
+                </div>
+            `).join('');
+
+            return `<div class="job-pipeline-steps">${stepsHtml}</div>`;
         }
     },
     filters: [["status", "=", "Open"]],
