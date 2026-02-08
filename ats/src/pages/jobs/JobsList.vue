@@ -1,178 +1,232 @@
 <template>
-    <div class="jc-page">
+  <div class="jc-page">
+    <div class="jc-toolbar">
+      <div class="jc-search">
+        <TextInput
+          v-model="filters.search"
+          type="text"
+          size="sm"
+          variant="subtle"
+          placeholder="Start typing to search jobs..."
+          @input="debouncedApplyFilters"
+        />
+      </div>
 
-        <div class="jc-toolbar">
-            <div class="jc-search">
-                <TextInput
-                    v-model="filters.search"
-                    type="text"
-                    size="sm"
-                    variant="subtle"
-                    placeholder="Start typing to search jobs..."
-                    @input="debouncedApplyFilters"
-                />
-            </div>
-
-            <div class="jc-filters">
-                <Select
-                    class="w-48"
-                    placeholder="Select Customer"
-                    v-model="filters.customer"
-                    :options="customerOptions"
-                    @update:model-value="reload"
-                />
-
-                <Select
-                    class="w-48"
-                    placeholder="Select Owner"
-                    v-model="filters.owner"
-                    :options="ownerOptions"
-                    @update:model-value="reload"
-                />
-
-                <Checkbox
-                    size="sm"
-                    v-model="filters.includeDrafts"
-                    label="Include draft jobs"
-                    @change="applyFilters"
-                />
-
-                <Button
-                    size="sm"
-                    theme="gray"
-                    @click="clearFilters"
-                    v-if="filters.customer || filters.owner || filters.search"
-                >
-                    Clear Filters
-                </Button>
-            </div>
-        </div>
-
-        <div class="flex justify-end gap-3 items-center w-full my-4">
-            <Button
-                theme="gray"
-                size="md"
-                class="w-40"
-                :disabled="jobsResource.loading"
-                @click="reload"
-            >
-                {{ jobsResource.loading ? "Refreshing..." : "Refresh" }}
-            </Button>
-            <Button theme="gray" variant="solid" size="md" class="w-40" @click="createNewJob">
-                New Job
-            </Button>
-        </div>
-
-        <!-- Loading state -->
-        <div v-if="jobsResource.loading" class="text-center py-8 text-gray-500">
-            Loading jobs...
-        </div>
-
-        <!-- Error state -->
-        <div v-else-if="jobsResource.error" class="text-center py-8 text-red-500">
-            Error loading jobs: {{ jobsResource.error }}
-        </div>
-
-        <!-- Jobs list -->
-        <div v-else-if="filteredJobs.length > 0" class="jc-list">
-            <div v-for="job in filteredJobs" :key="job.name" class="jc-card" :data-job="job.name">
-                <!-- Card Header -->
-                <div class="jc-card-head">
-                    <div>
-                        <div class="jc-title" @click="openJob(job.name)">
-                            {{ job.title }}
-                        </div>
-                        <div class="jc-subtitle">
-                            <span v-if="job.customer" class="jc-info-item">
-                                <Building2 :size="14" />
-                                {{ job.customer }}
-                            </span>
-                            <span v-if="job.department" class="jc-info-item">
-                                <Users :size="14" />
-                                {{ job.department }}
-                            </span>
-                            <span v-if="job.work_mode" class="jc-info-item">
-                                <Briefcase :size="14" />
-                                {{ job.work_mode }}
-                            </span>
-                            <span v-if="job.location" class="jc-info-item">
-                                <MapPin :size="14" />
-                                {{ job.location }}
-                            </span>
-                        </div>
-                    </div>
-
-                    <div class="jc-actions">
-                        <button class="btn btn-default btn-sm" @click="copyJobLink(job)">
-                             Copy Link
-                        </button>
-                        <button class="btn btn-default !bg-black !text-white !px-5 btn-sm" @click="editJob(job.name)">
-                             Edit Job
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Pipeline stages -->
-                <div v-if="job.stages.length > 0" class="jc-pipeline">
-                    <div
-                        v-for="stage in job.stages.slice(0, 12)"
-                        :key="`${job.name}-${stage.id}`"
-                        class="jc-stage"
-                        :title="stage.label"
-                        @click="openJobWithStep(job.name, stage.id)"
-                    >
-                        <div class="jc-stage-count">{{ formatCount(stage.count) }}</div>
-                        <div class="jc-stage-label">{{ stage.label }}</div>
-                    </div>
-                </div>
-
-                <!-- Card Footer -->
-                <div class="jc-card-foot">
-                    <div v-if="!job.is_published" class="jc-warn">
-                        <span style="font-size: 16px">✕</span>
-                        <span
-                            >This job is not published on your careers page or on any job
-                            boards</span
-                        >
-                    </div>
-                    <div v-else></div>
-
-                    <div>
-                        Candidates: {{ job.candidates_total }} total ·
-                        {{ job.candidates_active }} active in pipeline · Last candidate on
-                        {{ formatDate(job.last_candidate_on) }}
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Empty state -->
-        <div v-else class="jc-empty">No jobs found.</div>
-
-        <!-- File input for job upload -->
-        <input
-            ref="jobFileInput"
-            type="file"
-            accept=".pdf,.doc,.docx"
-            style="display: none"
-            @change="handleJobFileUpload"
+      <div class="jc-filters">
+        <Select
+          v-model="filters.customer"
+          class="w-48"
+          placeholder="Select Customer"
+          :options="customerOptions"
+          @update:model-value="reload"
         />
 
-        <!-- Job Description Dialog -->
-        <JobDescriptionDialog
-            v-model="showJobDialog"
-            :parsed-data="parsedJobData"
-            :is-loading="isParsing"
-            @create="handleJobCreate" @update:model-value="handleJobCreate"
+        <Select
+          v-model="filters.owner"
+          class="w-48"
+          placeholder="Select Owner"
+          :options="ownerOptions"
+          @update:model-value="reload"
         />
 
-        <!-- Edit Job Dialog -->
-        <EditJobDialog
-            v-model="showEditDialog"
-            :job-name="selectedJobName"
-            @saved="handleJobSaved"
+        <Checkbox
+          v-model="filters.includeDrafts"
+          size="sm"
+          label="Include draft jobs"
+          @change="applyFilters"
         />
+
+        <Button
+          v-if="filters.customer || filters.owner || filters.search"
+          size="sm"
+          theme="gray"
+          @click="clearFilters"
+        >
+          Clear Filters
+        </Button>
+      </div>
     </div>
+
+    <div class="flex justify-end gap-3 items-center w-full my-4">
+      <Button
+        theme="gray"
+        size="md"
+        class="w-40"
+        :disabled="jobsResource.loading"
+        @click="reload"
+      >
+        {{ jobsResource.loading ? "Refreshing..." : "Refresh" }}
+      </Button>
+      <Button
+        theme="gray"
+        variant="solid"
+        size="md"
+        class="w-40"
+        @click="createNewJob"
+      >
+        New Job
+      </Button>
+    </div>
+
+    <!-- Loading state -->
+    <div
+      v-if="jobsResource.loading"
+      class="text-center py-8 text-gray-500"
+    >
+      Loading jobs...
+    </div>
+
+    <!-- Error state -->
+    <div
+      v-else-if="jobsResource.error"
+      class="text-center py-8 text-red-500"
+    >
+      Error loading jobs: {{ jobsResource.error }}
+    </div>
+
+    <!-- Jobs list -->
+    <div
+      v-else-if="filteredJobs.length > 0"
+      class="jc-list"
+    >
+      <div
+        v-for="job in filteredJobs"
+        :key="job.name"
+        class="jc-card"
+        :data-job="job.name"
+      >
+        <!-- Card Header -->
+        <div class="jc-card-head">
+          <div>
+            <div
+              class="jc-title"
+              @click="openJob(job.name)"
+            >
+              {{ job.title }}
+            </div>
+            <div class="jc-subtitle">
+              <span
+                v-if="job.customer"
+                class="jc-info-item"
+              >
+                <Building2 :size="14" />
+                {{ job.customer }}
+              </span>
+              <span
+                v-if="job.department"
+                class="jc-info-item"
+              >
+                <Users :size="14" />
+                {{ job.department }}
+              </span>
+              <span
+                v-if="job.work_mode"
+                class="jc-info-item"
+              >
+                <Briefcase :size="14" />
+                {{ job.work_mode }}
+              </span>
+              <span
+                v-if="job.location"
+                class="jc-info-item"
+              >
+                <MapPin :size="14" />
+                {{ job.location }}
+              </span>
+            </div>
+          </div>
+
+          <div class="jc-actions">
+            <button
+              class="btn btn-default btn-sm"
+              @click="copyJobLink(job)"
+            >
+              Copy Link
+            </button>
+            <button
+              class="btn btn-default !bg-black !text-white !px-5 btn-sm"
+              @click="editJob(job.name)"
+            >
+              Edit Job
+            </button>
+          </div>
+        </div>
+
+        <!-- Pipeline stages -->
+        <div
+          v-if="job.stages.length > 0"
+          class="jc-pipeline"
+        >
+          <div
+            v-for="stage in job.stages.slice(0, 12)"
+            :key="`${job.name}-${stage.id}`"
+            class="jc-stage"
+            :title="stage.label"
+            @click="openJobWithStep(job.name, stage.id)"
+          >
+            <div class="jc-stage-count">
+              {{ formatCount(stage.count) }}
+            </div>
+            <div class="jc-stage-label">
+              {{ stage.label }}
+            </div>
+          </div>
+        </div>
+
+        <!-- Card Footer -->
+        <div class="jc-card-foot">
+          <div
+            v-if="!job.is_published"
+            class="jc-warn"
+          >
+            <span style="font-size: 16px">✕</span>
+            <span>This job is not published on your careers page or on any job
+              boards</span>
+          </div>
+          <div v-else />
+
+          <div>
+            Candidates: {{ job.candidates_total }} total ·
+            {{ job.candidates_active }} active in pipeline · Last candidate on
+            {{ formatDate(job.last_candidate_on) }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty state -->
+    <div
+      v-else
+      class="jc-empty"
+    >
+      No jobs found.
+    </div>
+
+    <!-- File input for job upload -->
+    <input
+      ref="jobFileInput"
+      type="file"
+      accept=".pdf,.doc,.docx"
+      style="display: none"
+      @change="handleJobFileUpload"
+    >
+
+    <!-- Job Description Dialog -->
+    <JobDescriptionDialog
+      v-model="showJobDialog"
+      :parsed-data="parsedJobData"
+      :is-loading="isParsing"
+      @create="handleJobCreate"
+      @update:model-value="handleJobCreate"
+    />
+
+    <!-- Edit Job Dialog -->
+    <EditJobDialog
+      v-model="showEditDialog"
+      :job-name="selectedJobName"
+      @saved="handleJobSaved"
+    />
+  </div>
 </template>
 
 <script setup>

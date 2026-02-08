@@ -37,7 +37,7 @@
 <script lang="ts" setup>
 import { session } from "../data/session";
 
-function submit(e) {
+function submit(e : any) {
     console.log("submitting");
     const formData = new FormData(e.target);
     session.login.submit({

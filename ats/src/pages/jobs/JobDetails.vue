@@ -1,321 +1,394 @@
 <template>
-    <div class="jd-page">
-        <!-- Loading state -->
-        <!-- <div v-if="jobDetailsResource.loading" class="jd-loading">
+  <div class="jd-page">
+    <!-- Loading state -->
+    <!-- <div v-if="jobDetailsResource.loading" class="jd-loading">
             <div class="text-center py-8 text-gray-500">Loading job details...</div>
         </div> -->
 
-        <!-- Error state -->
-        <!-- <div v-else-if="jobDetailsResource.error" class="jd-error">
+    <!-- Error state -->
+    <!-- <div v-else-if="jobDetailsResource.error" class="jd-error">
             <div class="text-center py-8 text-red-500">
                 Error loading job details: {{ jobDetailsResource.error }}
             </div>
         </div> -->
 
-        <!-- Header -->
-        <div class="jd-content">
-            <div class="jd-header">
-                <div>
-                    <div class="jd-title-row">
-                        <h2 class="jd-title">{{ job?.designation || "Job Details" }}</h2>
-                        <div style="display: flex; gap: 8px;">
-                            <Button size="sm" @click="showJobDescription">
-                                <Eye :size="16" class="button-icon" />
-                                Show
-                            </Button>
-                            <Button size="sm" @click="editJob">
-                                <Edit2 :size="16" class="button-icon" />
-                                Edit
-                            </Button>
-                        </div>
-                    </div>
-                    <!-- <div class="jd-subtitle">
+    <!-- Header -->
+    <div class="jd-content">
+      <div class="jd-header">
+        <div>
+          <div class="jd-title-row">
+            <h2 class="jd-title">
+              {{ job?.designation || "Job Details" }}
+            </h2>
+            <div style="display: flex; gap: 8px;">
+              <Button
+                size="sm"
+                @click="showJobDescription"
+              >
+                <Eye
+                  :size="16"
+                  class="button-icon"
+                />
+                Show
+              </Button>
+              <Button
+                size="sm"
+                @click="editJob"
+              >
+                <Edit2
+                  :size="16"
+                  class="button-icon"
+                />
+                Edit
+              </Button>
+            </div>
+          </div>
+          <!-- <div class="jd-subtitle">
                         {{ job?.department }} · {{ job?.work_mode }} · {{ job?.location }}
                     </div> -->
-                </div>
+        </div>
 
-                <div class="jd-header-actions">
-                    <input
-                        ref="resumeFileInput"
-                        type="file"
-                        accept=".pdf,.doc,.docx"
-                        style="display: none"
-                        @change="handleResumeUpload"
-                    />
-                    <Button
-                        theme="gray"
-                        class="w-40 p-5"
-                        :loading="isUploading"
-                        @click="triggerResumeUpload"
-                    >
-                        <Upload :size="16" class="button-icon" v-if="!isUploading" />
-                        {{ isUploading ? `Uploading... ${uploadProgress}%` : "Upload Resume" }}
-                    </Button>
-                    <Button
-                        theme="gray"
-                        :variant="'solid'"
-                        class="w-40 p-5 p-5"
-                        @click="showAddCandidateDialog = true"
-                    >
-                        <UserPlus :size="16" class="button-icon" />
-                        Add candidates
-                    </Button>
-                </div>
-            </div>
+        <div class="jd-header-actions">
+          <input
+            ref="resumeFileInput"
+            type="file"
+            accept=".pdf,.doc,.docx"
+            style="display: none"
+            @change="handleResumeUpload"
+          >
+          <Button
+            theme="gray"
+            class="w-40 p-5"
+            :loading="isUploading"
+            @click="triggerResumeUpload"
+          >
+            <Upload
+              v-if="!isUploading"
+              :size="16"
+              class="button-icon"
+            />
+            {{ isUploading ? `Uploading... ${uploadProgress}%` : "Upload Resume" }}
+          </Button>
+          <Button
+            theme="gray"
+            :variant="'solid'"
+            class="w-40 p-5 p-5"
+            @click="showAddCandidateDialog = true"
+          >
+            <UserPlus
+              :size="16"
+              class="button-icon"
+            />
+            Add candidates
+          </Button>
+        </div>
+      </div>
 
-            <!-- Pipeline tabs -->
-            <div class="jd-pipeline-container">
-                <div class="jd-pipeline">
-                    <div
-                        v-for="step in Object.values(steps)"
-                        :key="step.step_id"
-                        :class="['jd-step', { active: activeStep === step.step_id }]"
-                        @click="changeStep(step.step_id)"
-                    >
-                        {{ step.step_name }} <span class="count">{{ step.candidate_count }}</span>
-                    </div>
-                </div>
-                <Button size="sm" theme="gray" @click="editPipeline">
-                    <Settings :size="16" class="button-icon" />
-                    Edit Pipeline
+      <!-- Pipeline tabs -->
+      <div class="jd-pipeline-container">
+        <div class="jd-pipeline">
+          <div
+            v-for="step in Object.values(steps)"
+            :key="step.step_id"
+            :class="['jd-step', { active: activeStep === step.step_id }]"
+            @click="changeStep(step.step_id)"
+          >
+            {{ step.step_name }} <span class="count">{{ step.candidate_count }}</span>
+          </div>
+        </div>
+        <Button
+          size="sm"
+          theme="gray"
+          @click="editPipeline"
+        >
+          <Settings
+            :size="16"
+            class="button-icon"
+          />
+          Edit Pipeline
+        </Button>
+      </div>
+
+      <!-- Body -->
+      <div class="jd-body">
+        <!-- Left: list -->
+        <div class="jd-left">
+          <div class="jd-left-top">
+            <TextInput
+              v-model="searchQuery"
+              type="text"
+              size="sm"
+              variant="subtle"
+              placeholder="Search by name, skills, tags..."
+            />
+            <div class="jd-bulk-toolbar">
+              <Button
+                size="sm"
+                @click="toggleSelectAll"
+              >
+                <CheckSquare
+                  v-if="!allSelected"
+                  :size="16"
+                  class="button-icon"
+                />
+                <Square
+                  v-else
+                  :size="16"
+                  class="button-icon"
+                />
+                {{ allSelected ? "Deselect All" : "Select All" }}
+              </Button>
+              <div
+                v-if="selectedCandidates.size > 0"
+                class="jd-bulk-actions"
+              >
+                <Button
+                  size="sm"
+                  theme="gray"
+                  :variant="'solid'"
+                  @click="showBulkMoveDialog = true"
+                >
+                  <MoveRight
+                    :size="16"
+                    class="button-icon"
+                  />
+                  Bulk Move
                 </Button>
+                <Button
+                  size="sm"
+                  @click="clearSelection"
+                >
+                  <X
+                    :size="16"
+                    class="button-icon"
+                  />
+                  Clear
+                </Button>
+              </div>
             </div>
-
-            <!-- Body -->
-            <div class="jd-body">
-                <!-- Left: list -->
-                <div class="jd-left">
-                    <div class="jd-left-top">
-                        <TextInput
-                            v-model="searchQuery"
-                            type="text"
-                            size="sm"
-                            variant="subtle"
-                            placeholder="Search by name, skills, tags..."
-                        />
-                        <div class="jd-bulk-toolbar">
-                            <Button size="sm" @click="toggleSelectAll">
-                                <CheckSquare :size="16" class="button-icon" v-if="!allSelected" />
-                                <Square :size="16" class="button-icon" v-else />
-                                {{ allSelected ? "Deselect All" : "Select All" }}
-                            </Button>
-                            <div v-if="selectedCandidates.size > 0" class="jd-bulk-actions">
-                                <Button
-                                    size="sm"
-                                    theme="gray"
-                                    :variant="'solid'"
-                                    @click="showBulkMoveDialog = true"
-                                >
-                                    <MoveRight :size="16" class="button-icon" />
-                                    Bulk Move
-                                </Button>
-                                <Button size="sm" @click="clearSelection">
-                                    <X :size="16" class="button-icon" />
-                                    Clear
-                                </Button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="jd-candidate-list">
-                        <div
-                            v-for="candidate in steps[activeStep]?.candidates || []"
-                            :key="candidate.applicant_id"
-                            :class="['jd-item', { active: activeCandidateId === candidate.applicant_id }]"
-                            @click="selectCandidate(candidate.applicant_id)"
-                        >
-                            <input
-                                type="checkbox"
-                                class="jd-candidate-checkbox"
-                                :checked="selectedCandidates.has(candidate.applicant_id)"
-                                @click.stop="toggleCandidateSelection(candidate.applicant_id)"
-                            />
-                            <div class="jd-avatar">
-                                {{ candidate.applicant_name?.charAt(0).toUpperCase() }}
-                            </div>
-                            <div>
-                                <div class="jd-item-name">{{ candidate.applicant_name }}</div>
-                                <div v-if="candidate.applicant_source" class="jd-item-sub">
-                                    via <b>{{ candidate.applicant_source }}</b>
-                                    <!-- {{ formatDate(candidate.applicant_created_at) }} -->
-                                </div>
-                            </div>
-                        </div>
-                        <div
-                            v-if="filteredCandidates.length === 0"
-                            class="text-muted"
-                            style="padding: 10px"
-                        >
-                            No candidates
-                        </div>
-                    </div>
+          </div>
+          <div class="jd-candidate-list">
+            <div
+              v-for="candidate in steps[activeStep]?.candidates || []"
+              :key="candidate.applicant_id"
+              :class="['jd-item', { active: activeCandidateId === candidate.applicant_id }]"
+              @click="selectCandidate(candidate.applicant_id)"
+            >
+              <input
+                type="checkbox"
+                class="jd-candidate-checkbox"
+                :checked="selectedCandidates.has(candidate.applicant_id)"
+                @click.stop="toggleCandidateSelection(candidate.applicant_id)"
+              >
+              <div class="jd-avatar">
+                {{ candidate.applicant_name?.charAt(0).toUpperCase() }}
+              </div>
+              <div>
+                <div class="jd-item-name">
+                  {{ candidate.applicant_name }}
                 </div>
+                <div
+                  v-if="candidate.applicant_source"
+                  class="jd-item-sub"
+                >
+                  via <b>{{ candidate.applicant_source }}</b>
+                  <!-- {{ formatDate(candidate.applicant_created_at) }} -->
+                </div>
+              </div>
+            </div>
+            <div
+              v-if="filteredCandidates.length === 0"
+              class="text-muted"
+              style="padding: 10px"
+            >
+              No candidates
+            </div>
+          </div>
+        </div>
 
-                <!-- Middle: details -->
-                <div class="jd-middle">
-                    <div class="jd-detail-card">
-                        <div v-if="!activeCandidate" class="text-muted py-10">
-                            Select a candidate from the list.
-                        </div>
-                        <div v-else>
-                            <div class="jd-detail-head">
-                                <div style="display: flex; align-items: center; gap: 12px">
-                                    <div
-                                        class="jd-avatar"
-                                        style="width: 55px; height: 55px; font-size: 20px"
-                                    >
-                                        {{ activeCandidate.applicant_name?.charAt(0).toUpperCase() }}
-                                    </div>
-                                    <div>
-                                        <h3 class="jd-detail-name">{{ activeCandidate.applicant_name }}</h3>
-                                        <div class="jd-detail-meta">
-                                            <a
-                                                class="underline"
-                                                :href="`mailto:${activeCandidate.applicant_email}`"
-                                                >{{ activeCandidate.applicant_email }}</a
-                                            >
-                                        </div>
-                                    </div>
-                                </div>
-                                <div
-                                    style="
+        <!-- Middle: details -->
+        <div class="jd-middle">
+          <div class="jd-detail-card">
+            <div
+              v-if="!activeCandidate"
+              class="text-muted py-10"
+            >
+              Select a candidate from the list.
+            </div>
+            <div v-else>
+              <div class="jd-detail-head">
+                <div style="display: flex; align-items: center; gap: 12px">
+                  <div
+                    class="jd-avatar"
+                    style="width: 55px; height: 55px; font-size: 20px"
+                  >
+                    {{ activeCandidate.applicant_name?.charAt(0).toUpperCase() }}
+                  </div>
+                  <div>
+                    <h3 class="jd-detail-name">
+                      {{ activeCandidate.applicant_name }}
+                    </h3>
+                    <div class="jd-detail-meta">
+                      <a
+                        class="underline"
+                        :href="`mailto:${activeCandidate.applicant_email}`"
+                      >{{ activeCandidate.applicant_email }}</a>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  style="
                                         display: flex;
                                         flex-direction: column;
                                         gap: 8px;
                                         min-width: 200px;
                                     "
-                                >
-                                    <Select
-                                        v-model="targetStep"
-                                        :options="stepOptions"
-                                        placeholder="Select step"
-                                    />
-                                    <Button
-                                        size="sm"
-                                        theme="gray"
-                                        :variant="'solid'"
-                                        @click="moveCandidateToStep"
-                                    >
-                                        <MoveRight :size="16" class="button-icon" />
-                                        Move to selected step
-                                    </Button>
-                                </div>
-                            </div>
-
-                            <!-- Tab Navigation -->
-                            <div class="jd-tabs-nav">
-                                <button
-                                    v-for="tab in tabs"
-                                    :key="tab.key"
-                                    :class="['jd-tab-button', { active: activeTab === tab.key }]"
-                                    @click="activeTab = tab.key"
-                                >
-                                    {{ tab.label }}
-                                </button>
-                            </div>
-
-                            <!-- Tab Content -->
-                            <div class="jd-tab-content">
-                                <component
-                                    :is="tabComponents[activeTab]"
-                                    :candidate="activeCandidate"
-                                    :job-title="job?.designation"
-                                />
-                            </div>
-                        </div>
-                    </div>
+                >
+                  <Select
+                    v-model="targetStep"
+                    :options="stepOptions"
+                    placeholder="Select step"
+                  />
+                  <Button
+                    size="sm"
+                    theme="gray"
+                    :variant="'solid'"
+                    @click="moveCandidateToStep"
+                  >
+                    <MoveRight
+                      :size="16"
+                      class="button-icon"
+                    />
+                    Move to selected step
+                  </Button>
                 </div>
+              </div>
 
-                <!-- Right: action panel -->
-                <div class="jd-actions-panel !w-[12rem]">
-                    <div v-if="!activeCandidate" class="text-muted py-10">Select a candidate</div>
-                    <div v-else class="jd-actions-content">
-                        <h4 class="jd-actions-title">Actions</h4>
-                        <div class="jd-actions-buttons">
-                            <Button
-                                v-for="action in candidateActions"
-                                :key="action.key"
-                                size="sm"
-                                theme="gray"
-                                class="p-7"
-                                :variant="action.variant === 'danger' ? 'outline' : 'solid'"
-                                @click="action.action"
-                            >
-                                <div :class="['jd-action-button']">
-                                    <component
-                                        :is="action.icon"
-                                        :size="14"
-                                        class="jd-action-icon"
-                                    />
-                                    <span>{{ action.label }}</span>
-                                </div>
-                            </Button>
-                        </div>
-                    </div>
-                </div>
+              <!-- Tab Navigation -->
+              <div class="jd-tabs-nav">
+                <button
+                  v-for="tab in tabs"
+                  :key="tab.key"
+                  :class="['jd-tab-button', { active: activeTab === tab.key }]"
+                  @click="activeTab = tab.key"
+                >
+                  {{ tab.label }}
+                </button>
+              </div>
+
+              <!-- Tab Content -->
+              <div class="jd-tab-content">
+                <component
+                  :is="tabComponents[activeTab]"
+                  :candidate="activeCandidate"
+                  :job-title="job?.designation"
+                />
+              </div>
             </div>
-
-            <!-- Dialog Components -->
-            <AddCandidateDialog 
-                v-model="showAddCandidateDialog" 
-                :job-id="job?.name || ''"
-                @success="onCandidateAdded" 
-            />
-
-            <AssignInterviewDialog
-                v-model="showAssignInterviewDialog"
-                :candidate-id="activeCandidate?.applicant_id || ''"
-                :candidate-name="activeCandidate?.applicant_name || ''"
-                :job-id="job?.name || ''"
-                :job-designation="job?.designation || ''"
-                :resume-link="activeCandidate?.applicant_resume_link || ''"
-                @success="onInterviewAssigned"
-            />
-
-            <EditJobDialog
-                v-model="showEditDialog"
-                :job-name="jobId"
-                @saved="getJobOpening"
-            />
-            <JobDescriptionDialog
-                v-model="showJobDescriptionDialog"
-                :parsed-data="transformedParsedData"
-                :is-loading="false"
-                :job-details="job"
-            />
-
-            <BulkMoveDialog
-                v-model="showBulkMoveDialog"
-                :step-options="stepOptions"
-                :candidate-count="selectedCandidates.size"
-                :candidate-ids="Array.from(selectedCandidates)"
-                @success="onBulkMoveCompleted"
-            />
-
-            <ApplicantProfileDialog
-                v-model="showProfileDialog"
-                :applicant-id="activeCandidate?.applicant_id"
-                :candidate-name="activeCandidate?.applicant_name"
-                :profile="parsingProfile || undefined"
-                :is-loading="isParsingResume"
-                :on-fetch-profile="fetchApplicantProfile"
-            />
-
-            <SendEmailDialog
-                v-model="showSendEmailDialog"
-                :candidate-id="activeCandidate?.applicant_id || ''"
-                :candidate-email="activeCandidate?.applicant_email || ''"
-                :job-id="job?.name || ''"
-                @success="onEmailSent"
-            />
-
-            <EditPipelineDialog
-                v-model="showEditPipelineDialog"
-                :job-id="job?.name || ''"
-                :job-data="job"
-                @success="onPipelineUpdated"
-            />
+          </div>
         </div>
+
+        <!-- Right: action panel -->
+        <div class="jd-actions-panel !w-[12rem]">
+          <div
+            v-if="!activeCandidate"
+            class="text-muted py-10"
+          >
+            Select a candidate
+          </div>
+          <div
+            v-else
+            class="jd-actions-content"
+          >
+            <h4 class="jd-actions-title">
+              Actions
+            </h4>
+            <div class="jd-actions-buttons">
+              <Button
+                v-for="action in candidateActions"
+                :key="action.key"
+                size="sm"
+                theme="gray"
+                class="p-7"
+                :variant="action.variant === 'danger' ? 'outline' : 'solid'"
+                @click="action.action"
+              >
+                <div :class="['jd-action-button']">
+                  <component
+                    :is="action.icon"
+                    :size="14"
+                    class="jd-action-icon"
+                  />
+                  <span>{{ action.label }}</span>
+                </div>
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dialog Components -->
+      <AddCandidateDialog 
+        v-model="showAddCandidateDialog" 
+        :job-id="job?.name || ''"
+        @success="onCandidateAdded" 
+      />
+
+      <AssignInterviewDialog
+        v-model="showAssignInterviewDialog"
+        :candidate-id="activeCandidate?.applicant_id || ''"
+        :candidate-name="activeCandidate?.applicant_name || ''"
+        :job-id="job?.name || ''"
+        :job-designation="job?.designation || ''"
+        :resume-link="activeCandidate?.applicant_resume_link || ''"
+        @success="onInterviewAssigned"
+      />
+
+      <EditJobDialog
+        v-model="showEditDialog"
+        :job-name="jobId"
+        @saved="getJobOpening"
+      />
+      <JobDescriptionDialog
+        v-model="showJobDescriptionDialog"
+        :parsed-data="transformedParsedData"
+        :is-loading="false"
+        :job-details="job"
+      />
+
+      <BulkMoveDialog
+        v-model="showBulkMoveDialog"
+        :step-options="stepOptions"
+        :candidate-count="selectedCandidates.size"
+        :candidate-ids="Array.from(selectedCandidates)"
+        @success="onBulkMoveCompleted"
+      />
+
+      <ApplicantProfileDialog
+        v-model="showProfileDialog"
+        :applicant-id="activeCandidate?.applicant_id"
+        :candidate-name="activeCandidate?.applicant_name"
+        :profile="parsingProfile || undefined"
+        :is-loading="isParsingResume"
+        :on-fetch-profile="fetchApplicantProfile"
+      />
+
+      <SendEmailDialog
+        v-model="showSendEmailDialog"
+        :candidate-id="activeCandidate?.applicant_id || ''"
+        :candidate-email="activeCandidate?.applicant_email || ''"
+        :job-id="job?.name || ''"
+        @success="onEmailSent"
+      />
+
+      <EditPipelineDialog
+        v-model="showEditPipelineDialog"
+        :job-id="job?.name || ''"
+        :job-data="job"
+        @success="onPipelineUpdated"
+      />
     </div>
+  </div>
 </template>
 
 <script setup lang="ts">

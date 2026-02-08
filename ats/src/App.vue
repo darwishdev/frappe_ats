@@ -125,8 +125,14 @@ function showHelp() {
         },
       ]"
     />
-    <div class="flex-1 overflow-auto app-container" style="">
-      <div v-if="route.name !== 'Login'" class="p-4">
+    <div
+      class="flex-1 overflow-auto app-container"
+      style=""
+    >
+      <div
+        v-if="route.name !== 'Login'"
+        class="p-4"
+      >
         <Breadcrumbs :items="breadcrumbItems" />
       </div>
       <router-view />

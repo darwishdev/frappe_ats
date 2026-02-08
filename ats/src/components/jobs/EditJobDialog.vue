@@ -93,30 +93,30 @@
           </div>
         </div>
 
-                <!-- Location -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">
-                        Location
-                    </label>
-                    <TextInput
-                        v-model="formData.location"
-                        type="text"
-                        placeholder="Enter location"
-                        size="md"
-                    />
-                </div>
+        <!-- Location -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">
+            Location
+          </label>
+          <TextInput
+            v-model="formData.location"
+            type="text"
+            placeholder="Enter location"
+            size="md"
+          />
+        </div>
 
-                <!-- Customer -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">
-                        Customer
-                    </label>
-                    <Select
-                        v-model="formData.customer"
-                        :options="customerOptions"
-                        placeholder="Select customer"
-                    />
-                </div>
+        <!-- Customer -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">
+            Customer
+          </label>
+          <Select
+            v-model="formData.customer"
+            :options="customerOptions"
+            placeholder="Select customer"
+          />
+        </div>
 
         <!-- Description -->
         <div>

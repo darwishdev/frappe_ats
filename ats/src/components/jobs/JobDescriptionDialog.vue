@@ -1,194 +1,275 @@
 <template>
-    <Dialog 
-        v-model="isOpen" 
-        :options="{ 
-            title: 'Parsed Job Description', 
-            size: '5xl' 
-        }"
-    >
-        <template #body-content>
-            <div class="jdd-content">
-                <div v-if="isLoading" class="jdd-loading">
-                    <div class="spinner"></div>
-                    <p>Parsing job description...</p>
-                </div>
+  <Dialog 
+    v-model="isOpen" 
+    :options="{ 
+      title: 'Parsed Job Description', 
+      size: '5xl' 
+    }"
+  >
+    <template #body-content>
+      <div class="jdd-content">
+        <div
+          v-if="isLoading"
+          class="jdd-loading"
+        >
+          <div class="spinner" />
+          <p>Parsing job description...</p>
+        </div>
 
-                <div v-else-if="Object.keys(parsedData).length > 0" class="jdd-sections">
-                    <!-- Job Details Card from props -->
-                    <div v-if="props.jobDetails" class="jdd-details-card">
-                        <h3 class="jdd-details-title">Job Details</h3>
+        <div
+          v-else-if="Object.keys(parsedData).length > 0"
+          class="jdd-sections"
+        >
+          <!-- Job Details Card from props -->
+          <div
+            v-if="props.jobDetails"
+            class="jdd-details-card"
+          >
+            <h3 class="jdd-details-title">
+              Job Details
+            </h3>
                         
-                        <div class="jdd-details-grid">
-                            <!-- Job Title -->
-                            <div class="jdd-detail-item jdd-detail-full">
-                                <div class="jdd-detail-icon">
-                                    <Briefcase :size="24" />
-                                </div>
-                                <div class="jdd-detail-content">
-                                    <div class="jdd-detail-label">Job Title</div>
-                                    <div class="jdd-detail-value jdd-detail-highlight">{{ props.jobDetails.title }}</div>
-                                </div>
-                            </div>
+            <div class="jdd-details-grid">
+              <!-- Job Title -->
+              <div class="jdd-detail-item jdd-detail-full">
+                <div class="jdd-detail-icon">
+                  <Briefcase :size="24" />
+                </div>
+                <div class="jdd-detail-content">
+                  <div class="jdd-detail-label">
+                    Job Title
+                  </div>
+                  <div class="jdd-detail-value jdd-detail-highlight">
+                    {{ props.jobDetails.title }}
+                  </div>
+                </div>
+              </div>
 
-                            <!-- Department -->
-                            <div class="jdd-detail-item">
-                                <div class="jdd-detail-icon">
-                                    <Users :size="24" />
-                                </div>
-                                <div class="jdd-detail-content">
-                                    <div class="jdd-detail-label">Department</div>
-                                    <div class="jdd-detail-value">{{ props.jobDetails.department }}</div>
-                                </div>
-                            </div>
+              <!-- Department -->
+              <div class="jdd-detail-item">
+                <div class="jdd-detail-icon">
+                  <Users :size="24" />
+                </div>
+                <div class="jdd-detail-content">
+                  <div class="jdd-detail-label">
+                    Department
+                  </div>
+                  <div class="jdd-detail-value">
+                    {{ props.jobDetails.department }}
+                  </div>
+                </div>
+              </div>
 
-                            <!-- Location -->
-                            <div class="jdd-detail-item">
-                                <div class="jdd-detail-icon">
-                                    <MapPin :size="24" />
-                                </div>
-                                <div class="jdd-detail-content">
-                                    <div class="jdd-detail-label">Location</div>
-                                    <div class="jdd-detail-value">{{ props.jobDetails.location }}</div>
-                                </div>
-                            </div>
+              <!-- Location -->
+              <div class="jdd-detail-item">
+                <div class="jdd-detail-icon">
+                  <MapPin :size="24" />
+                </div>
+                <div class="jdd-detail-content">
+                  <div class="jdd-detail-label">
+                    Location
+                  </div>
+                  <div class="jdd-detail-value">
+                    {{ props.jobDetails.location }}
+                  </div>
+                </div>
+              </div>
 
-                            <!-- Work Mode -->
-                            <div class="jdd-detail-item">
-                                <div class="jdd-detail-icon">
-                                    <Briefcase :size="24" />
-                                </div>
-                                <div class="jdd-detail-content">
-                                    <div class="jdd-detail-label">Work Mode</div>
-                                    <div class="jdd-detail-value">{{ props.jobDetails.work_mode }}</div>
-                                </div>
-                            </div>
+              <!-- Work Mode -->
+              <div class="jdd-detail-item">
+                <div class="jdd-detail-icon">
+                  <Briefcase :size="24" />
+                </div>
+                <div class="jdd-detail-content">
+                  <div class="jdd-detail-label">
+                    Work Mode
+                  </div>
+                  <div class="jdd-detail-value">
+                    {{ props.jobDetails.work_mode }}
+                  </div>
+                </div>
+              </div>
 
-                            <!-- Pipeline -->
-                            <div class="jdd-detail-item">
-                                <div class="jdd-detail-icon">
-                                    <FileText :size="24" />
-                                </div>
-                                <div class="jdd-detail-content">
-                                    <div class="jdd-detail-label">Pipeline</div>
-                                    <div class="jdd-detail-value">{{ props.jobDetails.pipeline_name }}</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+              <!-- Pipeline -->
+              <div class="jdd-detail-item">
+                <div class="jdd-detail-icon">
+                  <FileText :size="24" />
+                </div>
+                <div class="jdd-detail-content">
+                  <div class="jdd-detail-label">
+                    Pipeline
+                  </div>
+                  <div class="jdd-detail-value">
+                    {{ props.jobDetails.pipeline_name }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
 
-                    <div v-for="(section, sectionKey) in parsedData" :key="sectionKey">
-                        <!-- Special handling for job_opening_details -->
-                         <!-- {{ section }} -->
-                        <div v-if="sectionKey === 'job_opening_details'" class="jdd-details-card">
-                            <h3 class="jdd-details-title">Job Opening</h3>
+          <div
+            v-for="(section, sectionKey) in parsedData"
+            :key="sectionKey"
+          >
+            <!-- Special handling for job_opening_details -->
+            <!-- {{ section }} -->
+            <div
+              v-if="sectionKey === 'job_opening_details'"
+              class="jdd-details-card"
+            >
+              <h3 class="jdd-details-title">
+                Job Opening
+              </h3>
                             
-                            <div class="jdd-details-grid">
-                                <!-- Job Title -->
-                                <div v-if="section.job_title" class="jdd-detail-item jdd-detail-full">
-                                    <div class="jdd-detail-icon">
-                                        <Briefcase :size="24" />
-                                    </div>
-                                    <div class="jdd-detail-content">
-                                        <div class="jdd-detail-label">Job Title</div>
-                                        <div class="jdd-detail-value">{{ section.job_title }}</div>
-                                    </div>
-                                </div>
-
-                                <!-- Location -->
-                                <div class="jdd-detail-item">
-                                    <div class="jdd-detail-icon">
-                                        <MapPin :size="24" />
-                                    </div>
-                                    <div class="jdd-detail-content">
-                                        <div class="jdd-detail-label">Location</div>
-                                        <div class="jdd-detail-value">{{ section.location || 'N/A' }}</div>
-                                    </div>
-                                </div>
-
-                                <!-- Salary Range -->
-                                <div class="jdd-detail-item">
-                                    <div class="jdd-detail-icon">
-                                        <Banknote :size="24" />
-                                    </div>
-                                    <div class="jdd-detail-content">
-                                        <div class="jdd-detail-label">Salary Range</div>
-                                        <div class="jdd-detail-value">
-                                            {{ formatSalaryRange(section.lower_range, section.upper_range, section.currency) || 'N/A' }}
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Description -->
-                                <div class="jdd-detail-item jdd-detail-full">
-                                    <div class="jdd-detail-icon">
-                                        <FileText :size="24" />
-                                    </div>
-                                    <div class="jdd-detail-content">
-                                        <div class="jdd-detail-label">Description</div>
-                                        <div class="jdd-detail-value jdd-detail-description">{{ section.description || 'N/A' }}</div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Footer -->
-                            <div v-if="section.footer" class="jdd-details-footer">
-                                {{ section.footer }}
-                            </div>
-                        </div>
-
-                        <!-- Regular section rendering for other keys -->
-                        <div v-else class="jdd-section">
-                            <!-- Section Title -->
-                            <div class="jdd-section-header">
-                                <h3 class="jdd-section-title">{{ formatSectionTitle(sectionKey) }}</h3>
-                            </div>
-
-                            <!-- Section Description -->
-                            <div v-if="section.description" class="jdd-section-description">
-                                {{ section.description }}
-                            </div>
-
-                            <!-- Bullet Points -->
-                            <div v-if="section.bullet_points && section.bullet_points.length > 0" class="jdd-bullet-points">
-                                <ul>
-                                    <li v-for="(point, idx) in section.bullet_points" :key="idx">
-                                        {{ point }}
-                                    </li>
-                                </ul>
-                            </div>
-
-                            <!-- Footer -->
-                            <div v-if="section.footer" class="jdd-section-footer">
-                                {{ section.footer }}
-                            </div>
-                        </div>
+              <div class="jdd-details-grid">
+                <!-- Job Title -->
+                <div
+                  v-if="section.job_title"
+                  class="jdd-detail-item jdd-detail-full"
+                >
+                  <div class="jdd-detail-icon">
+                    <Briefcase :size="24" />
+                  </div>
+                  <div class="jdd-detail-content">
+                    <div class="jdd-detail-label">
+                      Job Title
                     </div>
+                    <div class="jdd-detail-value">
+                      {{ section.job_title }}
+                    </div>
+                  </div>
                 </div>
 
-                <div v-else class="jdd-empty">
-                    <p>No data parsed yet</p>
+                <!-- Location -->
+                <div class="jdd-detail-item">
+                  <div class="jdd-detail-icon">
+                    <MapPin :size="24" />
+                  </div>
+                  <div class="jdd-detail-content">
+                    <div class="jdd-detail-label">
+                      Location
+                    </div>
+                    <div class="jdd-detail-value">
+                      {{ section.location || 'N/A' }}
+                    </div>
+                  </div>
                 </div>
-            </div>
-        </template>
 
-        <template #actions>
-            <div class="w-full flex justify-end">
-                <Button v-if="props.jobDetails"
-                    variant="solid" 
-                    @click="close" 
-                >
-                    Close
-                </Button>
-                <Button v-else
-                    variant="solid" 
-                    @click="createJob" 
-                    :disabled="isLoading || Object.keys(parsedData).length === 0"
-                >
-                    Create Job
-                </Button>
+                <!-- Salary Range -->
+                <div class="jdd-detail-item">
+                  <div class="jdd-detail-icon">
+                    <Banknote :size="24" />
+                  </div>
+                  <div class="jdd-detail-content">
+                    <div class="jdd-detail-label">
+                      Salary Range
+                    </div>
+                    <div class="jdd-detail-value">
+                      {{ formatSalaryRange(section.lower_range, section.upper_range, section.currency) || 'N/A' }}
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Description -->
+                <div class="jdd-detail-item jdd-detail-full">
+                  <div class="jdd-detail-icon">
+                    <FileText :size="24" />
+                  </div>
+                  <div class="jdd-detail-content">
+                    <div class="jdd-detail-label">
+                      Description
+                    </div>
+                    <div class="jdd-detail-value jdd-detail-description">
+                      {{ section.description || 'N/A' }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Footer -->
+              <div
+                v-if="section.footer"
+                class="jdd-details-footer"
+              >
+                {{ section.footer }}
+              </div>
             </div>
-        </template>
-    </Dialog>
+
+            <!-- Regular section rendering for other keys -->
+            <div
+              v-else
+              class="jdd-section"
+            >
+              <!-- Section Title -->
+              <div class="jdd-section-header">
+                <h3 class="jdd-section-title">
+                  {{ formatSectionTitle(sectionKey) }}
+                </h3>
+              </div>
+
+              <!-- Section Description -->
+              <div
+                v-if="section.description"
+                class="jdd-section-description"
+              >
+                {{ section.description }}
+              </div>
+
+              <!-- Bullet Points -->
+              <div
+                v-if="section.bullet_points && section.bullet_points.length > 0"
+                class="jdd-bullet-points"
+              >
+                <ul>
+                  <li
+                    v-for="(point, idx) in section.bullet_points"
+                    :key="idx"
+                  >
+                    {{ point }}
+                  </li>
+                </ul>
+              </div>
+
+              <!-- Footer -->
+              <div
+                v-if="section.footer"
+                class="jdd-section-footer"
+              >
+                {{ section.footer }}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div
+          v-else
+          class="jdd-empty"
+        >
+          <p>No data parsed yet</p>
+        </div>
+      </div>
+    </template>
+
+    <template #actions>
+      <div class="w-full flex justify-end">
+        <Button
+          v-if="props.jobDetails"
+          variant="solid" 
+          @click="close" 
+        >
+          Close
+        </Button>
+        <Button
+          v-else
+          variant="solid" 
+          :disabled="isLoading || Object.keys(parsedData).length === 0" 
+          @click="createJob"
+        >
+          Create Job
+        </Button>
+      </div>
+    </template>
+  </Dialog>
 </template>
 
 <script setup>
