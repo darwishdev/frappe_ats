@@ -72,6 +72,7 @@
       <Button
         theme="gray"
         :variant="'solid'"
+        :loading="isSubmitting"
         @click="submit"
       >
         Add Candidate
@@ -82,22 +83,29 @@
 
 <script setup>
 import { ref, watch } from 'vue';
-import { Dialog, Button, Select, TextInput } from 'frappe-ui';
+import { Dialog, Button, Select, TextInput, createResource } from 'frappe-ui';
+import { useToast } from 'vue-toastification';
+import { JobDetailsAPI } from '../../api/apiClient.js';
+
+const toast = useToast();
+
+JobDetailsAPI.init(createResource);
 
 const props = defineProps({
   modelValue: {
     type: Boolean,
     default: false
   },
-  onSubmit: {
-    type: Function,
+  jobId: {
+    type: String,
     required: true
   }
 });
 
-const emit = defineEmits(['update:modelValue']);
+const emit = defineEmits(['update:modelValue', 'success']);
 
 const isOpen = ref(props.modelValue);
+const isSubmitting = ref(false);
 
 const formData = ref({
   name: '',
@@ -141,8 +149,41 @@ function resetForm() {
 }
 
 async function submit() {
-  await props.onSubmit(formData.value);
-  close();
+  if (!formData.value.name || !formData.value.email) {
+    toast.warning('Please fill in required fields');
+    return;
+  }
+
+  if (!props.jobId) {
+    toast.error('Job details not loaded');
+    return;
+  }
+
+  const payload = {
+    name: props.jobId,
+    applicant_name: formData.value.name,
+    email_id: formData.value.email,
+    docstatus: 1,
+  };
+
+  if (formData.value.lower_range) {
+    payload.lower_range = parseFloat(formData.value.lower_range);
+  }
+  if (formData.value.upper_range) {
+    payload.upper_range = parseFloat(formData.value.upper_range);
+  }
+
+  try {
+    isSubmitting.value = true;
+    await JobDetailsAPI.createOrUpdateApplicant(payload);
+    emit('success');
+    close();
+  } catch (error) {
+    const err = error;
+    toast.error(err.message || 'Failed to add candidate');
+  } finally {
+    isSubmitting.value = false;
+  }
 }
 
 function close() {

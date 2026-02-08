@@ -8,7 +8,7 @@ export interface ParsedDocumentDTO {
   file: string;
   file_hash: string;
   parent_type: string;
-  meta_data: dict[str, str];
+  meta_data: Record<string, any>;
   parent_id: string;
   sections: ParsedDocumentSectionDTO[];
 }

@@ -272,7 +272,7 @@
           class="profile-skills-grid"
         >
           <span
-            v-for="(skill, idx) in applicantProfile.skills.split(',').map(s => s.trim())"
+            v-for="(skill, idx) in applicantProfile.skills.split(',').map((s: string) => s.trim())"
             :key="idx"
             class="profile-skill-badge"
           >
@@ -296,29 +296,29 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, watch } from 'vue';
 import { createResource } from "frappe-ui";
 import { JobDetailsAPI } from "../../api/apiClient.js";
+import type { JobPipelineStepCandidateDTO } from "@/src/tsgen/job_opening";
+import type { ApplicantParsedProfile } from "../../types/job-details";
+import { useRoute } from 'vue-router';
 
-const props = defineProps({
-  candidate: {
-    type: Object,
-    default: null,
-  },
-});
+const props = defineProps<{
+  candidate: JobPipelineStepCandidateDTO | null;
+}>();
 
 JobDetailsAPI.init(createResource);
-
+const route = useRoute();
 const loading = ref(false);
-const applicantProfile = ref(null);
+const applicantProfile = ref<ApplicantParsedProfile | null>(null);
 
 // Watch for candidate changes and fetch profile
 watch(
   () => props.candidate,
   async (newCandidate) => {
-    if (newCandidate?.id) {
-      await fetchApplicantProfile(newCandidate.id);
+    if (newCandidate?.applicant_id) {
+      await fetchApplicantProfile(newCandidate.applicant_id);
     } else {
       applicantProfile.value = null;
     }
@@ -326,12 +326,12 @@ watch(
   { immediate: true }
 );
 
-async function fetchApplicantProfile(applicantId) {
+async function fetchApplicantProfile(applicantId: string) {
   if (!applicantId) return;
   
   loading.value = true;
   try {
-    const profile = await JobDetailsAPI.jobApplicantFind(applicantId);
+    const profile = await JobDetailsAPI.jobApplicantFind(applicantId, route.params.jobId as string) as { resume?: ApplicantParsedProfile };
     applicantProfile.value = profile?.resume || null;
   } catch (error) {
     console.error('Failed to load applicant profile:', error);
@@ -341,7 +341,7 @@ async function fetchApplicantProfile(applicantId) {
   }
 }
 
-function formatProfileDate(dateStr) {
+function formatProfileDate(dateStr: string | null | undefined): string {
   if (!dateStr) return 'Present';
   try {
     const date = new Date(dateStr);

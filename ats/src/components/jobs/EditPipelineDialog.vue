@@ -117,30 +117,31 @@
 
 <script setup>
 import { ref, watch, computed } from "vue";
-import { Dialog, TextInput, Select, Button } from "frappe-ui";
+import { Dialog, TextInput, Select, Button, createResource } from "frappe-ui";
 import { Plus, Trash2 } from "lucide-vue-next";
+import { useToast } from "vue-toastification";
 import { JobDetailsAPI } from "../../api/apiClient.js";
+
+const toast = useToast();
+
+JobDetailsAPI.init(createResource);
 
 const props = defineProps({
     modelValue: {
         type: Boolean,
         required: true,
     },
+    jobId: {
+        type: String,
+        required: true,
+    },
     jobData: {
         type: Object,
         default: null,
     },
-    pipelineData: {
-        type: Object,
-        default: null,
-    },
-    onSubmit: {
-        type: Function,
-        required: true,
-    },
 });
 
-const emit = defineEmits(["update:modelValue"]);
+const emit = defineEmits(["update:modelValue", "success"]);
 
 const show = computed({
     get: () => props.modelValue,
@@ -164,7 +165,6 @@ const formData = ref({
     steps: [],
 });
 
-// Initialize form data when dialog opens
 watch(
     () => props.modelValue,
     (newVal) => {
@@ -177,24 +177,12 @@ watch(
 
 function initializeFormData() {
     if (!props.jobData) return;
-
-    // Use pipelineData if available, otherwise use jobData
-    const pipeline = props.pipelineData || {};
-    
+    props.jobData.steps.splice(0, 1);
     formData.value = {
-        name: pipeline.name || props.jobData.pipeline_name || props.jobData.title || "",
-        description: pipeline.description || "",
+        name: props.jobId || props.jobData.pipeline_name || props.jobData.title || "",
+        description: "",
         steps:
-            pipeline.steps && pipeline.steps.length > 0
-                ? pipeline.steps.map((step) => ({
-                      name: step.name || step.step_code || "",
-                      step_name: step.step_name || "",
-                      step_type: step.step_type || "Other",
-                      step_code: step.step_code || step.name || "",
-                      idx: step.idx,
-                      doctype: "Pipeline Step",
-                  }))
-                : props.jobData.steps && props.jobData.steps.length > 0
+            props.jobData.steps && props.jobData.steps.length > 0
                 ? props.jobData.steps.map((step, index) => ({
                       name: step.id || step.step_id || "",
                       step_name: step.label || step.step_name || "",
@@ -226,25 +214,17 @@ function removeStep(index) {
 }
 
 async function handleSubmit() {
-    // Validate form
-    // if (!formData.value.name.trim()) {
-    //     return;
-    // }
-    // console.log(formData.value);
-    
-
-    // Check if all steps have names and codes
     const hasEmptySteps = formData.value.steps.some(
         (step) => !step.step_name.trim() || !step.step_code
     );
     if (hasEmptySteps) {
+        toast.warning('Please fill in all step fields');
         return;
     }
 
     try {
         isSubmitting.value = true;
         
-        // Fetch the latest pipeline document to get current timestamps
         let latestPipeline = null;
         try {
             latestPipeline = await JobDetailsAPI.getPipeline(formData.value.name);
@@ -252,8 +232,7 @@ async function handleSubmit() {
             console.log("Pipeline not found, creating new one");
         }
         
-        // Construct the Frappe document payload
-        const pipeline = latestPipeline || props.pipelineData || {};
+        const pipeline = latestPipeline || {};
         const now = new Date().toISOString().replace('T', ' ').split('.')[0];
         
         const pipelineDoc = {
@@ -263,10 +242,9 @@ async function handleSubmit() {
             idx: 0,
             owner: pipeline.owner || "Administrator",
             creation: pipeline.creation || now,
-            modified: pipeline.modified || now, // Use actual modified timestamp from DB
+            modified: pipeline.modified || now,
             modified_by: pipeline.modified_by || "Administrator",
             steps: formData.value.steps.map((step, index) => {
-                // Find existing step to preserve its timestamps
                 const existingStep = latestPipeline?.steps?.find(s => 
                     s.name === step.name || s.step_code === step.step_code
                 );
@@ -290,11 +268,24 @@ async function handleSubmit() {
             }),
         };
 
-        // Call the API through the onSubmit prop
-        await props.onSubmit(pipelineDoc);
+        const payload = {
+            name: props.jobId,
+            // description: pipelineDoc.description || "",
+            custom_pipeline_steps: pipelineDoc.steps.map((step) => ({
+                ...(step.name ? { name: typeof step.name === "string" ? step.name : step.name.toString() } : {}),
+                step_code: step.step_code,
+                step_name: step.step_name,
+                step_type: step.step_type,
+            })),
+        };
+
+        await JobDetailsAPI.pipelineCreateUpdate(payload);
+        emit('success');
         show.value = false;
     } catch (error) {
         console.error("Error submitting pipeline:", error);
+        const err = error;
+        toast.error(err.message || 'Failed to update pipeline');
     } finally {
         isSubmitting.value = false;
     }

@@ -141,6 +141,7 @@
           <Button
             theme="gray"
             :variant="'solid'"
+            :loading="isSubmitting"
             @click="submit"
           >
             Send Email
@@ -198,39 +199,38 @@
 
 <script setup>
 import { ref, watch } from "vue";
-import { Dialog, Button, TextInput } from "frappe-ui";
+import { Dialog, Button, TextInput, createResource } from "frappe-ui";
 import { Sparkles, Settings, Save } from "lucide-vue-next";
 import { useToast } from "vue-toastification";
 import { JobDetailsAPI } from "../../api/apiClient.js";
 
 const toast = useToast();
 
+JobDetailsAPI.init(createResource);
+
 const props = defineProps({
     modelValue: {
         type: Boolean,
         default: false,
     },
-    candidate: {
-        type: Object,
-        required: true,
-    },
-    step: {
+    candidateId: {
         type: String,
         required: true,
     },
-    job: {
-        type: Object,
+    candidateEmail: {
+        type: String,
         required: true,
     },
-    onSubmit: {
-        type: Function,
+    jobId: {
+        type: String,
         required: true,
     },
 });
 
-const emit = defineEmits(["update:modelValue"]);
+const emit = defineEmits(["update:modelValue", "success"]);
 
 const isOpen = ref(props.modelValue);
+const isSubmitting = ref(false);
 
 const formData = ref({
     to: "",
@@ -255,11 +255,7 @@ watch(
     (newVal) => {
         isOpen.value = newVal;
         if (newVal) {
-            // Pre-fill form data when dialog opens
             formData.value.to = props.candidateEmail;
-            if (props.jobTitle) {
-                formData.value.subject = `Regarding your application for ${props.jobTitle}`;
-            }
         }
     },
 );
@@ -283,8 +279,37 @@ function resetForm() {
 }
 
 async function submit() {
-    await props.onSubmit(formData.value);
-    close();
+    if (!formData.value.to || !formData.value.subject || !formData.value.message) {
+        toast.warning('Please fill in all required fields');
+        return;
+    }
+
+    if (!props.candidateId || !props.jobId) {
+        toast.error('Candidate or job not loaded');
+        return;
+    }
+
+    try {
+        isSubmitting.value = true;
+        await JobDetailsAPI.sendEmail({
+            recipient: formData.value.to,
+            subject: formData.value.subject,
+            message: formData.value.message,
+            cc: formData.value.cc || '',
+            bcc: formData.value.bcc || '',
+            send_me_a_copy: formData.value.send_me_a_copy || false,
+            job_applicant: props.candidateId,
+            job_opening: props.jobId,
+        });
+
+        emit('success', { recipient: formData.value.to });
+        close();
+    } catch (error) {
+        const err = error;
+        toast.error(err.message || 'Failed to send email');
+    } finally {
+        isSubmitting.value = false;
+    }
 }
 
 function close() {
@@ -296,7 +321,7 @@ function togglePromptInput() {
 }
 
 async function generateEmailContent() {
-    if (!props.candidate) {
+    if (!props.candidateId) {
         toast.warning("Candidate information is required to generate email");
         return;
     }
@@ -305,9 +330,9 @@ async function generateEmailContent() {
 
     try {
         const payload = {
-            applicant: props.candidate,
-            pipeline_step: props.step,
-            job: props.job,
+            applicant: { applicant_id: props.candidateId },
+            pipeline_step: '',
+            job: { name: props.jobId },
         };
 
         const response = await JobDetailsAPI.generateEmail(payload);

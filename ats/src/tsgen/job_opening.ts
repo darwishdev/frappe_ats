@@ -86,11 +86,15 @@ export interface CandidateDTO {
 }
 
 export interface JobPipelineStepCandidateDTO {
-  name: string;
-  job_applicant: string;
-  applicant_resume: string;
-  comment: string;
-  candidate_count: number;
+  "applicant_id": string,
+  "applicant_name": string,
+  "applicant_email": string,
+  "applicant_status": string,
+  "applicant_rating": number,
+  "applicant_source"?: string,
+  "applicant_phone"?: string,
+  "applicant_country": string,
+  "applicant_designation": string
 }
 
 export interface JobPipelineStepDTO {

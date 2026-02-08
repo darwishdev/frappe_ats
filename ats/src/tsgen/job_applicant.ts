@@ -1,3 +1,5 @@
+import { ApplicantResumeDTO } from "./applicant_resume_dto";
+
 export interface JobApplicantCreateWithResume {
   applicant_resume: ApplicantResumeDTO;
   pipeline_step_id: string;

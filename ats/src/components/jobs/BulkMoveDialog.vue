@@ -32,6 +32,7 @@
       </Button>
       <Button
         theme="primary"
+        :loading="isSubmitting"
         @click="submit"
       >
         Move Candidates
@@ -42,7 +43,13 @@
 
 <script setup>
 import { ref, watch } from 'vue';
-import { Dialog, Button, Select } from 'frappe-ui';
+import { Dialog, Button, Select, createResource } from 'frappe-ui';
+import { useToast } from 'vue-toastification';
+import { JobDetailsAPI } from '../../api/apiClient.js';
+
+const toast = useToast();
+
+JobDetailsAPI.init(createResource);
 
 const props = defineProps({
   modelValue: {
@@ -57,15 +64,16 @@ const props = defineProps({
     type: Number,
     default: 0
   },
-  onSubmit: {
-    type: Function,
+  candidateIds: {
+    type: Array,
     required: true
   }
 });
 
-const emit = defineEmits(['update:modelValue']);
+const emit = defineEmits(['update:modelValue', 'success']);
 
 const isOpen = ref(props.modelValue);
+const isSubmitting = ref(false);
 
 const formData = ref({
   target_step: '',
@@ -99,8 +107,38 @@ function resetForm() {
 }
 
 async function submit() {
-  await props.onSubmit(formData.value);
-  close();
+  if (!formData.value.target_step) {
+    toast.warning('Please select a target step');
+    return;
+  }
+
+  const targetStepLabel =
+    props.stepOptions.find((s) => s.value === formData.value.target_step)?.label || '';
+
+  const payload = {
+    names: props.candidateIds,
+    pipeline_step: formData.value.target_step,
+  };
+
+  if (formData.value.status) {
+    payload.status = formData.value.status;
+  }
+
+  try {
+    isSubmitting.value = true;
+    await JobDetailsAPI.bulkUpdateApplicants(payload);
+    emit('success', {
+      count: props.candidateCount,
+      targetStepLabel,
+      targetStepId: formData.value.target_step
+    });
+    close();
+  } catch (error) {
+    const err = error;
+    toast.error(err.message || 'Failed to move candidates');
+  } finally {
+    isSubmitting.value = false;
+  }
 }
 
 function close() {

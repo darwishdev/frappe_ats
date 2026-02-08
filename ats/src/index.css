@@ -1,2 +1,360 @@
 @import "./assets/Inter/inter.css";
 @import "frappe-ui/style.css";
+
+.jd-page {
+    padding: 1rem 2rem;
+}
+
+.jd-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    align-items: flex-start;
+    margin-bottom: 8px;
+}
+
+.jd-header-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.jd-title-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.jd-title {
+    margin: 0;
+    font-size: 28px;
+    font-weight: 800;
+}
+
+.jd-subtitle {
+    color: #6b7280;
+    margin-top: 6px;
+}
+
+.jd-pipeline-container {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border-color, #eee);
+    margin-bottom: 12px;
+}
+
+.jd-pipeline {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    overflow: auto;
+    flex: 1;
+}
+
+.jd-step {
+    white-space: nowrap;
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color, #e6e6e6);
+    cursor: pointer;
+    background: #fff;
+    color: #111827;
+    font-weight: 600;
+    font-size: 13px;
+}
+
+.jd-step.active {
+    background: #111827;
+    color: #fff;
+    border-color: #111827;
+}
+
+.jd-step .count {
+    opacity: 0.9;
+    margin-left: 6px;
+    font-weight: 800;
+}
+
+.jd-body {
+    display: grid;
+    grid-template-columns: 350px 1fr 190px;
+    gap: 14px;
+    min-height: calc(100vh - 215px);
+}
+
+.jd-left,
+.jd-middle,
+.jd-actions-panel {
+    background: #ffffff66;
+    border: 1px solid var(--border-color, #e6e6e6);
+    border-radius: 10px;
+}
+
+.jd-actions-panel {
+    display: flex;
+    flex-direction: column;
+}
+
+.jd-actions-content {
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.jd-actions-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #111827;
+    margin: 0 0 12px 0;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border-color, #e6e6e6);
+}
+
+.jd-actions-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    /* overflow-y: auto; */
+}
+
+.jd-action-button {
+    width: 100%;
+    justify-content: center !important;
+    padding: 25px 12px !important;
+    font-size: 13px !important;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.jd-action-button span {
+    font-weight: 500;
+}
+
+.jd-action-icon {
+    flex-shrink: 0;
+}
+
+.jd-left-top {
+    padding: 12px;
+    border-bottom: 1px solid var(--border-color, #eee);
+}
+
+.jd-bulk-toolbar {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-top: 10px;
+    justify-content: space-between;
+}
+
+.jd-bulk-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.jd-candidate-list {
+    padding: 6px;
+    max-height: 680px;
+    overflow: auto;
+}
+
+.jd-item {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    padding: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    margin: 7px 0;
+}
+
+.jd-item:hover {
+    background: #f7f7f7;
+}
+
+.jd-item.active {
+    background: #e5e5e59e;
+}
+
+.jd-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #e5e7eb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    color: #374151;
+}
+
+.jd-item-name {
+    font-weight: 800;
+    color: black;
+}
+
+.jd-item-sub {
+    color: #6b7280;
+    font-size: 12px;
+    margin-top: 2px;
+}
+
+.jd-detail-card {
+    padding: 14px;
+}
+
+.jd-detail-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 14px;
+    align-items: flex-start;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border-color, #e6e6e6);
+    margin-bottom: 4px;
+}
+
+.jd-detail-name {
+    font-size: 18px;
+    font-weight: 900;
+    margin: 0;
+    color: #111827;
+}
+
+.jd-badges {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+}
+
+.jd-badge {
+    font-size: 12px;
+    background: #f3f4f6;
+    border: 1px solid #e5e7eb;
+    border-radius: 999px;
+    padding: 4px 8px;
+    color: #111827;
+}
+
+.jd-detail-meta {
+    color: #6b7280;
+    margin-top: 2px;
+    font-size: 14px;
+}
+
+.jd-candidate-checkbox {
+    cursor: pointer;
+    width: 16px;
+    height: 16px;
+}
+
+.text-muted {
+    color: #6b7280;
+    text-align: center;
+}
+
+.space-y-4 > * + * {
+    margin-top: 1rem;
+}
+
+.grid {
+    display: grid;
+}
+
+.grid-cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.grid-cols-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.gap-4 {
+    gap: 1rem;
+}
+
+.form-control {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.form-control:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+label {
+    font-size: 14px;
+    color: #374151;
+}
+
+.block {
+    display: block;
+}
+
+.text-sm {
+    font-size: 0.875rem;
+}
+
+.font-medium {
+    font-weight: 500;
+}
+
+.mb-1 {
+    margin-bottom: 0.25rem;
+}
+
+.button-icon {
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 6px;
+}
+
+/* Tab Navigation Styles */
+.jd-tabs-nav {
+    display: flex;
+    gap: 0;
+    border-bottom: 1px solid #e5e7eb;
+    margin-bottom: 20px;
+    background: transparent;
+}
+
+.jd-tab-button {
+    padding: 12px 24px;
+    background: transparent;
+    border: none;
+    color: #6b7280;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    position: relative;
+    transition: color 0.2s ease;
+    border-bottom: 2px solid transparent;
+}
+
+.jd-tab-button:hover {
+    color: #374151;
+    background: #f9fafb;
+}
+
+.jd-tab-button.active {
+    color: #111827;
+    background: #f3f4f6;
+    border-bottom-color: #111827;
+}
+
+.jd-tab-content {
+    padding: 0;
+}

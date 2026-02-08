@@ -226,9 +226,10 @@ export const JobDetailsAPI = {
     /**
      * Parse resume and create job applicant (EventStream)
      * @param {Object} resumeData - Resume parsing data
-     * @param {string} resumeData.file_url - Uploaded resume file URL
+     * @param {string} resumeData.path - Uploaded resume file URL
      * @param {string} resumeData.file_name - Resume file name
-     * @param {string} resumeData.job_opening - Job Opening ID
+     * @param {string} resumeData.job_opening_id - Job Opening ID
+     * @param {string} resumeData.pipeline_step_id - Pipeline Step ID
      * @param {Function} onProgress - Optional callback for progress updates (step, data)
      * @returns {Promise<Object>} Final parsed resume data and created applicant
      */

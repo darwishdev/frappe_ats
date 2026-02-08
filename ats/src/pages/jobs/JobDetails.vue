@@ -1,23 +1,23 @@
 <template>
     <div class="jd-page">
         <!-- Loading state -->
-        <div v-if="jobDetailsResource.loading" class="jd-loading">
+        <!-- <div v-if="jobDetailsResource.loading" class="jd-loading">
             <div class="text-center py-8 text-gray-500">Loading job details...</div>
-        </div>
+        </div> -->
 
         <!-- Error state -->
-        <div v-else-if="jobDetailsResource.error" class="jd-error">
+        <!-- <div v-else-if="jobDetailsResource.error" class="jd-error">
             <div class="text-center py-8 text-red-500">
                 Error loading job details: {{ jobDetailsResource.error }}
             </div>
-        </div>
+        </div> -->
 
         <!-- Header -->
-        <div v-else class="jd-content">
+        <div class="jd-content">
             <div class="jd-header">
                 <div>
                     <div class="jd-title-row">
-                        <h2 class="jd-title">{{ job?.title || "Job Details" }}</h2>
+                        <h2 class="jd-title">{{ job?.designation || "Job Details" }}</h2>
                         <div style="display: flex; gap: 8px;">
                             <Button size="sm" @click="showJobDescription">
                                 <Eye :size="16" class="button-icon" />
@@ -67,12 +67,12 @@
             <div class="jd-pipeline-container">
                 <div class="jd-pipeline">
                     <div
-                        v-for="step in job?.pipeline_steps"
-                        :key="step.key"
-                        :class="['jd-step', { active: activeStep === step.key }]"
-                        @click="changeStep(step.key)"
+                        v-for="step in Object.values(steps)"
+                        :key="step.step_id"
+                        :class="['jd-step', { active: activeStep === step.step_id }]"
+                        @click="changeStep(step.step_id)"
                     >
-                        {{ step.label }} <span class="count">{{ getStepCount(step.key) }}</span>
+                        {{ step.step_name }} <span class="count">{{ step.candidate_count }}</span>
                     </div>
                 </div>
                 <Button size="sm" theme="gray" @click="editPipeline">
@@ -118,25 +118,25 @@
                     </div>
                     <div class="jd-candidate-list">
                         <div
-                            v-for="candidate in filteredCandidates"
-                            :key="candidate.id"
-                            :class="['jd-item', { active: activeCandidateId === candidate.id }]"
-                            @click="selectCandidate(candidate.id)"
+                            v-for="candidate in steps[activeStep]?.candidates || []"
+                            :key="candidate.applicant_id"
+                            :class="['jd-item', { active: activeCandidateId === candidate.applicant_id }]"
+                            @click="selectCandidate(candidate.applicant_id)"
                         >
                             <input
                                 type="checkbox"
                                 class="jd-candidate-checkbox"
-                                :checked="selectedCandidates.has(candidate.id)"
-                                @click.stop="toggleCandidateSelection(candidate.id)"
+                                :checked="selectedCandidates.has(candidate.applicant_id)"
+                                @click.stop="toggleCandidateSelection(candidate.applicant_id)"
                             />
                             <div class="jd-avatar">
-                                {{ candidate.name?.charAt(0).toUpperCase() }}
+                                {{ candidate.applicant_name?.charAt(0).toUpperCase() }}
                             </div>
                             <div>
-                                <div class="jd-item-name">{{ candidate.name }}</div>
-                                <div class="jd-item-sub">
-                                    via <b>{{ candidate.source }}</b> ·
-                                    {{ formatDate(candidate.created_at) }}
+                                <div class="jd-item-name">{{ candidate.applicant_name }}</div>
+                                <div v-if="candidate.applicant_source" class="jd-item-sub">
+                                    via <b>{{ candidate.applicant_source }}</b>
+                                    <!-- {{ formatDate(candidate.applicant_created_at) }} -->
                                 </div>
                             </div>
                         </div>
@@ -163,15 +163,15 @@
                                         class="jd-avatar"
                                         style="width: 55px; height: 55px; font-size: 20px"
                                     >
-                                        {{ activeCandidate.name?.charAt(0).toUpperCase() }}
+                                        {{ activeCandidate.applicant_name?.charAt(0).toUpperCase() }}
                                     </div>
                                     <div>
-                                        <h3 class="jd-detail-name">{{ activeCandidate.name.split(' ').length > 1 ? activeCandidate.name.split(' ')[0] +  ' ' + activeCandidate.name.split(' ')[1] : activeCandidate.name }}</h3>
+                                        <h3 class="jd-detail-name">{{ activeCandidate.applicant_name }}</h3>
                                         <div class="jd-detail-meta">
                                             <a
                                                 class="underline"
-                                                href="mailto:{{ activeCandidate.email }}"
-                                                >{{ activeCandidate.email }}</a
+                                                :href="`mailto:${activeCandidate.applicant_email}`"
+                                                >{{ activeCandidate.applicant_email }}</a
                                             >
                                         </div>
                                     </div>
@@ -218,7 +218,7 @@
                                 <component
                                     :is="tabComponents[activeTab]"
                                     :candidate="activeCandidate"
-                                    :job-title="job?.title"
+                                    :job-title="job?.designation"
                                 />
                             </div>
                         </div>
@@ -255,19 +255,26 @@
             </div>
 
             <!-- Dialog Components -->
-            <AddCandidateDialog v-model="showAddCandidateDialog" :on-submit="handleAddCandidate" />
+            <AddCandidateDialog 
+                v-model="showAddCandidateDialog" 
+                :job-id="job?.name || ''"
+                @success="onCandidateAdded" 
+            />
 
             <AssignInterviewDialog
                 v-model="showAssignInterviewDialog"
-                :candidate-id="activeCandidate?.id"
-                :candidate-name="activeCandidate?.name"
-                :on-submit="handleAssignInterview"
+                :candidate-id="activeCandidate?.applicant_id || ''"
+                :candidate-name="activeCandidate?.applicant_name || ''"
+                :job-id="job?.name || ''"
+                :job-designation="job?.designation || ''"
+                :resume-link="activeCandidate?.applicant_resume_link || ''"
+                @success="onInterviewAssigned"
             />
 
             <EditJobDialog
                 v-model="showEditDialog"
                 :job-name="jobId"
-                @saved="reloadJobDetails"
+                @saved="getJobOpening"
             />
             <JobDescriptionDialog
                 v-model="showJobDescriptionDialog"
@@ -280,62 +287,45 @@
                 v-model="showBulkMoveDialog"
                 :step-options="stepOptions"
                 :candidate-count="selectedCandidates.size"
-                :on-submit="handleBulkMove"
+                :candidate-ids="Array.from(selectedCandidates)"
+                @success="onBulkMoveCompleted"
             />
 
             <ApplicantProfileDialog
                 v-model="showProfileDialog"
-                :applicant-id="activeCandidate?.id"
-                :candidate-name="activeCandidate?.name"
-                :profile="parsingProfile"
+                :applicant-id="activeCandidate?.applicant_id"
+                :candidate-name="activeCandidate?.applicant_name"
+                :profile="parsingProfile || undefined"
                 :is-loading="isParsingResume"
                 :on-fetch-profile="fetchApplicantProfile"
             />
 
             <SendEmailDialog
                 v-model="showSendEmailDialog"
-                :candidate="activeCandidate"
-                :job="job"
-                :step="activeStep"
-                :on-submit="handleSendEmail"
+                :candidate-id="activeCandidate?.applicant_id || ''"
+                :candidate-email="activeCandidate?.applicant_email || ''"
+                :job-id="job?.name || ''"
+                @success="onEmailSent"
             />
 
             <EditPipelineDialog
                 v-model="showEditPipelineDialog"
+                :job-id="job?.name || ''"
                 :job-data="job"
-                :pipeline-data="pipelineData"
-                :on-submit="handleEditPipeline"
+                @success="onPipelineUpdated"
             />
         </div>
     </div>
 </template>
 
-<script setup>
-import { ref, computed, onMounted, watch } from "vue";
-import { useRoute, useRouter } from "vue-router";
+<script setup lang="ts">
+import { ref, computed, onMounted } from "vue";
+import { useRoute } from "vue-router";
 import { TextInput, Select, Button, createResource } from "frappe-ui";
 import { useToast } from "vue-toastification";
 import { JobDetailsAPI } from "../../api/apiClient.js";
-import {
-    Edit2,
-    Upload,
-    UserPlus,
-    CheckSquare,
-    Square,
-    MoveRight,
-    X,
-    User,
-    Calendar,
-    Mail,
-    FileText,
-    Share2,
-    Printer,
-    Copy,
-    ArrowRightLeft,
-    Trash2,
-    Edit,
-    Settings,
-    Eye,
+import { NewJobDetailsAPI } from "../../api/ApiClient.ts";
+import { Edit2, Upload, UserPlus, CheckSquare, Square, MoveRight, X, Calendar, Share2, Printer, Copy, ArrowRightLeft, Trash2, Edit, Settings, Eye,
 } from "lucide-vue-next";
 import AddCandidateDialog from "../../components/jobs/AddCandidateDialog.vue";
 import AssignInterviewDialog from "../../components/jobs/AssignInterviewDialog.vue";
@@ -350,63 +340,28 @@ import ApplicantComments from "../../components/jobs/ApplicantComments.vue";
 import EditJobDialog from "../../components/jobs/EditJobDialog.vue";
 import JobDescriptionDialog from "../../components/jobs/JobDescriptionDialog.vue";
 import EditPipelineDialog from "../../components/jobs/EditPipelineDialog.vue";
+import type { JobOpeningDTO, JobPipelineStepDTO, JobPipelineStepCandidateDTO, CandidateDTO } from "@/src/tsgen/job_opening.ts";
+import type { PipelineStepOption, ResumeParseProgressData, ApplicantParsedProfile,
+} from "@/src/types/job-details";
 
 const toast = useToast();
-
 const route = useRoute();
-const router = useRouter();
-const showEditDialog = ref(false);
 
 JobDetailsAPI.init(createResource);
-// Get job ID from route
-const jobId = computed(() => route.params.jobId || route.query.job || "HR-OPN-2026-0002");
+NewJobDetailsAPI.init(createResource);
 
-// Create resource for fetching job details
-const jobDetailsResource = createResource({
-    url: "mawhub.job_opening_find",
-    params: {
-        job: jobId.value,
-    },
-    auto: true,
-    onSuccess(data) {
-        if (data) {
-            const transformedData = transformJobData(data);
-            job.value = transformedData;
-            pipelineData.value = transformedData.pipelineData;
-            candidates.value = transformedData.candidates;
-            
-            // Initialize activeStep from query params if available
-            const stepFromQuery = route.query.step;
-            if (stepFromQuery) {
-                activeStep.value = stepFromQuery;
-            } else {
-                activeStep.value = "all";
-            }
-            
-            activeCandidateId.value = candidates.value[0]?.id || null;
+const jobId = computed(() => route.params.jobId as string);
 
-            if (activeCandidate.value) {
-                targetStep.value = activeCandidate.value.stage;
-            }
-        }
-    },
-    onError(error) {
-        console.error("Error loading job details:", error);
-        toast.error(`Error loading job details: ${error.message || "Unknown error"}`);
-    },
-});
+const job = ref<JobOpeningDTO>();
+const candidates = ref<CandidateDTO[]>([]);
+const steps = ref<Record<string, JobPipelineStepDTO>>({});
+const activeStep = ref<string>("All");
+const activeCandidateId = ref<string | null>(null);
+const selectedCandidates = ref(new Set<string>());
+const searchQuery = ref<string>("");
+const targetStep = ref<string>("");
 
-// State
-const job = ref(null);
-const candidates = ref([]);
-const pipelineData = ref(null);
-const activeStep = ref("all");
-const activeCandidateId = ref(null);
-const selectedCandidates = ref(new Set());
-const searchQuery = ref("");
-const targetStep = ref("");
-
-// Dialog states
+const showEditDialog = ref(false);
 const showAddCandidateDialog = ref(false);
 const showAssignInterviewDialog = ref(false);
 const showBulkMoveDialog = ref(false);
@@ -414,13 +369,16 @@ const showProfileDialog = ref(false);
 const showSendEmailDialog = ref(false);
 const showJobDescriptionDialog = ref(false);
 const showEditPipelineDialog = ref(false);
-const parsingProfile = ref(null);
+const parsingProfile = ref<ApplicantParsedProfile | null>(null);
 
-// Tab state
-const activeTab = ref("profile");
+const activeTab = ref<keyof typeof tabComponents>("profile");
 
-// Tab configuration
-const tabs = [
+const resumeFileInput = ref<HTMLInputElement | null>(null);
+const isUploading = ref(false);
+const uploadProgress = ref(0);
+const isParsingResume = ref(false);
+
+const tabs: Array<{ key: keyof typeof tabComponents; label: string }> = [
     { key: "profile", label: "Profile" },
     { key: "communication", label: "Communication" },
     { key: "timeline", label: "Timeline" },
@@ -428,7 +386,6 @@ const tabs = [
     { key: "comments", label: "Comments" },
 ];
 
-// Tab component mapping
 const tabComponents = {
     profile: ApplicantProfile,
     timeline: ApplicantTimeline,
@@ -437,7 +394,6 @@ const tabComponents = {
     comments: ApplicantComments,
 };
 
-// Actions panel configuration
 const candidateActions = [
     {
         key: "assign-interview",
@@ -486,221 +442,101 @@ const candidateActions = [
     },
 ];
 
-// Resume upload state
-const resumeFileInput = ref(null);
-const isUploading = ref(false);
-const uploadProgress = ref(0);
-const isParsingResume = ref(false);
-
-// Computed properties
-const stepOptions = computed(() => {
+const stepOptions = computed<PipelineStepOption[]>(() => {
     if (!job.value?.steps) return [];
     return job.value.steps.map((step) => ({
-        label: step.label,
-        value: step.key,
+        label: step.step_name,
+        value: step.step_id,
     }));
 });
 
-const filteredCandidates = computed(() => {
-    let list = candidates.value;
-
-    // Filter by active step
-    if (activeStep.value !== "all") {
-        list = list.filter((c) => c.stage === activeStep.value);
-    }
-
-    // Filter by search query
-    const q = searchQuery.value.toLowerCase().trim();
-    if (q) {
-        list = list.filter((c) => {
-            const searchText =
-                `${c.name} ${c.email} ${c.country} ${c.designation} ${c.source}`.toLowerCase();
-            return searchText.includes(q);
-        });
-    }
-
-    return list;
+const filteredCandidates = computed<JobPipelineStepCandidateDTO[]>(() => {
+    return steps.value[activeStep.value]?.candidates || [];
 });
 
-const activeCandidate = computed(() => {
-    return candidates.value.find((c) => c.id === activeCandidateId.value) || null;
+const activeCandidate = computed<CandidateDTO | null>(() => {
+    if (!activeCandidateId.value) return null;
+    return filteredCandidates.value.find((c) => c.applicant_id === activeCandidateId.value) || null;
 });
 
 const allSelected = computed(() => {
-    return (
-        filteredCandidates.value.length > 0 &&
-        selectedCandidates.value.size === filteredCandidates.value.length
-    );
+    const filtered = filteredCandidates.value;
+    return filtered.length > 0 && selectedCandidates.value.size === filtered.length;
 });
 
-// Methods
-function transformJobData(rawJob) {
-    const stepsMap = new Map();
-    const allCandidates = [];
+const transformedParsedData = computed(() => {
+    if (!job.value?.parsed_documents || job.value.parsed_documents.length === 0) {
+        return {};
+    }
+    const parsedDoc = job.value.parsed_documents[0];
+    const transformed: Record<string, any> = {};
+    if (parsedDoc.sections && Array.isArray(parsedDoc.sections)) {
+        parsedDoc.sections.forEach((section: any) => {
+            const key = section.title
+                .toLowerCase()
+                .replace(/[^a-z0-9]+/g, "_")
+                .replace(/^_+|_+$/g, "");
 
-    // Helper to safely read fields from both old and new API shapes
-    const getField = (obj, ...keys) => {
-        for (const k of keys) {
-            if (obj[k] !== undefined && obj[k] !== null && obj[k] !== "") {
-                return obj[k];
-            }
-        }
-        return null;
-    };
-
-    if (rawJob.steps && Array.isArray(rawJob.steps)) {
-        rawJob.steps.forEach((step) => {
-            const stepKey = `${step.step_id}`;
-            if (!stepsMap.has(stepKey)) {
-                stepsMap.set(stepKey, {
-                    key: stepKey,
-                    label: step.step_name,
-                    id: step.step_id,
-                    idx: step.step_idx,
-                    type: step.step_type,
-                });
+            let bulletPoints: string[] = [];
+            if (section.pullet_points) {
+                try {
+                    bulletPoints =
+                        typeof section.pullet_points === "string"
+                            ? JSON.parse(section.pullet_points)
+                            : section.pullet_points;
+                } catch (e) {
+                    console.error("Failed to parse bullet points:", e);
+                    bulletPoints = [];
+                }
             }
 
-            if (step.candidates && Array.isArray(step.candidates)) {
-                step.candidates.forEach((candidate) => {
-                    // Support both old keys with trailing commas and new clean keys
-                    const candidateId = getField(
-                        candidate,
-                        "applicant_id",
-                        "applicant_id,",
-                        "applicant_email",
-                        "applicant_email,",
-                    );
-                    const email = getField(candidate, "applicant_email", "applicant_email,");
-
-                    // Skip candidates without valid ID or email
-                    if (!candidateId && !email) {
-                        return;
-                    }
-
-                    const uniqueId = candidateId || email;
-                    const exists = allCandidates.findIndex(
-                        (c) => c.id === uniqueId || (email && c.email === email),
-                    );
-                    if (exists === -1) {
-                        allCandidates.push({
-                            id: uniqueId,
-                            name:
-                                getField(candidate, "applicant_name", "applicant_name,") ||
-                                "Unknown",
-                            email: email || "",
-                            phone:
-                                getField(candidate, "applicant_phone", "applicant_phone,") ||
-                                "N/A",
-                            country:
-                                getField(candidate, "applicant_country", "applicant_country,") ||
-                                "N/A",
-                            designation:
-                                getField(
-                                    candidate,
-                                    "applicant_designation",
-                                    "applicant_designation,",
-                                ) || "",
-                            status:
-                                getField(candidate, "applicant_status", "applicant_status,") || "",
-                            source:
-                                getField(candidate, "applicant_source", "applicant_source,") ||
-                                "Unknown",
-                            rating:
-                                parseFloat(
-                                    getField(candidate, "applicant_rating", "applicant_rating,") ??
-                                        0,
-                                ) || 0,
-                            resume_link: getField(
-                                candidate,
-                                "applicant_resume_link",
-                                "applicant_resume_link,",
-                            ),
-                            cover_letter: getField(
-                                candidate,
-                                "applicant_cover_letter",
-                                "applicant_cover_letter,",
-                            ),
-                            stage: stepKey,
-                            stage_name: step.step_name,
-                            created_at: getField(
-                                candidate,
-                                "applicant_created_at",
-                                "applicant_created_at,",
-                            ),
-                        });
-                    }
-                });
-            }
+            transformed[key] = {
+                description: section.description || "",
+                bullet_points: Array.isArray(bulletPoints) ? bulletPoints : [],
+            };
         });
     }
+    return transformed;
+});
 
-    const steps = Array.from(stepsMap.values()).sort((a, b) => a.idx - b.idx);
+const getJobOpening = async () => {
+    try {
+        const data = await NewJobDetailsAPI.findJobOpening(jobId.value);
+        job.value = data;
+        data.steps.forEach((step) => {
+            steps.value[step.step_id] = step;
+        });
+    } catch (error) {
+        const err = error as Error;
+        toast.error(err.message || "Failed to load job details");
+    }
+};
 
-    const pipeline_steps = [{ key: "all", label: "All" }, ...steps];
+onMounted(() => {
+    getJobOpening();
+});
 
-    // Store pipeline data for editing
-    const pipelineInfo = {
-        name: rawJob.pipeline || "Main",
-        description: rawJob.pipeline_description || "",
-        is_primary: rawJob.pipeline_is_primary || 0,
-        owner: rawJob.owner || "Administrator",
-        creation: rawJob.creation,
-        modified: rawJob.modified,
-        modified_by: rawJob.modified_by || "Administrator",
-        steps: Array.from(stepsMap.values()).map((step) => ({
-            name: step.id || step.key,
-            step_name: step.label,
-            step_type: step.type || "Other",
-            step_code: step.id || step.key,
-            idx: step.idx,
-        })),
-    };
-
-    return {
-        name: rawJob.name,
-        title: rawJob.designation || "Untitled Position",
-        department: rawJob.department || "Not Specified",
-        location: rawJob.location || "Not Specified",
-        work_mode: rawJob.employment_type || "Full-time",
-        pipeline_steps: pipeline_steps,
-        pipeline_name: rawJob.pipeline_name || rawJob.pipeline || "Main",
-        steps: steps,
-        candidates: allCandidates,
-        parsed_documents : rawJob.parsed_documents || [],
-        pipelineData: pipelineInfo,
-    };
-}
-
-function getStepCount(stepKey) {
-    if (stepKey === "all") return candidates.value.length;
-    return candidates.value.filter((c) => c.stage === stepKey).length;
-}
-
-function changeStep(stepKey) {
+function changeStep(stepKey: string) {
     activeStep.value = stepKey;
     selectedCandidates.value.clear();
 
-    // Reset active candidate if not in filtered list
-    if (!filteredCandidates.value.some((c) => c.id === activeCandidateId.value)) {
-        activeCandidateId.value = filteredCandidates.value[0]?.id || null;
+    const filtered = filteredCandidates.value;
+    const currentCandidateExists = filtered.some((c) => c.applicant_id === activeCandidateId.value);
+    if (!currentCandidateExists) {
+        activeCandidateId.value = filtered[0]?.applicant_id || null;
     }
 }
 
-function selectCandidate(candidateId) {
+function selectCandidate(candidateId: string) {
     activeCandidateId.value = candidateId;
-    if (activeCandidate.value) {
-        targetStep.value = activeCandidate.value.stage;
-    }
 }
 
-function toggleCandidateSelection(candidateId) {
+function toggleCandidateSelection(candidateId: string) {
     if (selectedCandidates.value.has(candidateId)) {
         selectedCandidates.value.delete(candidateId);
     } else {
         selectedCandidates.value.add(candidateId);
     }
-    // Force reactivity
     selectedCandidates.value = new Set(selectedCandidates.value);
 }
 
@@ -708,7 +544,7 @@ function toggleSelectAll() {
     if (allSelected.value) {
         selectedCandidates.value.clear();
     } else {
-        filteredCandidates.value.forEach((c) => selectedCandidates.value.add(c.id));
+        filteredCandidates.value.forEach((c) => selectedCandidates.value.add(c.applicant_id));
     }
     selectedCandidates.value = new Set(selectedCandidates.value);
 }
@@ -716,29 +552,6 @@ function toggleSelectAll() {
 function clearSelection() {
     selectedCandidates.value.clear();
     selectedCandidates.value = new Set();
-}
-
-function getRatingStars(rating) {
-    const stars = Math.max(0, Math.min(5, Math.floor(rating)));
-    return stars > 0 ? "⭐".repeat(stars) : "Not rated";
-}
-
-function formatDate(dateStr) {
-    if (!dateStr) return "Recently";
-    try {
-        const date = new Date(dateStr);
-        const now = new Date();
-        const diff = now - date;
-        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-
-        if (days === 0) return "Today";
-        if (days === 1) return "Yesterday";
-        if (days < 7) return `${days} days ago`;
-        if (days < 30) return `${Math.floor(days / 7)} weeks ago`;
-        return date.toLocaleDateString();
-    } catch {
-        return "Recently";
-    }
 }
 
 function editJob() {
@@ -749,98 +562,46 @@ function showJobDescription() {
     showJobDescriptionDialog.value = true;
 }
 
-// Transform parsed documents from API to JobDescriptionDialog format
-const transformedParsedData = computed(() => {
-    if (!job.value || !job.value?.parsed_documents || job.value.parsed_documents.length === 0) {
-        return {};
-    }
-    const parsedDoc = job.value.parsed_documents[0];
-    const transformed = {};
-    // Transform sections to the expected format
-    if (parsedDoc.sections && Array.isArray(parsedDoc.sections)) {
-        parsedDoc.sections.forEach((section) => {
-            // Create a key from the title (convert to snake_case)
-            const key = section.title
-                .toLowerCase()
-                .replace(/[^a-z0-9]+/g, '_')
-                .replace(/^_+|_+$/g, '');
-
-            // Parse bullet points if they're a JSON string
-            let bulletPoints = [];
-            if (section.pullet_points) {
-                try {
-                    bulletPoints = typeof section.pullet_points === 'string'
-                        ? JSON.parse(section.pullet_points)
-                        : section.pullet_points;
-                } catch (e) {
-                    console.error('Failed to parse bullet points:', e);
-                    bulletPoints = [];
-                }
-            }
-
-            transformed[key] = {
-                description: section.description || '',
-                bullet_points: Array.isArray(bulletPoints) ? bulletPoints : [],
-            };
-        });
-    }
-    return transformed;
-});
-
 function editPipeline() {
     if (!job.value) return;
     showEditPipelineDialog.value = true;
 }
 
-// Handler functions for dialog components
-async function handleAddCandidate(formData) {
-    if (!formData.name || !formData.email) {
-        toast.warning("Please fill in required fields");
-        throw new Error("Required fields missing");
-    }
-
-    const payload = {
-        name: job.value.name,
-        applicant_name: formData.name,
-        email_id: formData.email,
-        docstatus: 1,
-    };
-
-    // Add salary range if provided
-    if (formData.lower_range) {
-        payload.lower_range = parseFloat(formData.lower_range);
-    }
-    if (formData.upper_range) {
-        payload.upper_range = parseFloat(formData.upper_range);
-    }
-
-    // Add name (job applicant ID) if updating existing applicant
-    if (formData.applicant_id) {
-        payload.name = formData.applicant_id;
-    }
-
-    try {
-        await JobDetailsAPI.createOrUpdateApplicant(payload);
-        toast.success("Candidate added successfully");
-        reloadJobDetails();
-    } catch (error) {
-        toast.error(error.message || "Failed to add candidate");
-        throw error;
-    }
+function onCandidateAdded() {
+    toast.success("Candidate added successfully");
+    getJobOpening();
 }
 
-// Resume upload functions
+function onInterviewAssigned(data: { candidateName: string; scheduledOn: string }) {
+    toast.success(`Interview assigned to ${data.candidateName} on ${data.scheduledOn}`);
+}
+
+function onBulkMoveCompleted(data: { count: number; targetStepLabel: string; targetStepId: string }) {
+    toast.success(`${data.count} candidate(s) moved to "${data.targetStepLabel}"`);
+    changeStep(data.targetStepId);
+    clearSelection();
+    getJobOpening();
+}
+
+function onEmailSent(data: { recipient: string }) {
+    toast.success(`Email sent successfully to ${data.recipient}`);
+}
+
+function onPipelineUpdated() {
+    toast.success("Pipeline updated successfully");
+    getJobOpening();
+}
 function triggerResumeUpload() {
     if (resumeFileInput.value) {
         resumeFileInput.value.click();
     }
 }
 
-async function handleResumeUpload(event) {
-    const file = event.target.files[0];
+async function handleResumeUpload(event: Event) {
+    const target = event.target as HTMLInputElement;
+    const file = target.files?.[0];
     if (!file) return;
 
-    // Validate file type
     const validTypes = [
         "application/pdf",
         "application/msword",
@@ -851,8 +612,7 @@ async function handleResumeUpload(event) {
         return;
     }
 
-    // Validate file size (max 10MB)
-    const maxSize = 10 * 1024 * 1024; // 10MB
+    const maxSize = 10 * 1024 * 1024;
     if (file.size > maxSize) {
         toast.error("File size must be less than 10MB");
         return;
@@ -860,8 +620,7 @@ async function handleResumeUpload(event) {
 
     const formData = new FormData();
     formData.append("file", file);
-    formData.append("is_private", 1);
-    // formData.append('folder', 'Home/Resumes');
+    formData.append("is_private", "1");
 
     try {
         isUploading.value = true;
@@ -870,7 +629,7 @@ async function handleResumeUpload(event) {
         const response = await fetch("/api/method/upload_file", {
             method: "POST",
             headers: {
-                "X-Frappe-CSRF-Token": window.frappe?.csrf_token || "",
+                "X-Frappe-CSRF-Token": (window as any).frappe?.csrf_token || "",
             },
             body: formData,
         });
@@ -886,29 +645,29 @@ async function handleResumeUpload(event) {
             toast.success("Resume uploaded successfully");
             console.log("File Uploaded:", result.message.file_url);
 
-            // Parse the resume
             await parseResume(result.message.file_url, result.message.name);
         } else {
             throw new Error("Invalid response from server");
         }
     } catch (error) {
         console.error("Upload failed:", error);
-        toast.error(`Upload failed: ${error.message || "Unknown error"}`);
+        const err = error as Error;
+        toast.error(`Upload failed: ${err.message || "Unknown error"}`);
     } finally {
         isUploading.value = false;
         uploadProgress.value = 0;
-        // Reset file input
         if (resumeFileInput.value) {
             resumeFileInput.value.value = "";
         }
     }
 }
 
-async function parseResume(fileUrl, fileName) {
+async function parseResume(fileUrl: string, fileName: string) {
+    if (!job.value) return;
+
     try {
         toast.info("Parsing resume...");
 
-        // Initialize empty profile for real-time updates
         parsingProfile.value = {
             job_applicant: "Parsing...",
             summary: null,
@@ -920,37 +679,28 @@ async function parseResume(fileUrl, fileName) {
             personal: {},
         };
 
-        // Set loading state to true
         isParsingResume.value = true;
-
-        // Open the profile dialog to show real-time parsing
         showProfileDialog.value = true;
 
-        // Call the resume parsing API with progress callback
         const response = await JobDetailsAPI.parseResume(
             {
                 path: `./${import.meta.env.VITE_SITE_NAME}${fileUrl}`,
                 file_name: fileName,
                 job_opening_id: job.value.name,
-                pipeline_step_id:
-                    activeStep.value == "all"
-                        ? job.value?.pipeline_steps[1].key
-                        : activeStep.value,
+                pipeline_step_id: activeStep.value == 'All' ? job.value.steps[1]!.step_id : activeStep.value,
             },
-            (progressData) => {
-                // Handle progress updates from the EventStream
+            (progressData: ResumeParseProgressData) => {
                 console.log("Resume parsing step:", progressData);
 
-                // Update the parsing profile in real-time
-                if (progressData && progressData.data) {
-                    // Merge the new data with existing profile
+                if (progressData?.data) {
                     if (progressData.data.name) {
                         toast.info(`Parsed ${progressData.data.name} Section`);
-                        parsingProfile.value[progressData.data.name] = JSON.parse(
-                            progressData.data.content,
-                        );
+                        if (parsingProfile.value) {
+                            parsingProfile.value[progressData.data.name as keyof ApplicantParsedProfile] =
+                                JSON.parse(progressData.data.content || "{}");
+                        }
                     } else {
-                        parsingProfile.value = progressData.data;
+                        parsingProfile.value = progressData.data as ApplicantParsedProfile;
                     }
                     console.log("parsingProfile:", parsingProfile.value);
                 }
@@ -959,166 +709,64 @@ async function parseResume(fileUrl, fileName) {
 
         if (response) {
             toast.success("Resume parsed successfully! Candidate added.");
-            // Update with final complete profile
-            // parsingProfile.value = response;
-            // Reload job details to show the new candidate
-            reloadJobDetails();
+            await getJobOpening();
         }
     } catch (error) {
         console.error("Resume parsing failed:", error);
-        toast.error(`Resume parsing failed: ${error.message || "Unknown error"}`);
+        const err = error as Error;
+        toast.error(`Resume parsing failed: ${err.message || "Unknown error"}`);
         showProfileDialog.value = false;
         parsingProfile.value = null;
     } finally {
-        // Set loading state to false when parsing ends
         isParsingResume.value = false;
     }
 }
 
 async function moveCandidateToStep() {
-    if (!activeCandidate.value || !targetStep.value) return;
+    if (!activeCandidate.value || !targetStep.value || !job.value) return;
 
-    if (targetStep.value === activeCandidate.value.stage) {
+    const currentStepId = activeCandidate.value.applicant_pipeline_step_ref;
+    if (targetStep.value === currentStepId) {
         toast.warning("Candidate is already in this stage");
         return;
     }
 
     const targetStepName =
-        job.value.steps.find((s) => s.key === targetStep.value)?.label || targetStep.value;
+        job.value.steps.find((s) => s.step_id === targetStep.value)?.step_name || targetStep.value;
 
     const payload = {
-        names: [activeCandidate.value.id],
+        names: [activeCandidate.value.applicant_id || ""],
         pipeline_step: targetStep.value,
-        status: activeCandidate.value.status,
+        status: activeCandidate.value.applicant_status || "Open",
     };
 
     try {
-        const response = await JobDetailsAPI.bulkUpdateApplicants(payload);
-        toast.success(`${activeCandidate.value.name} moved to "${targetStepName}"`);
+        await JobDetailsAPI.bulkUpdateApplicants(payload);
+        toast.success(`${activeCandidate.value.applicant_name} moved to "${targetStepName}"`);
 
-        // Update local state
-        const candidate = candidates.value.find((c) => c.id === activeCandidate.value.id);
+        const candidate = candidates.value.find((c) => c.applicant_id === activeCandidate.value?.applicant_id);
         if (candidate) {
-            candidate.stage = targetStep.value;
-            candidate.stage_name = targetStepName;
+            candidate.applicant_pipeline_step_ref = targetStep.value;
         }
         changeStep(targetStep.value);
     } catch (error) {
         console.log(error);
-
-        toast.error(error.message || "Failed to move candidate");
+        const err = error as Error;
+        toast.error(err.message || "Failed to move candidate");
     }
 }
 
-async function handleAssignInterview(formData) {
-    if (
-        !formData.interview_round ||
-        !formData.status ||
-        !formData.scheduled_on ||
-        !formData.from_time ||
-        !formData.to_time
-    ) {
-        toast.warning("Please fill in all required fields");
-        throw new Error("Required fields missing");
-    }
 
-    if (formData.from_time >= formData.to_time) {
-        toast.warning("End time must be after start time");
-        throw new Error("Invalid time range");
-    }
 
-    const payload = {
-        job_applicant: activeCandidate.value.id,
-        job_opening: job.value.name,
-        designation: job.value.title,
-        interview_round: formData.interview_round,
-        status: formData.status,
-        scheduled_on: formData.scheduled_on,
-        from_time: formData.from_time,
-        to_time: formData.to_time,
-        expected_average_rating: formData.expected_average_rating || 0,
-        interview_summary: formData.interview_summary || "",
-        resume_link: activeCandidate.value.resume_link || "",
-        reminded: 0,
-    };
-
+async function fetchApplicantProfile(applicantId: string) {
     try {
-        await JobDetailsAPI.createOrUpdateInterview(payload);
-        toast.success(
-            `Interview assigned to ${activeCandidate.value?.name} on ${formData.scheduled_on}`,
-        );
-    } catch (error) {
-        toast.error(error.message || "Failed to assign interview");
-        throw error;
-    }
-}
-
-async function handleBulkMove(formData) {
-    if (!formData.target_step) {
-        toast.warning("Please select a target step");
-        throw new Error("Target step required");
-    }
-
-    const targetStepLabel =
-        job.value.steps.find((s) => s.key === formData.target_step)?.label || "";
-
-    const payload = {
-        names: Array.from(selectedCandidates.value),
-        pipeline_step: formData.target_step,
-    };
-
-    if (formData.status) {
-        payload.status = formData.status;
-    }
-
-    try {
-        const response = await JobDetailsAPI.bulkUpdateApplicants(payload);
-
-        toast.success(
-            `${selectedCandidates.value.size} candidate(s) moved to "${targetStepLabel}"`,
-        );
-
-        // Update local state
-        selectedCandidates.value.forEach((candidateId) => {
-            const candidate = candidates.value.find((c) => c.id === candidateId);
-            if (candidate) {
-                candidate.stage = formData.target_step;
-                candidate.stage_name = targetStepLabel;
-                if (formData.status) {
-                    candidate.status = formData.status;
-                }
-            }
-        });
-        changeStep(formData.target_step);
-        clearSelection();
-    } catch (error) {
-        toast.error(error.message || "Failed to move candidates");
-        console.log(error);
-
-        throw error;
-    }
-}
-
-// Reload job details
-function reloadJobDetails() {
-    jobDetailsResource.fetch();
-}
-
-// Action panel methods
-function viewApplicantProfile() {
-    if (!activeCandidate.value) return;
-    showProfileDialog.value = true;
-}
-
-async function fetchApplicantProfile(applicantId) {
-    try {
-        const profile = await JobDetailsAPI.jobApplicantFind(applicantId);
+        const profile = await JobDetailsAPI.jobApplicantFind(applicantId, jobId.value) as any;
         console.log(profile);
 
         return {
-            resume: profile.resume,
+            resume: profile.resume || {},
             interviews: profile.interviews || [],
-            applicant: profile.applicant
+            applicant: profile.applicant || {},
         };
     } catch (error) {
         toast.error("Failed to load profile");
@@ -1126,23 +774,16 @@ async function fetchApplicantProfile(applicantId) {
         throw error;
     }
 }
-
-function sendEmail() {
-    if (!activeCandidate.value) return;
-    showSendEmailDialog.value = true;
-}
-
-// New action handlers
 function shareCandidate() {
     if (!activeCandidate.value) return;
 
-    const shareUrl = `${window.location.origin}${window.location.pathname}?candidate=${activeCandidate.value.id}`;
+    const shareUrl = `${window.location.origin}${window.location.pathname}?candidate=${activeCandidate.value.applicant_id}`;
 
     if (navigator.share) {
         navigator
             .share({
-                title: `${activeCandidate.value.name} - Candidate Profile`,
-                text: `Check out ${activeCandidate.value.name}'s profile for ${job.value?.title}`,
+                title: `${activeCandidate.value.applicant_name} - Candidate Profile`,
+                text: `Check out ${activeCandidate.value.applicant_name}'s profile for ${job.value?.designation}`,
                 url: shareUrl,
             })
             .then(() => {
@@ -1157,7 +798,7 @@ function shareCandidate() {
     }
 }
 
-function copyToClipboard(text) {
+function copyToClipboard(text: string) {
     navigator.clipboard
         .writeText(text)
         .then(() => {
@@ -1172,501 +813,39 @@ function copyToClipboard(text) {
 function printProfile() {
     if (!activeCandidate.value) return;
     toast.info("Print profile feature coming soon...");
-    // Future: Open print dialog with formatted profile
-    // window.print() or open a new window with printable profile
 }
 
 function copyToJob() {
     if (!activeCandidate.value) return;
     toast.info("Copy to job feature coming soon...");
-    // Future: Show dialog to select target job and copy candidate
 }
 
 function moveToJob() {
     if (!activeCandidate.value) return;
     toast.info("Move to job feature coming soon...");
-    // Future: Show dialog to select target job and move candidate
 }
 
 function editCandidate() {
     if (!activeCandidate.value) return;
-    window.open(`http://localhost:8001/desk/job-applicant/${activeCandidate.value.id}`, "_blank");
+    window.open(
+        `http://localhost:8001/desk/job-applicant/${activeCandidate.value.applicant_id}`,
+        "_blank",
+    );
 }
 
 async function deleteCandidate() {
     if (!activeCandidate.value) return;
 
     const confirmed = confirm(
-        `Are you sure you want to delete ${activeCandidate.value.name}? This action cannot be undone.`,
+        `Are you sure you want to delete ${activeCandidate.value.applicant_name}? This action cannot be undone.`,
     );
 
     if (!confirmed) return;
 
     try {
-        // Future: Call delete API
-        // await JobDetailsAPI.deleteApplicant(activeCandidate.value.id);
         toast.info("Delete candidate feature coming soon...");
-        // Remove from local state after successful deletion
-        // candidates.value = candidates.value.filter(c => c.id !== activeCandidate.value.id);
-        // activeCandidateId.value = candidates.value[0]?.id || null;
     } catch (error) {
-        toast.error(error.message || "Failed to delete candidate");
         console.error(error);
     }
 }
-
-async function handleSendEmail(formData) {
-    if (!formData.to || !formData.subject || !formData.message) {
-        toast.warning("Please fill in all required fields");
-        throw new Error("Required fields missing");
-    }
-
-    try {
-        // Call the email API
-        await JobDetailsAPI.sendEmail({
-            recipient: formData.to,
-            subject: formData.subject,
-            message: formData.message,
-            cc: formData.cc,
-            bcc: formData.bcc,
-            send_me_a_copy: formData.send_me_a_copy,
-            job_applicant: activeCandidate.value.id,
-            job_opening: job.value.name,
-        });
-
-        toast.success(`Email sent successfully to ${formData.to}`);
-    } catch (error) {
-        toast.error(error.message || "Failed to send email");
-        throw error;
-    }
-}
-
-async function handleEditPipeline(pipelineDoc) {
-    if (!pipelineDoc.steps || pipelineDoc.steps.length === 0) {
-        toast.warning("Please provide at least one step");
-        throw new Error("Required fields missing");
-    }
-
-    try {
-        // Transform pipelineDoc to the required payload format
-        const payload = {
-            name: job.value.name,
-            custom_pipeline_steps: pipelineDoc.steps.map((step) => ({
-                ...(step.name ? { name: typeof step.name == "string" ? step.name : step.name.toString() } : {}),
-                step_code: step.step_code,
-                step_name: step.step_name,
-                step_type: step.step_type,
-            })),
-        };
-
-        // Call API to save pipeline using the new endpoint
-        const result = await JobDetailsAPI.pipelineCreateUpdate(payload);
-        
-        toast.success("Pipeline updated successfully");
-        console.log("Pipeline saved:", result);
-        
-        // Update local pipeline data
-        pipelineData.value = {
-            ...pipelineDoc,
-            steps: pipelineDoc.steps,
-        };
-        
-        // Reload job details to reflect changes
-        reloadJobDetails();
-    } catch (error) {
-        console.error("Pipeline update error:", error);
-        toast.error(error.message || "Failed to update pipeline");
-        throw error;
-    }
-}
-
-// Watch for search query changes
-watch(searchQuery, () => {
-    if (!filteredCandidates.value.some((c) => c.id === activeCandidateId.value)) {
-        activeCandidateId.value = filteredCandidates.value[0]?.id || null;
-    }
-});
-
-// Watch for route changes
-watch(
-    () => route.params.jobId,
-    (newJobId) => {
-        if (newJobId) {
-            jobDetailsResource.update({
-                params: { job: newJobId },
-            });
-            jobDetailsResource.fetch();
-        }
-    },
-);
-
-// Watch for step query param changes
-watch(
-    () => route.query.step,
-    (newStep) => {
-        if (newStep && job.value) {
-            changeStep(newStep);
-        }
-    },
-);
 </script>
-
-<style>
-.jd-page {
-    padding: 1rem 2rem;
-}
-
-.jd-header {
-    display: flex;
-    justify-content: space-between;
-    gap: 16px;
-    align-items: flex-start;
-    margin-bottom: 8px;
-}
-
-.jd-header-actions {
-    display: flex;
-    gap: 12px;
-    align-items: center;
-}
-
-.jd-title-row {
-    display: flex;
-    gap: 10px;
-    align-items: center;
-}
-
-.jd-title {
-    margin: 0;
-    font-size: 28px;
-    font-weight: 800;
-}
-
-.jd-subtitle {
-    color: #6b7280;
-    margin-top: 6px;
-}
-
-.jd-pipeline-container {
-    display: flex;
-    gap: 12px;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px 0;
-    border-bottom: 1px solid var(--border-color, #eee);
-    margin-bottom: 12px;
-}
-
-.jd-pipeline {
-    display: flex;
-    gap: 10px;
-    align-items: center;
-    overflow: auto;
-    flex: 1;
-}
-
-.jd-step {
-    white-space: nowrap;
-    padding: 8px 10px;
-    border-radius: 8px;
-    border: 1px solid var(--border-color, #e6e6e6);
-    cursor: pointer;
-    background: #fff;
-    color: #111827;
-    font-weight: 600;
-    font-size: 13px;
-}
-
-.jd-step.active {
-    background: #111827;
-    color: #fff;
-    border-color: #111827;
-}
-
-.jd-step .count {
-    opacity: 0.9;
-    margin-left: 6px;
-    font-weight: 800;
-}
-
-.jd-body {
-    display: grid;
-    grid-template-columns: 350px 1fr 190px;
-    gap: 14px;
-    min-height: calc(100vh - 215px);
-}
-
-.jd-left,
-.jd-middle,
-.jd-actions-panel {
-    background: #ffffff66;
-    border: 1px solid var(--border-color, #e6e6e6);
-    border-radius: 10px;
-}
-
-.jd-actions-panel {
-    display: flex;
-    flex-direction: column;
-}
-
-.jd-actions-content {
-    padding: 14px;
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-}
-
-.jd-actions-title {
-    font-size: 14px;
-    font-weight: 700;
-    color: #111827;
-    margin: 0 0 12px 0;
-    padding-bottom: 10px;
-    border-bottom: 1px solid var(--border-color, #e6e6e6);
-}
-
-.jd-actions-buttons {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    /* overflow-y: auto; */
-}
-
-.jd-action-button {
-    width: 100%;
-    justify-content: center !important;
-    padding: 25px 12px !important;
-    font-size: 13px !important;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-}
-
-.jd-action-button span {
-    font-weight: 500;
-}
-
-.jd-action-icon {
-    flex-shrink: 0;
-}
-
-.jd-left-top {
-    padding: 12px;
-    border-bottom: 1px solid var(--border-color, #eee);
-}
-
-.jd-bulk-toolbar {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-    margin-top: 10px;
-    justify-content: space-between;
-}
-
-.jd-bulk-actions {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-}
-
-.jd-candidate-list {
-    padding: 6px;
-    max-height: 680px;
-    overflow: auto;
-}
-
-.jd-item {
-    display: flex;
-    gap: 10px;
-    align-items: center;
-    padding: 10px;
-    border-radius: 8px;
-    cursor: pointer;
-    margin: 7px 0;
-}
-
-.jd-item:hover {
-    background: #f7f7f7;
-}
-
-.jd-item.active {
-    background: #e5e5e59e;
-}
-
-.jd-avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: #e5e7eb;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 800;
-    color: #374151;
-}
-
-.jd-item-name {
-    font-weight: 800;
-    color: black;
-}
-
-.jd-item-sub {
-    color: #6b7280;
-    font-size: 12px;
-    margin-top: 2px;
-}
-
-.jd-detail-card {
-    padding: 14px;
-}
-
-.jd-detail-head {
-    display: flex;
-    justify-content: space-between;
-    gap: 14px;
-    align-items: flex-start;
-    padding-bottom: 16px;
-    border-bottom: 1px solid var(--border-color, #e6e6e6);
-    margin-bottom: 4px;
-}
-
-.jd-detail-name {
-    font-size: 18px;
-    font-weight: 900;
-    margin: 0;
-    color: #111827;
-}
-
-.jd-badges {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    margin-top: 8px;
-}
-
-.jd-badge {
-    font-size: 12px;
-    background: #f3f4f6;
-    border: 1px solid #e5e7eb;
-    border-radius: 999px;
-    padding: 4px 8px;
-    color: #111827;
-}
-
-.jd-detail-meta {
-    color: #6b7280;
-    margin-top: 2px;
-    font-size: 14px;
-}
-
-.jd-candidate-checkbox {
-    cursor: pointer;
-    width: 16px;
-    height: 16px;
-}
-
-.text-muted {
-    color: #6b7280;
-    text-align: center;
-}
-
-.space-y-4 > * + * {
-    margin-top: 1rem;
-}
-
-.grid {
-    display: grid;
-}
-
-.grid-cols-2 {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
-.grid-cols-3 {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-}
-
-.gap-4 {
-    gap: 1rem;
-}
-
-.form-control {
-    width: 100%;
-    padding: 8px 12px;
-    border: 1px solid #d1d5db;
-    border-radius: 6px;
-    font-size: 14px;
-    outline: none;
-    transition: border-color 0.2s;
-}
-
-.form-control:focus {
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
-
-label {
-    font-size: 14px;
-    color: #374151;
-}
-
-.block {
-    display: block;
-}
-
-.text-sm {
-    font-size: 0.875rem;
-}
-
-.font-medium {
-    font-weight: 500;
-}
-
-.mb-1 {
-    margin-bottom: 0.25rem;
-}
-
-.button-icon {
-    display: inline-block;
-    vertical-align: middle;
-    margin-right: 6px;
-}
-
-/* Tab Navigation Styles */
-.jd-tabs-nav {
-    display: flex;
-    gap: 0;
-    border-bottom: 1px solid #e5e7eb;
-    margin-bottom: 20px;
-    background: transparent;
-}
-
-.jd-tab-button {
-    padding: 12px 24px;
-    background: transparent;
-    border: none;
-    color: #6b7280;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    position: relative;
-    transition: color 0.2s ease;
-    border-bottom: 2px solid transparent;
-}
-
-.jd-tab-button:hover {
-    color: #374151;
-    background: #f9fafb;
-}
-
-.jd-tab-button.active {
-    color: #111827;
-    background: #f3f4f6;
-    border-bottom-color: #111827;
-}
-
-.jd-tab-content {
-    padding: 0;
-}
-</style>

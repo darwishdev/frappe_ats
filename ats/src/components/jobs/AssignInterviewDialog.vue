@@ -85,6 +85,7 @@
         <Button
           theme="gray"
           :variant="'solid'"
+          :loading="isSubmitting"
           @click="submit"
         >
           Assign Interview
@@ -96,8 +97,13 @@
 
 <script setup>
 import { ref, watch, onMounted } from 'vue';
-import { Dialog, Button, Select, TextInput } from 'frappe-ui';
+import { Dialog, Button, Select, TextInput, createResource } from 'frappe-ui';
+import { useToast } from 'vue-toastification';
 import { JobDetailsAPI } from '../../api/apiClient.js';
+
+const toast = useToast();
+
+JobDetailsAPI.init(createResource);
 
 const props = defineProps({
   modelValue: {
@@ -112,17 +118,26 @@ const props = defineProps({
     type: String,
     default: ''
   },
-  onSubmit: {
-    type: Function,
+  jobId: {
+    type: String,
     required: true
+  },
+  jobDesignation: {
+    type: String,
+    required: true
+  },
+  resumeLink: {
+    type: String,
+    default: ''
   }
 });
 
-const emit = defineEmits(['update:modelValue']);
+const emit = defineEmits(['update:modelValue', 'success']);
 
 const isOpen = ref(props.modelValue);
 const interviewRoundOptions = ref([]);
 const isLoadingRounds = ref(false);
+const isSubmitting = ref(false);
 
 const formData = ref({
   interview_round: '',
@@ -142,12 +157,10 @@ const interviewStatusOptions = [
   { label: 'Cancelled', value: 'Cancelled' },
 ];
 
-// Fetch interview rounds on component mount
 onMounted(async () => {
   await fetchInterviewRounds();
 });
 
-// Fetch interview rounds dynamically
 async function fetchInterviewRounds() {
   try {
     isLoadingRounds.value = true;
@@ -161,13 +174,11 @@ async function fetchInterviewRounds() {
       value: round.name
     }));
     
-    // Set default value to first option if available
     if (interviewRoundOptions.value.length > 0 && !formData.value.interview_round) {
       formData.value.interview_round = interviewRoundOptions.value[0].value;
     }
   } catch (error) {
     console.error('Error fetching interview rounds:', error);
-    // Fallback to basic options if fetch fails
     interviewRoundOptions.value = [
       { label: 'HR Screening', value: 'HR Screening' },
       { label: 'Technical Interview', value: 'Technical Interview' },
@@ -180,7 +191,6 @@ async function fetchInterviewRounds() {
 watch(() => props.modelValue, (newVal) => {
   isOpen.value = newVal;
   if (newVal && interviewRoundOptions.value.length === 0) {
-    // Fetch rounds if dialog opens and rounds not yet loaded
     fetchInterviewRounds();
   }
 });
@@ -205,8 +215,56 @@ function resetForm() {
 }
 
 async function submit() {
-  await props.onSubmit(formData.value);
-  close();
+  if (
+    !formData.value.interview_round ||
+    !formData.value.status ||
+    !formData.value.scheduled_on ||
+    !formData.value.from_time ||
+    !formData.value.to_time
+  ) {
+    toast.warning('Please fill in all required fields');
+    return;
+  }
+
+  if (formData.value.from_time >= formData.value.to_time) {
+    toast.warning('End time must be after start time');
+    return;
+  }
+
+  if (!props.candidateId || !props.jobId) {
+    toast.error('Candidate or job not loaded');
+    return;
+  }
+
+  const payload = {
+    job_applicant: props.candidateId,
+    job_opening: props.jobId,
+    designation: props.jobDesignation,
+    interview_round: formData.value.interview_round,
+    status: formData.value.status,
+    scheduled_on: formData.value.scheduled_on,
+    from_time: formData.value.from_time,
+    to_time: formData.value.to_time,
+    expected_average_rating: formData.value.expected_average_rating || 0,
+    interview_summary: formData.value.interview_summary || '',
+    resume_link: props.resumeLink || '',
+    reminded: 0,
+  };
+
+  try {
+    isSubmitting.value = true;
+    await JobDetailsAPI.createOrUpdateInterview(payload);
+    emit('success', {
+      candidateName: props.candidateName,
+      scheduledOn: formData.value.scheduled_on
+    });
+    close();
+  } catch (error) {
+    const err = error;
+    toast.error(err.message || 'Failed to assign interview');
+  } finally {
+    isSubmitting.value = false;
+  }
 }
 
 function close() {
