@@ -20,11 +20,17 @@
 
 	<!-- Pipeline tabs -->
 	<div class="jd-pipeline" id="jd-pipeline">
-		{% if job and job.pipeline_steps %}
+		{% if job %}
 			{% for step in job.pipeline_steps %}
-				<div class="jd-step {% if step.key == active_step %}active{% endif %}" data-step="{{ step.key }}">
-					{{ step.label }}
-				</div>
+			<div class="jd-step active">
+				{{ step.label }}
+			</div>
+				<!-- {% if step.key == active_step %}
+				{% elif  %}
+					<div class="jd-step">
+						{{ step.label }}
+					</div>
+				{% endif %} -->
 			{% endfor %}
 		{% endif %}
 	</div>
@@ -43,13 +49,23 @@
 			<div class="jd-candidate-list" id="jd-candidate-list">
 				{% if candidates %}
 					{% for c in candidates %}
-						<div class="jd-item {% if c.id == active_candidate_id %}active{% endif %}" data-candidate="{{ c.id }}">
-							<div class="jd-avatar">{{ c.name[0] }}</div>
-							<div>
-								<div class="jd-item-name">{{ c.name }}</div>
-							<div class="jd-item-sub">via <b>{{ c.source }}</b> · {{ c.applied_ago }}</div>
+						{% if c.id == active_candidate_id %}
+							<div class="jd-item active" data-candidate="{{ c.id }}">
+								<div class="jd-avatar">{{ c.name[0] }}</div>
+								<div>
+									<div class="jd-item-name">{{ c.name }}</div>
+								<div class="jd-item-sub">via <b>{{ c.source }}</b> · {{ c.applied_ago }}</div>
+								</div>
 							</div>
-						</div>
+						{% else %}
+							<div class="jd-item" data-candidate="{{ c.id }}">
+								<div class="jd-avatar">{{ c.name[0] }}</div>
+								<div>
+									<div class="jd-item-name">{{ c.name }}</div>
+								<div class="jd-item-sub">via <b>{{ c.source }}</b> · {{ c.applied_ago }}</div>
+								</div>
+							</div>
+						{% endif %}
 					{% endfor %}
 				{% else %}
 					<div class="text-muted" style="padding:10px;">No candidates</div>
