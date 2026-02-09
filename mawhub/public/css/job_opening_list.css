@@ -3,13 +3,13 @@ div[data-page-route="List/Job Opening/List"] .frappe-list header.list-row-head {
     display: none !important;
 }
 div[data-page-route="List/Job Opening/List"] .frappe-list .list-row {
-    padding: 20px 0px;
+    padding: 20px 5px;
 }
 
 /* Pipeline Steps in Description Field */
 .job-pipeline-steps {
     display: flex;
-    gap: 20px;
+    gap: 10px;
     align-items: center;
     padding: 4px 0;
 }
@@ -18,8 +18,11 @@ div[data-page-route="List/Job Opening/List"] .frappe-list .list-row {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 4px;
-    min-width: 80px;
+    gap: 10px;
+    background: #00000029;
+    min-width: 90px;
+    padding: 10px;
+    border-radius: 10px;
 }
 
 .pipeline-step .step-count {

@@ -65,8 +65,8 @@ frappe.listview_settings['Job Opening'] = {
                 { label: "Online Interview", count: 0 },
                 { label: "Offer", count: 0 },
                 { label: "Final Interview", count: 0 },
-                { label: "Screening", count: 0 },
-                { label: "Hired", count: 0 }
+                // { label: "Screening", count: 0 },
+                // { label: "Hired", count: 0 }
             ];
 
 
