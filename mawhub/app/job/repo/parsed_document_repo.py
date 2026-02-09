@@ -15,11 +15,10 @@ class ParsedDocumentRepo(AppRepo[ParsedDocumentWithSections]):
             doc_name="Parsed Document",
             name_key="file",
             scalar_fields=[
-                "file",
+                "file_path",
                 "file_hash",
                 "meta_data",
-                "parent_id",
-                "parent_type",
+                "request_id",
             ],
             child_tables={
                 "sections": "sections",

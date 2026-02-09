@@ -1,7 +1,10 @@
+import hashlib
 import json
+from time import sleep
 from typing import Optional, TypedDict, cast
 from pydantic import BaseModel, Field
 from google.genai import types, Client
+from typing import  Optional, Callable
 # ----------------------------
 # LLM Schema for JobOpening Extraction (fully documented)
 # ----------------------------
@@ -59,9 +62,17 @@ class JobOpeningParserWorkflow:
     Converts a ParsedDocumentFinalEvent into a JobOpeningEvent.
     """
 
-    def __init__(self, client: Client, model_name: str):
+    def __init__(
+            self,
+             client: Client,
+             model_name: str,
+             get_cache_fn: Optional[Callable[[str, str], Optional[str]]] = None,
+             set_cache_fn: Optional[Callable[[str, str, dict], None]] = None
+     ):
         self.client = client
         self.default_model = model_name
+        self.get_cache_fn = get_cache_fn
+        self.set_cache_fn = set_cache_fn
     def job_opening_schema_to_event(self,schema: JobOpeningSchema) -> JobOpeningEvent:
         """Converts JobOpeningSchema (Pydantic) to JobOpeningEvent (TypedDict)"""
         return {
@@ -74,16 +85,18 @@ class JobOpeningParserWorkflow:
             "lower_range": schema.lower_range,
             "upper_range": schema.upper_range,
         }
-    def run(self, final_event: dict) -> JobOpeningEvent:
+
+    def get_text_hash(self, text: str) -> str:
+        return hashlib.sha256(text.strip().encode("utf-8")).hexdigest()
+    def run(self, full_text: str) -> JobOpeningEvent:
         """
         final_event: ParsedDocumentFinalEvent
         Returns: JobOpeningEvent TypedDict
         """
         prompt = f"""
 You are an AI assistant that extracts job opening information from a fully parsed document.
-The input is a ParsedDocumentFinalEvent JSON:
-
-{json.dumps(final_event, indent=2)}
+The file text is:
+{full_text}
 
 Task:
 - Extract all relevant information to create a job opening.
@@ -95,6 +108,15 @@ Task:
 """
 
         try:
+            cache_key = self.get_text_hash(full_text) + "job_opening_parser_agent"
+            cache_model = self.default_model
+            if self.get_cache_fn:
+                print("cache caclllaeddd")
+                cached = self.get_cache_fn(cache_key, cache_model)
+                if isinstance(cached,str):
+                    cached = json.loads(cached)
+                if cached:
+                    return cached
             response = self.client.models.generate_content(
                 model=self.default_model,
                 contents=prompt,
@@ -105,7 +127,14 @@ Task:
                 )
             )
             parsed_resp = cast(JobOpeningSchema, response.parsed)
-            return self.job_opening_schema_to_event(parsed_resp)
+            response = self.job_opening_schema_to_event(parsed_resp)
+
+            try:
+                if self.set_cache_fn:
+                    self.set_cache_fn(cache_key, cache_model, response)
+            except Exception as e:
+                pass
+            return response
 
         except Exception as e:
             raise ValueError(f"LLM output could not be parsed as JobOpening: {str(e)}")

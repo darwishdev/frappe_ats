@@ -1,13 +1,13 @@
 from warnings import filters
 from annotated_types import LowerCase
-from frappe import Any, LinkValidationError, _
+from frappe import Any, LinkValidationError, Optional, _
 from typing import  Dict, List, Protocol
 
 import frappe
 from frappe.model.document import Document
 from mawhub.app.job.agent.document_parser_agent import DocumentParserWorkflow
-from mawhub.app.job.agent.job_opening_parser_agent import  JobOpeningParserWorkflow
-from mawhub.app.job.dto.job_opening import JobOpeningDTO, job_opening_list_sql_to_dto, job_opening_sql_to_dto
+from mawhub.app.job.agent.job_opening_parser_agent import  JobOpeningEvent, JobOpeningParserWorkflow
+from mawhub.app.job.dto.job_opening import JobOpeningDTO, job_opening_create_request_from_agent, job_opening_list_sql_to_dto, job_opening_sql_to_dto
 from mawhub.app.job.repo.job_repo import  JobRepoInterface
 from mawhub.pkg.pdfconvertor.pdfconvertor import extract_text_from_pdf
 from mawhub.sqltypes.table_models import JobOpening
@@ -22,14 +22,16 @@ class JobOpeningUsecaseInterface(Protocol):
         self,
         payload: JobOpening,
     ) -> Document: ...
-    # def job_opening_parse(
-    #     self,
-    #     path: str,
-    # ) -> Iterator[JobAgentEvent]: ...
+    def job_opening_parse(
+        self,
+        document_text: str,
+        request_id:str
+    ) -> JobOpeningEvent: ...
     def job_opening_find(
         self,
         job: str,
     ) -> JobOpeningDTO: ...
+
 class JobOpeningUsecase:
     repo: JobRepoInterface
     job_agent: JobOpeningParserWorkflow
@@ -43,6 +45,75 @@ class JobOpeningUsecase:
         self.repo = repo
         self.job_agent = job_agent
         self.document_parser_agent = document_parser_agent
+
+    def ensure_designation(self, designation_name: str) -> str:
+        """Finds or creates Designation based on 'designation_name'."""
+        # Filter matches the insert field
+        exists = frappe.db.exists("Designation", {"designation_name": designation_name})
+        if isinstance(exists,str):
+            return exists
+
+        doc = frappe.get_doc({
+            "doctype": "Designation",
+            "designation_name": designation_name
+        }).insert(ignore_permissions=True)
+
+        return str(doc.name)
+
+    def ensure_customer(self, customer_name: str) -> str:
+        """Finds or creates Customer based on 'customer_name'."""
+        # Filter matches the insert field
+        exists = frappe.db.exists("Customer", {"customer_name": customer_name})
+        if isinstance(exists,str):
+            return exists
+
+        doc = frappe.get_doc({
+            "doctype": "Customer",
+            "customer_name": customer_name
+        }).insert(ignore_permissions=True)
+
+        return str(doc.name)
+
+    def ensure_location(self, location_name: str) -> str:
+        """Finds or creates Branch based on 'branch' field."""
+        # Filter matches the 'branch' field as used in your insert logic
+        exists = frappe.db.exists("Branch", {"branch": location_name})
+        if isinstance(exists,str):
+            return exists
+
+        doc = frappe.get_doc({
+            "doctype": "Branch",
+            "branch": location_name
+        }).insert(ignore_permissions=True)
+
+        return str(doc.name)
+    def job_opening_parse(
+        self,
+        document_text: str,
+        request_id: str,
+    ) -> JobOpeningEvent:
+        print("called herererererer")
+        print(document_text)
+        response = self.job_agent.run(document_text)
+        designation_name = None
+        if response.get("designation"):
+            designation_name = self.ensure_designation(str(response["designation"]))
+
+        customer_name = None
+        if response.get("customer"):
+            customer_name = self.ensure_customer(str(response["customer"]))
+
+        location_name  = None
+        if response.get("location"):
+            location_name = self.ensure_location(str(response["location"]))
+        db_create_req = job_opening_create_request_from_agent(
+                response,
+                designation_id=designation_name,
+                customer_id=customer_name,
+                location_id=location_name
+        )
+        self.job_opening_create_update(db_create_req)
+        return response
 
     def job_opening_list(
         self,

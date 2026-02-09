@@ -1,21 +1,20 @@
 import hashlib
-import json
-from typing import   Iterator, List, Protocol, cast
-from frappe import Callable, Optional
+from typing import   List, Protocol
+from frappe import Any
 from frappe.model.document import Document
 from mawhub.app.job.agent.document_parser_agent import  DocumentParserWorkflow
-from mawhub.app.job.dto.parsed_document_dto import ParsedDocumentDTO, ParsedDocumentParseRequest, ParsedDocumentWithSections, parsed_document_agent_to_dto, parsed_document_dto_to_sql
+from mawhub.app.job.agent.job_opening_parser_agent import JobOpeningParserWorkflow
+from mawhub.app.job.dto.parsed_document_dto import ParsedDocumentDTO,  ParsedDocumentWithSections, parsed_document_agent_to_dto,  parsed_document_dto_to_sql
 from mawhub.app.job.repo.job_repo import JobRepoInterface
-from mawhub.pkg.pdfconvertor.pdfconvertor import extract_text_from_pdf
 
 class ParsedDocumentUsecaseInterface(Protocol):
 	def parsed_document_create_update(self, payload: ParsedDocumentDTO)->Document: ...
 	def parse_document(
             self,
-            payload: ParsedDocumentParseRequest,
-            save_parent_callback: Optional[Callable[[dict], str]] = None,
-            on_final_event: Optional[Callable[[dict], None]] = None
-    )->Iterator[str]: ...
+            file_path:str,
+            document_text:str,
+            request_id:str
+    )->Any: ...
 	def parsed_document_bulk_create(
         self,
         payload:List[ParsedDocumentDTO],
@@ -24,13 +23,16 @@ class ParsedDocumentUsecaseInterface(Protocol):
 class ParsedDocumentUsecase:
     repo: JobRepoInterface
     document_parser_agent: DocumentParserWorkflow
+    job_opening_parser_agent: JobOpeningParserWorkflow
     def __init__(
         self,
         repo: JobRepoInterface,
-        document_parser_agent: DocumentParserWorkflow
+        document_parser_agent: DocumentParserWorkflow,
+        job_opening_parser_agent: JobOpeningParserWorkflow
     ):
         self.repo = repo
         self.document_parser_agent = document_parser_agent
+        self.job_opening_parser_agent = job_opening_parser_agent
 
     def parsed_document_create_update(self, payload: ParsedDocumentDTO)->Document:
         sql_params = parsed_document_dto_to_sql(payload)
@@ -49,40 +51,23 @@ class ParsedDocumentUsecase:
 
     def parse_document(
         self,
-        payload: ParsedDocumentParseRequest,
-        save_parent_callback: Optional[Callable[[dict], str]] = None,
-        on_final_event: Optional[Callable[[dict], None]] = None
-    ) -> Iterator[str]:
+        file_path: str,
+        document_text: str,
+        request_id: str
+    )->Any:
         try:
-            path = payload.get("path" , "")
-            document_text = extract_text_from_pdf(path)
-            # 2. Iterate through the workflow events
+            text_hash = hashlib.sha256(document_text.strip().encode("utf-8")).hexdigest()
             for event in self.document_parser_agent.run(document_text):
-                # Convert Pydantic models/Dicts to JSON
-                # Using default=str to handle any potential non-serializable objects
-                json_data = json.dumps(event, default=str)
-
-                # 3. Yield in SSE format: "data: <payload>\n\n"
-                yield f"data: {json_data}\n\n"
                 if event["event"] == "final":
-
-                    created_parent_id = payload.get("parent_id" , "")
-                    if save_parent_callback:
-                        created_parent_id = save_parent_callback(cast(dict,event["data"]))
-                    clean_text = document_text.strip().encode('utf-8')
-                    hash_text =  hashlib.sha256(clean_text).hexdigest()
-                    dto = parsed_document_agent_to_dto(
-                        event["data"],
-                        path,
-                        hash_text,
-                        created_parent_id,
-                        payload.get("parent_type" , ""),
-                    )
-                    self.parsed_document_create_update(dto)
-                    if on_final_event:
-                        on_final_event(cast(dict,event["data"]))
+                    final_event_data = event["data"]
+                    db_req = parsed_document_agent_to_dto(final_event_data,file_path,text_hash,request_id)
+                    try:
+                        self.parsed_document_create_update(db_req)
+                    except Exception as e:
+                        raise Exception(f"failed writing the document to db : {e} : body: {db_req}")
+                    print("db req is ")
+                    print("db req is ",db_req)
 
         except Exception as e:
-            error_payload = json.dumps({"event": "error", "data": {"message": str(e)}})
-            yield f"data: {error_payload}\n\n"
+            raise Exception(e)
 

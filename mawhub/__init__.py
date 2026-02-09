@@ -2,10 +2,12 @@ __version__ = "0.0.1"
 from mawhub.api.mawhub_job_pipeline_api import job_pipeline_create_update
 from mawhub.api.mawhub_parsed_document_api import(
         parsed_document_create_update,
-        parsed_document_parse
+        parsed_document_parse,
+        parsed_document_parse_bg
 )
 from mawhub.api.mawhub_job_opening_api import (
         generate_applicant_email,
+job_opening_parse,
         job_opening_create_update,
         job_opening_list,
         job_opening_find,
@@ -30,6 +32,7 @@ from mawhub.api.mawhub_interview_api import (
 __all__ = [
     "job_opening_list",
     "job_pipeline_create_update",
+    "job_opening_parse",
     "job_opening_create_update",
     "job_opening_find",
     "interview_create_update",
@@ -40,6 +43,7 @@ __all__ = [
 
     "parsed_document_create_update",
     "parsed_document_parse",
+    "parsed_document_parse_bg",
     "applicant_resume_bulk_create",
     "applicant_resume_create_update",
     "applicant_resume_parse",

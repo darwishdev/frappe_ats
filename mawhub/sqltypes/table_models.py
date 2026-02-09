@@ -16,7 +16,7 @@ class ParsedDocumentSection(TypedDict):
     idx: NotRequired[int]
     title: NotRequired[str]
     description: NotRequired[str]
-    pullet_points: NotRequired[str]
+    bullet_points: NotRequired[str]
     parent_section: NotRequired[str]
     parent: NotRequired[str]
     parentfield: NotRequired[str]

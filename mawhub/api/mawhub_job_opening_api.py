@@ -6,6 +6,7 @@ from typing import  List, cast
 from frappe import  _
 import frappe
 from mawhub.bootstrap import app_container
+from mawhub.pkg.pdfconvertor.pdfconvertor import extract_text_from_pdf
 from mawhub.sqltypes.table_models import JobOpening
 
 
@@ -45,3 +46,10 @@ def generate_applicant_email(applicant: dict, job: dict, pipeline_step: str,user
     except Exception as e:
         frappe.log_error(frappe.get_traceback(), "Email Generation Error")
         raise Exception(f"Error generating email: {str(e)}")
+
+@frappe.whitelist(methods=["PUT" , "POST"], allow_guest=True)
+def job_opening_parse(file_path:str,document_text:str,request_id : str):
+    if document_text == "":
+        document_text = extract_text_from_pdf(file_path)
+    parsed = app_container.job_usecase.job_opening.job_opening_parse(document_text,request_id)
+    return parsed

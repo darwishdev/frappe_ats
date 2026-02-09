@@ -14,14 +14,13 @@ class ParsedSection(TypedDict, total=False):
 class ParsedDocumentSectionDTO(TypedDict, total=False):
     title: str
     description: NotRequired[str]
-    pullet_points: NotRequired[List[str]]
+    bullet_points: NotRequired[List[str]]
 
 class ParsedDocumentDTO(TypedDict, total=False):
-    file: str
+    file_path: str
     file_hash: str
-    parent_type: str
     meta_data: dict[str,str]
-    parent_id: str
+    request_id: str
     sections: List[ParsedDocumentSectionDTO]
 
 class ParsedDocumentParseRequest(TypedDict, total=False):
@@ -45,16 +44,15 @@ def parsed_document_dto_to_sql(dto: ParsedDocumentDTO) -> ParsedDocumentWithSect
     sections = adapted_data.get("sections", [])
 
     for section in sections:
-        points = section.get("pullet_points")
-        section["pullet_points"] = json.dumps(points)
+        points = section.get("bullet_points")
+        section["bullet_points"] = json.dumps(points)
 
     return adapted_data
 def parsed_document_agent_to_dto(
     final_event_data: ParsedDocumentFinalEvent,
     path: str,
     file_hash: str,
-    parent_id: str,
-    parent_type: str
+    request_id: str,
 ) -> ParsedDocumentDTO:
     """
     Adapts the Workflow's Final Event data into a ParsedDocumentDTO.
@@ -65,16 +63,15 @@ def parsed_document_agent_to_dto(
         dto_sections.append({
             "title": section.get("title") or "Untitled Section",
             "description": section.get("description") or "",
-            "pullet_points": section.get("bullet_points") or []
+            "bullet_points": section.get("bullet_points") or []
         })
 
     return {
-        "file": path,
+        "file_path": path,
         "file_hash": file_hash,
-        "parent_type": parent_type,
-        "parent_id": parent_id,
         "meta_data": final_event_data["metadata"],
-        "sections": dto_sections
+        "sections": dto_sections,
+        "request_id": request_id
     }
 
 
