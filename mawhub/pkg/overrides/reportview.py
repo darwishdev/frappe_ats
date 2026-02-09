@@ -9,7 +9,7 @@ def get():
 
     data = cast(Dict[str, Any], original_get())
 
-    if args.get("doctype") != "Job Opening":
+    if True or args.get("doctype") != "Job Opening":
         return data
 
 
