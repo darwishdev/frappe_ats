@@ -4,6 +4,8 @@ from typing import List, Mapping, NotRequired, TypeVar, TypedDict, cast
 from frappe import Any, Optional
 from frappe.utils import secho
 
+from mawhub.app.job.agent.job_opening_parser_agent import JobOpeningEvent
+from mawhub.sqltypes.table_models import JobOpening
 from mawhub.sqltypes.tal_models import JobView
 
 class InterviewFeedbackDTO(TypedDict):
@@ -245,3 +247,34 @@ class JobOpeningCreateRequest(TypedDict):
     publish_salary_range: int
     publish_applications_received: int
     customer: int
+def job_opening_create_request_from_agent(
+        event: JobOpeningEvent,
+        designation_id: Optional[str] = None,
+        customer_id: Optional[str] = None,
+        location_id: Optional[str] = None
+    ) -> JobOpening:
+    """
+    Adapts a JobOpeningEvent to a JobOpeningCreateRequest format.
+    Maps 'customer' string to 'company' and initializes default publish flags.
+    """
+    # Initialize the request with direct mappings
+    request: JobOpening = {
+        "job_title": event["job_title"],
+        "planned_vacancies": event["planned_vacancies"],
+        "vacancies": event["vacancies"],
+        "lower_range": event["lower_range"],
+        "upper_range": event["upper_range"],
+        # Default flags for the request (assuming 1 for True/Active)
+        "publish": 1,
+        "publish_salary_range": 1,
+        "publish_applications_received": 1,
+    }
+    if designation_id:
+        request["designation"] = designation_id
+
+    if customer_id:
+        request["custom_customer"] = customer_id
+
+    if location_id:
+        request["location"] = location_id
+    return request

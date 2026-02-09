@@ -12,7 +12,7 @@ SELECT
         JSON_OBJECT(
             'title', pds.title,
             'description', pds.description,
-            'pullet_points', pds.pullet_points
+            'bullet_points', pds.bullet_points
         )
     ) AS sections
 FROM

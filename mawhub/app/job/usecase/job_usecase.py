@@ -50,7 +50,7 @@ class JobUseCase:
         model_name = 'gemini-2.5-flash-lite'
         resume_agent = ResumeWorkflow(client=gemini_api_client,model_name=model_name)
         communication_workflow = CommunicationWorkflow(client=gemini_api_client,model_name=model_name)
-        job_agent = JobOpeningParserWorkflow(client=gemini_api_client,model_name=model_name)
+        job_agent = JobOpeningParserWorkflow(client=gemini_api_client,model_name=model_name,get_cache_fn=get_ai_cache ,set_cache_fn=set_ai_cache)
         doc_parser = DocumentParserWorkflow(client=gemini_api_client,model_name=model_name , get_cache_fn=get_ai_cache ,set_cache_fn=set_ai_cache)
         self.resume_agent = resume_agent
         self.communication_agent = communication_workflow
@@ -58,7 +58,7 @@ class JobUseCase:
         self.document_parser_agent = doc_parser
         self.job_opening = JobOpeningUsecase(job_repo,job_agent,doc_parser)
         self.job_pipeline= JobPipelineUsecase(job_repo)
-        self.parsed_document = ParsedDocumentUsecase(job_repo,doc_parser)
+        self.parsed_document = ParsedDocumentUsecase(job_repo,doc_parser,job_agent)
         self.job_applicant = JobApplicantUsecase(job_repo)
         self.interview = InterviewUsecase(job_repo)
         self.auth = AuthUsecase(job_repo)

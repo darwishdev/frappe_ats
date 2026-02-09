@@ -1,28 +1,19 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "field:file",
+ "autoname": "field:file_hash",
  "creation": "2026-01-25 12:43:33.724087",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "file",
+  "file_path",
   "output",
   "file_hash",
-  "parent_type",
-  "parent_id",
   "sections",
-  "meta_data"
+  "meta_data",
+  "request_id"
  ],
  "fields": [
-  {
-   "fieldname": "file",
-   "fieldtype": "Data",
-   "in_list_view": 1,
-   "label": "File",
-   "reqd": 1,
-   "unique": 1
-  },
   {
    "fieldname": "output",
    "fieldtype": "Long Text",
@@ -32,17 +23,8 @@
    "fieldname": "file_hash",
    "fieldtype": "Data",
    "label": "File Hash",
-   "reqd": 1
-  },
-  {
-   "fieldname": "parent_type",
-   "fieldtype": "Data",
-   "label": "Parent Type"
-  },
-  {
-   "fieldname": "parent_id",
-   "fieldtype": "Data",
-   "label": "Parent ID"
+   "reqd": 1,
+   "unique": 1
   },
   {
    "fieldname": "sections",
@@ -54,12 +36,26 @@
    "fieldname": "meta_data",
    "fieldtype": "Long Text",
    "label": "Meta Data"
+  },
+  {
+   "fieldname": "request_id",
+   "fieldtype": "Data",
+   "label": "Request Id",
+   "reqd": 1
+  },
+  {
+   "fieldname": "file_path",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "File Path",
+   "reqd": 1,
+   "unique": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-01-26 15:34:23.417442",
+ "modified": "2026-02-09 15:06:02.169208",
  "modified_by": "Administrator",
  "module": "Mawhub",
  "name": "Parsed Document",

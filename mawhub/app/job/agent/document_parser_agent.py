@@ -1,3 +1,5 @@
+import json
+from time import sleep
 from frappe import Union
 from pydantic import BaseModel, Field
 from typing import List, Literal, TypedDict
@@ -179,7 +181,8 @@ class DocumentParserWorkflow:
 
                 Extraction Logic:
                 - description: All text appearing BEFORE the first detected list item.
-                - bullet_points: Each list item exactly as written.
+                - bullet_points: Each list item exactly as written but without the bullet symbol or
+                  the number.
                 - footer: All text appearing AFTER the final list item has ended.
                 - is_number_list: Set to True if the list uses numbers (e.g., 1., 2.). Set to False if it uses symbols (e.g., ●, •).
 
@@ -222,16 +225,25 @@ class DocumentParserWorkflow:
         document_text: str,
         model_overrides: Optional[Dict[str, str]] = None
     ) -> Iterator[DocumentParserEvent]:
-
+        print("text coming from the pdf")
+        print(document_text)
         overrides = model_overrides or {}
+        cache_key = self.get_text_hash(document_text)
+        if self.get_cache_fn:
+            cached_str = self.get_cache_fn(cache_key, self.default_model)
+            if isinstance(cached_str,str):
+                cached = json.loads(cached_str)
+                if cached:
+                    yield {"event": "final", "data": cached}
+                    return
 
-        # 1. Analysis Step
-        chunk_model = overrides.get("chunker", self.default_model)
-        try:
-            doc_chunks = self.chunk_document(document_text, chunk_model)
-        except Exception as e:
-            yield {"event": "error", "data": f"Chunking failed: {str(e)}"}
-            return
+            # 1. Analysis Step
+            chunk_model = overrides.get("chunker", self.default_model)
+            try:
+                doc_chunks = self.chunk_document(document_text, chunk_model)
+            except Exception as e:
+                yield {"event": "error", "data": f"Chunking failed: {str(e)}"}
+                return
 
         # Yield Analyzed Event (TypedDict)
         analyzed_data = self._to_analyzed_event_data(doc_chunks)
@@ -266,6 +278,12 @@ class DocumentParserWorkflow:
                         "event": "error",
                         "data": f"Parsing section '{title}' failed: {str(e)}"
                     }
+        final_data = {
+                "metadata": analyzed_data["metadata"],
+                "sections": results
+            }
+        if self.set_cache_fn:
+            self.set_cache_fn(cache_key, self.default_model, final_data)
 
         # 3. Final Step
         # Yield Final Event (TypedDict)

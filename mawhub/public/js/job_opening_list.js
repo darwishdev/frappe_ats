@@ -18,7 +18,39 @@ frappe.listview_settings['Job Opening'] = {
 
         // Add custom button
         listview.page.add_inner_button('Add From JD', function() {
-        console.log(listview.data)
+            new frappe.ui.FileUploader({
+                make_attachments: 0, // Don't attach to a specific doc yet
+                on_success: (file_doc) => {
+                    // 2. Send the file path to the background task
+                    frappe.call({
+                        method: "mawhub.parsed_document_parse",
+                        args: {
+                            "path": file_doc.file_url
+                        },
+                        callback: function(r) {
+                            if (r.message && r.message.request_id) {
+                                const req_id = r.message.request_id;
+
+                                frappe.show_alert({
+                                    message: __("Processing JD in background..."),
+                                    indicator: 'blue'
+                                });
+
+                                // 3. Listen to the Real-time room using the request_id
+                                frappe.realtime.on("jd_parsing_done_" + req_id, (data) => {
+                                    frappe.msgprint({
+                                        title: __('JD Parsed'),
+                                        indicator: 'green',
+                                        message: __(`Job Opening for <b>${data.job_title}</b> created.`)
+                                    });
+                                    listview.refresh();
+                                });
+                            }
+                        }
+                    });
+                }
+            });
+            console.log(listview.data)
             frappe.msgprint('Custom button clicked');
         });
     },
@@ -27,7 +59,7 @@ frappe.listview_settings['Job Opening'] = {
             console.log(field);
             console.log(value);
             console.log(doc);
-            
+
             // Static pipeline steps for now - will be dynamic later
             const pipeline_steps = [
                 { label: "Online Interview", count: 0 },
@@ -36,6 +68,7 @@ frappe.listview_settings['Job Opening'] = {
                 { label: "Screening", count: 0 },
                 { label: "Hired", count: 0 }
             ];
+
 
             const stepsHtml = pipeline_steps.map(step => `
                 <div class="pipeline-step">

@@ -8,7 +8,7 @@
  "field_order": [
   "title",
   "description",
-  "pullet_points",
+  "bullet_points",
   "parent_section"
  ],
  "fields": [
@@ -25,9 +25,9 @@
    "label": "Description"
   },
   {
-   "fieldname": "pullet_points",
+   "fieldname": "bullet_points",
    "fieldtype": "Long Text",
-   "label": "Pullet Points"
+   "label": "Bullet Points"
   },
   {
    "fieldname": "parent_section",
