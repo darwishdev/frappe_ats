@@ -264,6 +264,7 @@ def job_opening_create_request_from_agent(
         "vacancies": event["vacancies"],
         "lower_range": event["lower_range"],
         "upper_range": event["upper_range"],
+        "company" : "Mawhub",
         # Default flags for the request (assuming 1 for True/Active)
         "publish": 1,
         "publish_salary_range": 1,

@@ -98,7 +98,8 @@ class JobOpeningUsecase:
         designation_name = None
         if response.get("designation"):
             designation_name = self.ensure_designation(str(response["designation"]))
-
+        else:
+            designation_name = self.ensure_designation(str(response["job_title"]))
         customer_name = None
         if response.get("customer"):
             customer_name = self.ensure_customer(str(response["customer"]))
