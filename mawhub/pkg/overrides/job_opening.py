@@ -9,15 +9,41 @@ if TYPE_CHECKING:
 class CustomJobOpening(JobOpening):
     def before_save(self):
         # Run original HRMS logic first if needed
-        if hasattr(super(), "before_save"):
-            getattr(super() , "before_save").before_save()
+        # if hasattr(super(), "before_save"):
+        #     parent_method = getattr(super(), "before_save", None)
+        #     if parent_method:
+        #         parent_method()
 
         if self.is_new():
             return
 
         self.handle_applicant_invalidation()
-        self.validate_custom_applicants()
+        self.ensure_project()
+        # self.validate_custom_applicants()
 
+    def ensure_project(self):
+        project_name = self.get("job_title")
+        if not project_name:
+            return
+
+        # Check if project already exists
+        existing = frappe.db.exists("Project", project_name)
+        if existing:
+            self.project = existing
+            return
+
+        # Create project from template
+        project = frappe.get_doc({
+            "doctype": "Project",
+            "project_name": project_name,
+            "project_template": "Job Opening",
+            "status": "Open",
+        })
+
+        project.insert(ignore_permissions=True)
+
+        # Link back to job opening (requires Link field "project")
+        self.project = project.name
     def validate_custom_applicants(self):
         active_applicants = {}  # To track duplicates: {applicant_id: row_index}
 
