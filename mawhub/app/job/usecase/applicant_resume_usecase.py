@@ -13,6 +13,7 @@ from mawhub.app.job.dto import applicant_resume_dto
 from mawhub.app.job.dto.applicant_resume_dto import ApplicantResumeDTO
 from mawhub.app.job.dto.job_applicant import JobApplicantCreateWithResume
 from mawhub.app.job.repo.job_repo import JobRepoInterface
+from mawhub.pkg.overrides.job_opening import CustomJobOpening
 from mawhub.pkg.pdfconvertor.pdfconvertor import extract_text_from_pdf
 from mawhub.sqltypes.table_models import JobApplicant
 
@@ -162,34 +163,42 @@ class ApplicantResumeUsecase:
 
     def job_applicant_link_with_job_opening(
         self,
-        job:str,
-        email:str,
-        step:str,
-        resume_id:str,
-    ):
-        job_doc = frappe.get_doc("Job Opening" , job)
+        job: str,
+        email: str,
+        step: str,
+        resume_id: str,
+    ) -> None:
+
+        job_doc = frappe.get_doc("Job Opening", job)
         if not job_doc:
             raise frappe.ValidationError(f"job opening {job} is not found")
 
-        if step == "" or step == "null" or step == "all":
-            steps = job_doc.get("custom_pipeline_steps")
-            if not isinstance(steps , list):
-                raise frappe.ValidationError("job opening has no steps")
-            step = steps[0].name
+        # cast so type checker knows our custom methods exist
+        job_doc = cast(CustomJobOpening, job_doc)
 
-        job_candidates = job_doc.get("custom_candidates")
-        if not job_candidates:
-            job_doc.set("custom_candidates" , [])
-        job_candidate = {
-                "job_applicant" : email ,
-                "step" : step,
-                "applicant_resume" : resume_id
-        }
         try:
-            job_doc.append("custom_candidates" , job_candidate)
+            new_row = job_doc.link_applicant_to_step(
+                applicant_id=email,
+                step_code=step,
+                resume_id=resume_id,
+                comment="Linked via job_applicant_link_with_job_opening"
+            )
+
             job_doc.save()
+            frappe.db.commit()
+
+            print(
+                f"linked applicant={email} "
+                f"step={new_row.get('step')} "
+                f"job={job}"
+            )
+
         except Exception as e:
-            raise Exception(f"failed_to_link_job_with_candidate : params : {json.dumps(job_candidate)} : {str(e)}")
+            raise Exception(
+                "failed_to_link_job_with_applicant : "
+                f"params : {json.dumps({'email': email, 'step': step, 'resume': resume_id})} : "
+                f"{str(e)}"
+            )
 
 
     def get_text_hash(self, text: str) -> str:
@@ -214,14 +223,22 @@ class ApplicantResumeUsecase:
         doc_name = "Applicant Resume"
         cache_params = {"resume_hash" : document_text_hash}
         cached_resume = frappe.db.exists(doc_name , cache_params)
+        print("cached")
         if cached_resume:
-            cached_resume_doc_txt = frappe.get_value(doc_name , cache_params , "raw_resume_text")
-            cached_resume_doc = json.loads(cached_resume_doc_txt)
-            json_data = json.dumps({"event" : "final" ,"data" : cached_resume_doc} , default=str)
-            yield f"data: {json_data}\n\n"
-            doc_name = str(cached_resume_doc.name)
-            job_applicant_id = str(cached_resume_doc.get("job_applicant"))
-            self.job_applicant_link_with_job_opening(job,job_applicant_id,step,doc_name)
+            print("cached")
+            print(cached_resume)
+            cached_resume_doc= frappe.get_last_doc(
+                    doc_name,
+                    filters=cache_params
+                    )
+            cached_resume_doc_txt = cached_resume_doc.get("raw_resume_text")
+            if isinstance(cached_resume_doc_txt,str):
+                cached_resume_doc_parsed = json.loads(str(cached_resume_doc_txt))
+                json_data = json.dumps({"event" : "final" ,"data" : cached_resume_doc_parsed} , default=str)
+                yield f"data: {json_data}\n\n"
+                doc_name = cached_resume_doc.name
+                job_applicant_id = cached_resume_doc.get("job_applicant")
+                self.job_applicant_link_with_job_opening(job,job_applicant_id,step,doc_name)
         else:
             final_event_data: dict = {}
             for event in self.resume_agent.run(document_text):
