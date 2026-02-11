@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from "vue";
-import Child from './Child.vue'
+import Child from './JobFind.vue'
 </script>
 <template>
   <div>
