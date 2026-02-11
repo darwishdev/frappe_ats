@@ -1,6 +1,11 @@
 <script setup>
 import { ref, computed, onMounted, getCurrentInstance, h, render } from "vue";
 import JobDescriptionContent from "./components/JobDescriptionContent.vue";
+import ApplicantProfile from "./components/ApplicantProfile.vue";
+import ApplicantTimeline from "./components/ApplicantTimeline.vue";
+import ApplicantCommunication from "./components/ApplicantCommunication.vue";
+import ApplicantReview from "./components/ApplicantReview.vue";
+import ApplicantComments from "./components/ApplicantComments.vue";
 
 // Access frappe instance
 const { proxy } = getCurrentInstance();
@@ -14,8 +19,26 @@ const activeCandidateId = ref(null);
 const selectedCandidates = ref(new Set());
 const searchQuery = ref("");
 const loading = ref(false);
+const activeTab = ref("profile");
 
 const jobId = ref(frappe.get_route()[1]); 
+
+// Tab configuration
+const tabs = [
+  { key: "profile", label: "Profile" },
+  { key: "timeline", label: "Timeline" },
+  { key: "communication", label: "Communication" },
+  { key: "review", label: "Review" },
+  { key: "comments", label: "Comments" },
+];
+
+const tabComponents = {
+  profile: ApplicantProfile,
+  timeline: ApplicantTimeline,
+  communication: ApplicantCommunication,
+  review: ApplicantReview,
+  comments: ApplicantComments,
+};
 
 // Computed
 const stepOptions = computed(() => {
@@ -74,22 +97,6 @@ const getJobOpening = () => {
           indicator: "green"
         });
       }
-    },
-    error: function(r) {
-      loading.value = false;
-      frappe.msgprint({
-        title: "Error", message: "Failed to load job details",
-        indicator: "red"
-      });
-      console.error(r);
-    }
-  });
-  frappe.call({
-    method: "mawhub.api.mawhub_job_applicant_api.job_applicant_find",
-    type: "GET",
-    args: {
-      job: jobId.value,
-      name : 'kareemdeveloper24@gmail.com'
     },
     error: function(r) {
       loading.value = false;
@@ -305,14 +312,151 @@ const moveCandidateToStep = () => {
   dialog.show();
 };
 
+// Assign Interview Dialog
+const assignInterview = () => {
+  if (!activeCandidate.value) return;
+  
+  // First, fetch interview rounds
+  frappe.call({
+    method: 'frappe.client.get_list',
+    args: {
+      doctype: 'Interview Round',
+      fields: ['name', 'round_name'],
+      order_by: 'idx asc'
+    },
+    callback: function(res) {
+      const rounds = res.message || [];
+      const roundOptions = rounds.length > 0 
+        ? rounds.map(r => r.round_name || r.name).join('\n')
+        : 'HR Screening\nTechnical Interview\nFinal Interview';
+      
+      const dialog = new frappe.ui.Dialog({
+        title: `Assign Interview to ${activeCandidate.value.job_applicant}`,
+        fields: [
+          {
+            fieldtype: 'Select',
+            fieldname: 'interview_round',
+            label: 'Interview Round',
+            options: roundOptions,
+            reqd: 1
+          },
+          {
+            fieldtype: 'Select',
+            fieldname: 'status',
+            label: 'Status',
+            options: 'Pending\nUnder Review\nCleared\nRejected\nCancelled',
+            default: 'Pending',
+            reqd: 1
+          },
+          {
+            fieldtype: 'Column Break'
+          },
+          {
+            fieldtype: 'Date',
+            fieldname: 'scheduled_on',
+            label: 'Scheduled Date',
+            reqd: 1
+          },
+          {
+            fieldtype: 'Time',
+            fieldname: 'from_time',
+            label: 'From Time',
+            reqd: 1
+          },
+          {
+            fieldtype: 'Time',
+            fieldname: 'to_time',
+            label: 'To Time',
+            reqd: 1
+          },
+          {
+            fieldtype: 'Section Break'
+          },
+          {
+            fieldtype: 'Float',
+            fieldname: 'expected_average_rating',
+            label: 'Expected Rating (0-5)',
+            default: 0,
+            description: 'Expected average rating from 0 to 5'
+          },
+          {
+            fieldtype: 'Small Text',
+            fieldname: 'interview_summary',
+            label: 'Interview Summary',
+            description: 'Optional notes or summary'
+          }
+        ],
+        primary_action_label: 'Assign Interview',
+        primary_action: (values) => {
+          // Validation
+          if (values.from_time >= values.to_time) {
+            frappe.msgprint({
+              title: 'Validation Error',
+              message: 'End time must be after start time',
+              indicator: 'orange'
+            });
+            return;
+          }
+          
+          const payload = {
+            job_applicant: activeCandidate.value.job_applicant,
+            job_opening: jobId.value,
+            designation: job.value.designation,
+            interview_round: values.interview_round,
+            status: values.status,
+            scheduled_on: values.scheduled_on,
+            from_time: values.from_time,
+            to_time: values.to_time,
+            expected_average_rating: values.expected_average_rating || 0,
+            interview_summary: values.interview_summary || '',
+            resume_link: activeCandidate.value.applicant_resume_link || '',
+            reminded: 0
+          };
+          
+          frappe.call({
+            method: 'mawhub.api.mawhub_interview_api.interview_create_update',
+            args: payload,
+            callback: function(res) {
+              if (res.message) {
+                frappe.show_alert({
+                  message: `Interview assigned to ${activeCandidate.value.job_applicant} on ${values.scheduled_on}`,
+                  indicator: 'green'
+                });
+                dialog.hide();
+              }
+            },
+            error: function(err) {
+              frappe.msgprint({
+                title: 'Error',
+                message: 'Failed to assign interview',
+                indicator: 'red'
+              });
+              console.error('Failed to assign interview:', err);
+            }
+          });
+        }
+      });
+      
+      dialog.show();
+    },
+    error: function(err) {
+      console.error('Failed to fetch interview rounds:', err);
+      // Show dialog anyway with default options
+      frappe.msgprint({
+        title: 'Warning',
+        message: 'Could not load interview rounds. Using defaults.',
+        indicator: 'orange'
+      });
+    }
+  });
+};
+
 // Action buttons configuration
 const candidateActions = [
   {
     label: "Assign Interview",
     icon: "fa-calendar",
-    action: () => {
-      frappe.msgprint("Assign Interview clicked");
-    },
+    action: assignInterview,
     variant: "default"
   },
   {
@@ -529,34 +673,25 @@ onMounted(() => {
                 </div>
               </div>
 
-              <!-- Candidate Info -->
-              <div class="jd-candidate-info p-2">
-                <div class="info-section">
-                  <h4>Contact Information</h4>
-                  <div class="info-row">
-                    <span class="info-label">Email:</span>
-                    <span class="info-value">{{ activeCandidate.applicant_email || 'N/A' }}</span>
-                  </div>
-                  <div class="info-row">
-                    <span class="info-label">Phone:</span>
-                    <span class="info-value">{{ activeCandidate.applicant_phone || 'N/A' }}</span>
-                  </div>
-                  <div class="info-row">
-                    <span class="info-label">Source:</span>
-                    <span class="info-value">{{ activeCandidate.applicant_source || 'N/A' }}</span>
-                  </div>
-                </div>
+              <!-- Tab Navigation -->
+              <div class="jd-tabs-nav">
+                <button
+                  v-for="tab in tabs"
+                  :key="tab.key"
+                  :class="['jd-tab-button', { active: activeTab === tab.key }]"
+                  @click="activeTab = tab.key"
+                >
+                  {{ tab.label }}
+                </button>
+              </div>
 
-                <div v-if="activeCandidate.applicant_resume_link" class="info-section">
-                  <h4>Resume</h4>
-                  <a 
-                    :href="activeCandidate.applicant_resume_link" 
-                    target="_blank"
-                    class="btn btn-sm btn-default"
-                  >
-                    <span class="fa fa-file-pdf-o"></span> View Resume
-                  </a>
-                </div>
+              <!-- Tab Content -->
+              <div class="jd-tab-content">
+                <component
+                  :is="tabComponents[activeTab]"
+                  :candidate="activeCandidate"
+                  :job-id="jobId"
+                />
               </div>
             </div>
           </div>
