@@ -1,0 +1,46 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-02-11 19:07:50.793877",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "question",
+  "column_break_uujq",
+  "answer"
+ ],
+ "fields": [
+  {
+   "fieldname": "question",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Question",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_uujq",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "answer",
+   "fieldtype": "Small Text",
+   "label": "Answer"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2026-02-11 19:11:04.857051",
+ "modified_by": "Administrator",
+ "module": "Mawhub",
+ "name": "Question Template Item",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}
