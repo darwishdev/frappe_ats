@@ -96,70 +96,70 @@ class ApplicantResumeUsecase:
     def applicant_resume_create_update(self, payload: ApplicantResumeDTO)->Document:
         return self.repo.applicant_resume.create_or_update(payload)
 
-    def job_applicant_create_with_resume(self, payload: JobApplicantCreateWithResume)->Document:
-        applicant_resume = payload.get("applicant_resume")
-        personal_info = applicant_resume.get("personal")
-        if not personal_info:
-            raise ValueError(f"personal is required {json.dumps(applicant_resume)}")
-        step_name = payload.get("pipeline_step_id")
-        if not step_name or step_name == "null":
-            step_names = frappe.db.sql("""
-                SELECT name FROM `tabPipeline Step` s
-                WHERE s.parent = %s
-                ORDER BY idx ASC
-                LIMIT 1
-                                 """ , (payload.get('job_opening_id'),),pluck=True ) or []
-            typed_names = cast(List[str] , step_names)
-            if len(typed_names) == 0:
-                raise frappe.ValidationError("Please set valid pipeline steps to the job opening")
-            step_name = typed_names[0]
+    # def job_applicant_create_with_resume(self, payload: JobApplicantCreateWithResume)->Document:
+    #     applicant_resume = payload.get("applicant_resume")
+    #     personal_info = applicant_resume.get("personal")
+    #     if not personal_info:
+    #         raise ValueError(f"personal is required {json.dumps(applicant_resume)}")
+    #     step_name = payload.get("pipeline_step_id")
+    #     if not step_name or step_name == "null":
+    #         step_names = frappe.db.sql("""
+    #             SELECT name FROM `tabPipeline Step` s
+    #             WHERE s.parent = %s
+    #             ORDER BY idx ASC
+    #             LIMIT 1
+    #                              """ , (payload.get('job_opening_id'),),pluck=True ) or []
+    #         typed_names = cast(List[str] , step_names)
+    #         if len(typed_names) == 0:
+    #             raise frappe.ValidationError("Please set valid pipeline steps to the job opening")
+    #         step_name = typed_names[0]
+    #
+    #     email = personal_info.get("email" ,"")
+    #     # if frappe.db.exists("Job Applicant" , email):
+    #     create_update_params : JobApplicant = {
+    #         "name": email,
+    #         "email_id":email,
+    #         "applicant_name": str(personal_info.get("name")),
+    #         "custom_pipeline_step": step_name,
+    #         "job_title": payload.get("job_opening_id"),
+    #         "lower_range": 0.0,
+    #         "upper_range": 0.0
+    #     }
+    #     job_applicant_doc = self.repo.job_applicant.create_or_update(create_update_params)
+    #     if not job_applicant_doc:
+    #         raise ValueError("can't create job_applicant_doc")
+    #     applicant_resume_dto :ApplicantResumeDTO = {
+    #         "job_applicant" : str(job_applicant_doc.get("name")),
+    #         **applicant_resume
+    #     }
+    #     self.repo.applicant_resume.create_or_update(applicant_resume_dto)
+    #     return job_applicant_doc
 
-        email = personal_info.get("email" ,"")
-        # if frappe.db.exists("Job Applicant" , email):
-        create_update_params : JobApplicant = {
-            "name": email,
-            "email_id":email,
-            "applicant_name": str(personal_info.get("name")),
-            "custom_pipeline_step": step_name,
-            "job_title": payload.get("job_opening_id"),
-            "lower_range": 0.0,
-            "upper_range": 0.0
-        }
-        job_applicant_doc = self.repo.job_applicant.create_or_update(create_update_params)
-        if not job_applicant_doc:
-            raise ValueError("can't create job_applicant_doc")
-        applicant_resume_dto :ApplicantResumeDTO = {
-            "job_applicant" : str(job_applicant_doc.get("name")),
-            **applicant_resume
-        }
-        self.repo.applicant_resume.create_or_update(applicant_resume_dto)
-        return job_applicant_doc
 
 
-
-    def applicant_create_from_resume(
-        self,
-        parsed_resume: ApplicantResumeDTO
-    ):
-        personal = parsed_resume["personal"]
-        email = personal["email"]
-        is_candidate_stored = frappe.db.exists("Job Applicant" , email)
-        if not is_candidate_stored:
-            job_applicant_params : JobApplicant  = {
-                    "name" : email,
-                    "email_id":email,
-                    "phone_number":personal.get("phone",""),
-                    "lower_range":1.0,
-                    "upper_range":1.0,
-                    }
-
-            try:
-                created_applicant =  self.repo.job_applicant.create_or_update(job_applicant_params)
-                print("applcant created")
-                print(created_applicant)
-                return created_applicant
-            except Exception as e:
-                raise Exception(f"failed_to_insert_cadndiate : params : {job_applicant_params} error : {str(e)}")
+    # def applicant_create_from_resume(
+    #     self,
+    #     parsed_resume: ApplicantResumeDTO
+    # ):
+    #     personal = parsed_resume["personal"]
+    #     email = personal["email"]
+    #     is_candidate_stored = frappe.db.exists("Job Applicant" , email)
+    #     if not is_candidate_stored:
+    #         job_applicant_params : JobApplicant  = {
+    #                 "name" : email,
+    #                 "email_id":email,
+    #                 "phone_number":personal.get("phone",""),
+    #                 "lower_range":1.0,
+    #                 "upper_range":1.0,
+    #                 }
+    #
+    #         try:
+    #             created_applicant =  self.repo.job_applicant.create_or_update(job_applicant_params)
+    #             print("applcant created")
+    #             print(created_applicant)
+    #             return created_applicant
+    #         except Exception as e:
+    #             raise Exception(f"failed_to_insert_cadndiate : params : {job_applicant_params} error : {str(e)}")
 
     def job_applicant_link_with_job_opening(
         self,
@@ -175,7 +175,6 @@ class ApplicantResumeUsecase:
 
         # cast so type checker knows our custom methods exist
         job_doc = cast(CustomJobOpening, job_doc)
-
         try:
             new_row = job_doc.link_applicant_to_step(
                 applicant_id=email,
@@ -222,15 +221,11 @@ class ApplicantResumeUsecase:
         document_text_hash = self.get_text_hash(document_text)
         doc_name = "Applicant Resume"
         cache_params = {"resume_hash" : document_text_hash}
-        cached_resume = frappe.db.exists(doc_name , cache_params)
-        print("cached")
-        if cached_resume:
-            print("cached")
-            print(cached_resume)
-            cached_resume_doc= frappe.get_last_doc(
+        cached_resume_doc = frappe.get_last_doc(
                     doc_name,
                     filters=cache_params
                     )
+        if cached_resume_doc:
             cached_resume_doc_txt = cached_resume_doc.get("raw_resume_text")
             if isinstance(cached_resume_doc_txt,str):
                 cached_resume_doc_parsed = json.loads(str(cached_resume_doc_txt))
@@ -238,7 +233,7 @@ class ApplicantResumeUsecase:
                 yield f"data: {json_data}\n\n"
                 doc_name = cached_resume_doc.name
                 job_applicant_id = cached_resume_doc.get("job_applicant")
-                self.job_applicant_link_with_job_opening(job,job_applicant_id,step,doc_name)
+                self.job_applicant_link_with_job_opening(job,str(job_applicant_id),str(step),str(doc_name))
         else:
             final_event_data: dict = {}
             for event in self.resume_agent.run(document_text):

@@ -10,6 +10,7 @@ import ApplicantComments from "./components/ApplicantComments.vue";
 // Access frappe instance
 const { proxy } = getCurrentInstance();
 const frappe = proxy.$frappe;
+const frm = proxy.$frm;
 
 // State
 const job = ref(null);
@@ -21,7 +22,9 @@ const searchQuery = ref("");
 const loading = ref(false);
 const activeTab = ref("profile");
 
-const jobId = ref(frappe.get_route()[1]); 
+console.log("routesss")
+// console.log(frappe.get_route())
+const jobId = ref(frappe.get_route()[2]);
 
 // Tab configuration
 const tabs = [
@@ -52,11 +55,11 @@ const stepOptions = computed(() => {
 const filteredCandidates = computed(() => {
   const currentStepData = steps.value[activeStep.value];
   if (!currentStepData?.candidates) return [];
-  
+
   if (!searchQuery.value) {
     return currentStepData.candidates;
   }
-  
+
   const query = searchQuery.value.toLowerCase();
   return currentStepData.candidates.filter((c) =>
     c.applicant_name?.toLowerCase().includes(query) ||
@@ -77,10 +80,26 @@ const allSelected = computed(() => {
 });
 
 // Methods
+// example to use frm.call
+// const getJobOpening = async () => {
+//   loading.value = true;
+//
+//   try {
+//     const result = await frm.call("print_hello" ,
+//     {
+//       param1: "Ahmed",   // string argument
+//       param2: 42         // integer argument
+//     }); // matches Python method name
+//     console.log("Server response:", result);      // should print "hello from server!"
+//   } catch (error) {
+//     console.error(error);
+//   } finally {
+//     loading.value = false;
+//   }
+// };
 const getJobOpening = () => {
   loading.value = true;
-  console.log(frappe.get_route());
-  
+
   frappe.call({
     method: "mawhub.api.mawhub_job_opening_api.job_opening_find",
     args: {
@@ -124,12 +143,12 @@ const setPipelineSteps = (stepsData) => {
 const changeStep = (stepKey) => {
   activeStep.value = stepKey;
   selectedCandidates.value.clear();
-  
+
   const filtered = filteredCandidates.value;
   const currentCandidateExists = filtered.some(
     (c) => c.name === activeCandidateId.value
   );
-  
+
   if (!currentCandidateExists) {
     activeCandidateId.value = filtered[0]?.name || null;
   }
@@ -168,7 +187,7 @@ const transformedParsedData = computed(() => {
   }
   const parsedDoc = job.value.parsed_documents[0];
   const transformed = {};
-  
+
   if (parsedDoc.sections && Array.isArray(parsedDoc.sections)) {
     parsedDoc.sections.forEach((section) => {
       const key = section.title
@@ -195,21 +214,21 @@ const transformedParsedData = computed(() => {
       };
     });
   }
-  
+
   return transformed;
 });
 
 // Show job description dialog
 const showJobDescription = () => {
   const container = document.createElement('div');
-  
+
   const vueComponent = h(JobDescriptionContent, {
     parsedData: transformedParsedData.value,
     jobDetails: job.value
   });
-  
+
   render(vueComponent, container);
-  
+
   const dialog = new frappe.ui.Dialog({
     title: 'Job Description',
     size: 'extra-large',
@@ -224,7 +243,7 @@ const showJobDescription = () => {
       dialog.hide();
     }
   });
-  
+
   dialog.show();
   dialog.fields_dict.job_description_content.$wrapper.html(container);
 };
@@ -244,7 +263,7 @@ const addCandidates = () => {
 // Move candidate to step
 const moveCandidateToStep = () => {
   if (!activeCandidate.value) return;
-  
+
   const dialog = new frappe.ui.Dialog({
     title: 'Move Candidate to Step',
     fields: [
@@ -260,12 +279,12 @@ const moveCandidateToStep = () => {
     primary_action: (values) => {
       const selectedStepLabel = values.target_step;
       const selectedStep = stepOptions.value.find(s => s.label === selectedStepLabel);
-      
+
       if (!selectedStep) {
         frappe.msgprint('Please select a valid step');
         return;
       }
-      
+
       // Check if already in this step
       if (selectedStep.value === activeStep.value) {
         frappe.msgprint({
@@ -276,12 +295,12 @@ const moveCandidateToStep = () => {
         dialog.hide();
         return;
       }
-      
+
       // TODO: Implement actual API call to move candidate
       const formData = new FormData();
       formData.append('names', JSON.stringify([activeCandidate.value.name]));
       formData.append('pipeline_step', selectedStep.value);
-      
+
       frappe.call({
         method: "mawhub.api.mawhub_job_applicant_api.job_applicant_bulk_update",
         args: {
@@ -308,14 +327,14 @@ const moveCandidateToStep = () => {
       });
     }
   });
-  
+
   dialog.show();
 };
 
 // Assign Interview Dialog
 const assignInterview = () => {
   if (!activeCandidate.value) return;
-  
+
   // First, fetch interview rounds
   frappe.call({
     method: 'frappe.client.get_list',
@@ -326,10 +345,10 @@ const assignInterview = () => {
     },
     callback: function(res) {
       const rounds = res.message || [];
-      const roundOptions = rounds.length > 0 
+      const roundOptions = rounds.length > 0
         ? rounds.map(r => r.round_name || r.name).join('\n')
         : 'HR Screening\nTechnical Interview\nFinal Interview';
-      
+
       const dialog = new frappe.ui.Dialog({
         title: `Assign Interview to ${activeCandidate.value.job_applicant}`,
         fields: [
@@ -397,7 +416,7 @@ const assignInterview = () => {
             });
             return;
           }
-          
+
           const payload = {
             job_applicant: activeCandidate.value.job_applicant,
             job_opening: jobId.value,
@@ -412,7 +431,7 @@ const assignInterview = () => {
             resume_link: activeCandidate.value.applicant_resume_link || '',
             reminded: 0
           };
-          
+
           frappe.call({
             method: 'mawhub.api.mawhub_interview_api.interview_create_update',
             args: payload,
@@ -436,7 +455,7 @@ const assignInterview = () => {
           });
         }
       });
-      
+
       dialog.show();
     },
     error: function(err) {
@@ -602,7 +621,7 @@ onMounted(() => {
               </div>
             </div>
           </div>
-          
+
           <div class="jd-candidate-list">
             <div
               v-for="candidate in filteredCandidates"
@@ -662,7 +681,7 @@ onMounted(() => {
                   </div>
                 </div>
                 <div style="display: flex; flex-direction: column; gap: 8px; min-width: 200px;">
-                  <button 
+                  <button
                     class="btn btn-sm btn-default"
                     @click="moveCandidateToStep"
                     style="display: flex; align-items: center; justify-content: center; gap: 6px;"

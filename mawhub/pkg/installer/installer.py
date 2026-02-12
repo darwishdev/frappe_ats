@@ -24,7 +24,57 @@ ROLES_CONFIG = {
             "Job Pipeline": {"read": 1, "write": 1, "create": 1, "submit": 1, "cancel": 1, "amend": 1},
             "Job Applicant": {"read": 1, "write": 1, "create": 1, "submit": 1, "cancel": 1, "amend": 1},
         },
-    }
+    },
+     "ATS Client Viewer": {
+        "desk_access": True,
+        "perms": {
+            "Page": {"read": 1},
+            "Workspace": {"read": 1},
+            "Job Opening": {"read": 1},
+            "Job Applicant": {"read": 1},
+            "Interview": {"read": 1},
+            "Comment": {"read": 1, "create": 1},
+            "Communication": {"read": 1},
+
+            # Project Management
+            "Project": {"read": 1},
+            "Task": {"read": 1},
+        },
+    },
+
+    "ATS Client Reviewer": {
+        "desk_access": True,
+        "perms": {
+            "Page": {"read": 1},
+            "Workspace": {"read": 1},
+            "Job Opening": {"read": 1},
+            "Job Applicant": {"read": 1, "write": 1},
+            "Interview": {"read": 1, "write": 1},
+            "Comment": {"read": 1, "create": 1},
+            "Communication": {"read": 1, "create": 1},
+
+            # Project Management
+            "Project": {"read": 1},
+            "Task": {"read": 1, "write": 1},
+        },
+    },
+
+    "ATS Client Collaborator": {
+        "desk_access": True,
+        "perms": {
+            "Page": {"read": 1},
+            "Workspace": {"read": 1},
+            "Job Opening": {"read": 1},
+            "Job Applicant": {"read": 1, "write": 1},
+            "Interview": {"read": 1, "write": 1, "create": 1},
+            "Comment": {"read": 1, "create": 1},
+            "Communication": {"read": 1, "create": 1},
+
+            # Project Management
+            "Project": {"read": 1},
+            "Task": {"read": 1, "write": 1},
+        },
+    },
 }
 def after_install():
     return {"ok" : True}

@@ -18,6 +18,7 @@ function load_desk_page(wrapper) {
 		frappe.job_openings = new frappe.ui.JobOpenings({
 			wrapper: $parent,
 			page: wrapper.page,
+            frm: {test: "hello"}
 		});
 	});
 }

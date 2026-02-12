@@ -1,0 +1,19 @@
+{% extends "templates/web.html" %}
+
+{% block page_content %}
+<div id="job-openings-root"></div>
+{% endblock %}
+
+{% block script %}
+<script type="module">
+import { JobOpenings } from "/assets/mawhub/js/job_openings/job_openings.bundle.js";
+
+frappe.ready(() => {
+    const el = document.getElementById("job-openings-root");
+
+    new JobOpenings({
+        wrapper: el
+    });
+});
+</script>
+{% endblock %}

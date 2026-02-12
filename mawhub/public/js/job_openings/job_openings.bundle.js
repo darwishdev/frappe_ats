@@ -2,10 +2,10 @@ import { createApp } from "vue";
 import App from "./App.vue";
 
 class JobOpenings {
-	constructor({ page, wrapper }) {
+	constructor({ page, wrapper , frm }) {
 		this.$wrapper = $(wrapper);
 		this.page = page;
-
+        this.frm = frm
 		this.init();
 	}
 
@@ -26,6 +26,7 @@ class JobOpenings {
 		let app = createApp(App);
 		// make frappe available in all components
 		app.config.globalProperties.$frappe = frappe;
+		app.config.globalProperties.$frm = this.frm;
 		// mount the app
 		this.$job_openings = app.mount(this.$wrapper.get(0));
 	}
