@@ -1,41 +1,49 @@
-# your_custom_app/utils.py
 import frappe
 
 def patch_sidebar(bootinfo):
-    """
-    Ensures Mawhub sidebar items are prioritized in the boot payload.
-    """
+    try:
+        # 1. Fetch the items from the Sidebar doc
+        sidebar = frappe.get_doc("Workspace Sidebar", "Mawhub")
 
+        if not sidebar or not sidebar.items:
+            return
 
-    sidebar = frappe.get_doc("Workspace Sidebar" , "Mawhub")
-    print("iotesssm")
+        # 2. Map the items strictly
+        mawhub_items = []
+        for item in sidebar.items:
+            mawhub_items.append({
+                "label": item.label,
+                "link_to": item.link_to,
+                "link_type": item.link_type,
+                "type": item.type,
+                "icon": item.icon,
+                "child": item.child or 0,
+                "collapsible": item.collapsible or 0,
+                "indent": item.indent or 0,
+                "keep_closed": item.keep_closed or 0,
+                "url": item.url,
+            })
 
-    if sidebar:
-        items = sidebar.get("items")
-        print("itemssss")
-        print(items)
-        items_list = []
-        if items:
-            for item in items:
-                if item:
-                    items_list.append(item.as_dict())
-        print(items_list)
-        print(bootinfo.workspace_sidebar_item)
-        # bootinfo.workspace_sidebar_item = items_list
-    # # 1. Get the Mawhub sidebar data (assuming 'mawhub' is the workspace name)
-    # mawhub_data = bootinfo.get("workspace_sidebar_item", {}).get("mawhub")
-    #
-    # if mawhub_data:
-    #     print("mawww")
-    #     # 2. You can inject Mawhub items into the 'home' or current workspace
-    #     # so they appear regardless of the active module.
-    # for key in bootinfo.workspace_sidebar_item:
-    #     # Don't hide the original, just prepend Mawhub items to the current list
-    #     original_items = bootinfo.workspace_sidebar_item[key].get("items", [])
-    #
-    #     # Check if already injected to avoid duplicates
-    #     if not any(i.get("label") == "Mawhub Home" for i in original_items):
-    #         bootinfo.workspace_sidebar_item[key]["items"] = mawhub_data["items"] + original_items
-    #
-    # # 3. Force the app name to stay as 'Mawhub' in the header subtitle
-    # bootinfo.app_name_style = "Mawhub"
+        # 3. Get the name of the workspace the user is actually supposed to see
+        # We find every workspace the user has access to and replace its sidebar
+        # with our Mawhub items.
+
+        new_sidebar_dict = {}
+
+        # This replaces EVERY sidebar entry in the boot payload with Mawhub items
+        if hasattr(bootinfo, "workspace_sidebar_item"):
+            for ws_name in bootinfo.workspace_sidebar_item.keys():
+                new_sidebar_dict[ws_name] = {
+                    "label": "Mawhub",
+                    "items": mawhub_items,
+                    "header_icon": "work",
+                }
+
+        # Also add the specific keys just in case
+        new_sidebar_dict["Mawhub"] = {"label": "Mawhub", "items": mawhub_items}
+        new_sidebar_dict["mawhub"] = {"label": "Mawhub", "items": mawhub_items}
+
+        bootinfo.workspace_sidebar_item = new_sidebar_dict
+
+    except Exception as e:
+        frappe.log_error(f"Sidebar Force Patch Error: {str(e)}")

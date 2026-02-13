@@ -1,40 +1,46 @@
 [
-{
-    "fieldname": "custom_pipeline",
-    "label": "Pipeline",
-    "fieldtype": "Link",
-    "insert_after": "designation",
-    "options": "Job Pipeline",
-    "in_list_view": 1,
-    "default": "Main",
-    "in_standard_filter": 1,
-    "reqd": 0
-  },
-  {
-    "fieldname": "custom_pipeline_steps",
-    "label": "Pipeline Steps",
-    "fieldtype": "Table",
-    "insert_after": "job_pipeline",
-    "options": "Pipeline Step",
-    "in_standard_filter": 1,
-    "reqd": 0
-  },
-  {
-   "fieldname": "custom_applicants",
-   "label": "Applicants",
-   "fieldtype": "Table",
-   "insert_after": "custom_pipeline_steps",
-   "options": "Job Opening Applicant",
-   "reqd": 0
-  },
-  {
-   "fieldname": "custom_customer",
-   "label": "Customer",
-   "fieldtype": "Link",
-   "insert_after": "customer",
-   "options": "Customer",
-   "in_list_view": 1,
-   "in_standard_filter": 1,
-   "reqd": 0
-  }
+ {
+  "fieldname": "custom_pipeline",
+  "label": "Pipeline",
+  "fieldtype": "Link",
+  "insert_after": "designation",
+  "options": "Job Pipeline",
+  "in_list_view": 1,
+  "default": "Main",
+  "in_standard_filter": 1,
+  "reqd": 0
+ },
+ {
+  "fieldname": "custom_pipeline_steps",
+  "label": "Pipeline Steps",
+  "fieldtype": "Table",
+  "insert_after": "job_pipeline",
+  "options": "Pipeline Step",
+  "in_standard_filter": 1,
+  "reqd": 0
+ },
+ {
+  "fieldname": "custom_parse_request_id",
+  "fieldtype": "Data",
+  "label": "Parse Request Id",
+  "reqd": 0
+ },
+ {
+  "fieldname": "custom_applicants",
+  "label": "Applicants",
+  "fieldtype": "Table",
+  "insert_after": "custom_pipeline_steps",
+  "options": "Job Opening Applicant",
+  "reqd": 0
+ },
+ {
+  "fieldname": "custom_customer",
+  "label": "Customer",
+  "fieldtype": "Link",
+  "insert_after": "customer",
+  "options": "Customer",
+  "in_list_view": 1,
+  "in_standard_filter": 1,
+  "reqd": 0
+ }
 ]

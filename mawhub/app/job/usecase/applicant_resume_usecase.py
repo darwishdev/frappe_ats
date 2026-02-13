@@ -14,7 +14,7 @@ from mawhub.app.job.dto.applicant_resume_dto import ApplicantResumeDTO
 from mawhub.app.job.dto.job_applicant import JobApplicantCreateWithResume
 from mawhub.app.job.repo.job_repo import JobRepoInterface
 from mawhub.pkg.overrides.job_opening import CustomJobOpening
-from mawhub.pkg.pdfconvertor.pdfconvertor import extract_text_from_pdf
+from mawhub.pkg.pdfconvertor.pdfconvertor import extract_text_from_pdf, get_document_content_and_hash
 from mawhub.sqltypes.table_models import JobApplicant
 
 class ApplicantResumeUsecaseInterface(Protocol):
@@ -35,6 +35,7 @@ class ApplicantResumeUsecaseInterface(Protocol):
 class ApplicantResumeUsecase:
     repo: JobRepoInterface
     resume_agent: ResumeWorkflow
+    doc_name : str
     def __init__(
         self,
         repo: JobRepoInterface,
@@ -42,7 +43,7 @@ class ApplicantResumeUsecase:
     ):
         self.repo = repo
         self.resume_agent = resume_agent
-
+        self.doc_name = "Applicant Resume"
 
 
     def _transform_section_to_dto(
@@ -216,54 +217,50 @@ class ApplicantResumeUsecase:
         job_candidates = job_doc.get("custom_candidates")
         if not job_candidates:
             job_doc.set("custom_candidates" , [])
-        document_text = extract_text_from_pdf(path)
-
-        document_text_hash = self.get_text_hash(document_text)
-        doc_name = "Applicant Resume"
-        cache_params = {"resume_hash" : document_text_hash}
-        cached_resume_doc = frappe.get_last_doc(
-                    doc_name,
-                    filters=cache_params
-                    )
-        if cached_resume_doc:
-            cached_resume_doc_txt = cached_resume_doc.get("raw_resume_text")
-            if isinstance(cached_resume_doc_txt,str):
-                cached_resume_doc_parsed = json.loads(str(cached_resume_doc_txt))
-                json_data = json.dumps({"event" : "final" ,"data" : cached_resume_doc_parsed} , default=str)
+        document_text , document_text_hash= get_document_content_and_hash(path)
+        # cache_params = {"resume_hash" : document_text_hash}
+        # cached_resume_doc = frappe.get_last_doc(
+        #             doc_name,
+        #             filters=cache_params
+        #             )
+        # if cached_resume_doc:
+            # cached_resume_doc_txt = cached_resume_doc.get("raw_resume_text")
+            # if isinstance(cached_resume_doc_txt,str):
+            #     cached_resume_doc_parsed = json.loads(str(cached_resume_doc_txt))
+            #     json_data = json.dumps({"event" : "final" ,"data" : cached_resume_doc_parsed} , default=str)
+            #     yield f"data: {json_data}\n\n"
+            #     doc_name = cached_resume_doc.name
+            #     job_applicant_id = cached_resume_doc.get("job_applicant")
+            #     self.job_applicant_link_with_job_opening(job,str(job_applicant_id),str(step),str(doc_name))
+        final_event_data: dict = {}
+        for event in self.resume_agent.run(document_text):
+            if event["event"] == "update":
+                event_data = event["data"]
+                converted_event_data = self._transform_section_to_dto(event_data)
+                final_event_data = {
+                        **final_event_data,
+                        **converted_event_data
+                }
+                json_data = json.dumps({"event" : "update" ,"data" : converted_event_data} , default=str)
                 yield f"data: {json_data}\n\n"
-                doc_name = cached_resume_doc.name
-                job_applicant_id = cached_resume_doc.get("job_applicant")
-                self.job_applicant_link_with_job_opening(job,str(job_applicant_id),str(step),str(doc_name))
-        else:
-            final_event_data: dict = {}
-            for event in self.resume_agent.run(document_text):
-                if event["event"] == "update":
-                    event_data = event["data"]
-                    converted_event_data = self._transform_section_to_dto(event_data)
-                    final_event_data = {
-                            **final_event_data,
-                            **converted_event_data
-                    }
-                    json_data = json.dumps({"event" : "update" ,"data" : converted_event_data} , default=str)
-                    yield f"data: {json_data}\n\n"
 
-            final_data = {"event" : "final" , "data" : final_event_data}
-            final_json_data = json.dumps(final_data , default=str)
-            yield f"data: {final_json_data}\n\n"
-            personal = final_event_data["personal"]
-            email = personal["email"]
-            final_event_dto = cast(ApplicantResumeDTO , final_event_data)
-            print("doc has is")
-            print("doc has is")
-            print("doc has is")
-            print("doc has is")
-            print(document_text_hash)
-            final_event_dto["resume_hash"] = document_text_hash
-            final_event_dto["raw_resume_text"] = json.dumps(final_event_data)
-            self.applicant_create_from_resume(final_event_dto)
-            final_event_dto["job_applicant"] = email
-            try:
-                created_applicant_resume = self.applicant_resume_create_update(final_event_dto)
-            except Exception as e:
-                raise Exception(f"failed_to_insert_resume : params : {json.dumps(final_event_dto)} : {str(e)}")
-            self.job_applicant_link_with_job_opening(job,email,step,str(created_applicant_resume.name))
+        final_data = {"event" : "final" , "data" : final_event_data}
+        final_json_data = json.dumps(final_data , default=str)
+        yield f"data: {final_json_data}\n\n"
+        personal = final_event_data["personal"]
+        email = personal["email"]
+        final_event_dto = cast(ApplicantResumeDTO , final_event_data)
+        print("doc has is")
+        print("doc has is")
+        print("doc has is")
+        print("doc has is")
+        print(document_text_hash)
+        final_event_dto["resume_hash"] = document_text_hash
+        final_event_dto["raw_resume_text"] = json.dumps(final_event_data)
+        self.applicant_create_from_resume(final_event_dto)
+        final_event_dto["job_applicant"] = email
+        try:
+            created_applicant_resume = self.applicant_resume_create_update(final_event_dto)
+        except Exception as e:
+            raise Exception(f"failed_to_insert_resume : params : {json.dumps(final_event_dto)} : {str(e)}")
+        self.job_applicant_link_with_job_opening(job,email,step,str(created_applicant_resume.name))

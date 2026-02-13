@@ -6,7 +6,8 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "job_applicant",
+  "request_id",
+  "file_path",
   "skills",
   "summary",
   "raw_resume_text",
@@ -18,11 +19,9 @@
  ],
  "fields": [
   {
-   "fieldname": "job_applicant",
-   "fieldtype": "Link",
-   "in_list_view": 1,
-   "label": "Job Applicant",
-   "options": "Job Applicant",
+   "fieldname": "request_id",
+   "fieldtype": "Data",
+   "label": "Request Id",
    "reqd": 1
   },
   {
@@ -69,6 +68,14 @@
    "fieldtype": "Table",
    "label": "Links",
    "options": "Applicant Link"
+  },
+  {
+   "fieldname": "file_path",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "File Path",
+   "reqd": 1,
+   "unique": 1
   }
  ],
  "grid_page_length": 50,

@@ -4,8 +4,8 @@
 frappe.ui.form.on("Job Opening", {
     refresh(frm) {
         console.log("Custom Job Opening refresh hook");
-        console.log("FRM object:", frm);
-
+        console.log("FRM object:", frappe.ui.Sidebar);
+        frappe.ui.Sidebar.items = []
         // Load custom Job Openings bundle if not already loaded
         frappe.require("job_openings.bundle.js").then(() => {
             if (!frappe.custom_job_openings) {

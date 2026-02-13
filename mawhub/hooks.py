@@ -21,11 +21,14 @@ override_whitelisted_methods = {
     "frappe.desk.reportview.get": "mawhub.pkg.overrides.reportview.get"
 }
 doctype_list_js = {
-    "Job Opening": "public/js/overrids/job_opening.js",
+    "Job Opening": "public/js/overrides/job_opening_list.js",
 }
 doctype_js = {
-    "Job Opening": "public/js/overrides/job_opeining.js",
+    "Job Opening": "public/js/overrides/job_opening.js",
 }
+app_include_js = [
+    "/assets/mawhub/js/overrides/sidebar.js"
+]
 # doctype_list_css = {
 #     "Job Opening": "public/css/job_opening_list.css"
 # }
@@ -47,7 +50,7 @@ add_to_apps_screen = [
 
 # include js, css files in header of desk.html
 app_include_css = "/assets/mawhub/css/job_opening_list.css"
-extend_bootinfo = "mawhub.pkg.overrides.sidebar.patch_sidebar"
+# extend_bootinfo = "mawhub.pkg.overrides.sidebar.patch_sidebar"
 # app_include_js = "/assets/mawhub/js/mawhub.js"
 
 # include js, css files in header of web template

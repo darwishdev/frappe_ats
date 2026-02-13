@@ -1,11 +1,11 @@
 import hashlib
-from typing import   List, Protocol
-from frappe import Any
+from typing import   Iterator, List, Protocol
 from frappe.model.document import Document
-from mawhub.app.job.agent.document_parser_agent import  DocumentParserWorkflow
+from mawhub.app.job.agent.document_parser_agent import  DocumentParserEvent, DocumentParserWorkflow, ParsedDocumentFinalEvent
 from mawhub.app.job.agent.job_opening_parser_agent import JobOpeningParserWorkflow
-from mawhub.app.job.dto.parsed_document_dto import ParsedDocumentDTO,  ParsedDocumentWithSections, parsed_document_agent_to_dto,  parsed_document_dto_to_sql
+from mawhub.app.job.dto.parsed_document_dto import ParsedDocumentDTO,   ParsedDocumentWithSections, parsed_document_agent_to_dto,  parsed_document_dto_to_sql
 from mawhub.app.job.repo.job_repo import JobRepoInterface
+from mawhub.pkg.sql.sql_utils import get_cached_output
 
 class ParsedDocumentUsecaseInterface(Protocol):
 	def parsed_document_create_update(self, payload: ParsedDocumentDTO)->Document: ...
@@ -14,7 +14,7 @@ class ParsedDocumentUsecaseInterface(Protocol):
             file_path:str,
             document_text:str,
             request_id:str
-    )->Any: ...
+    )->Iterator[DocumentParserEvent]: ...
 	def parsed_document_bulk_create(
         self,
         payload:List[ParsedDocumentDTO],
@@ -54,20 +54,34 @@ class ParsedDocumentUsecase:
         file_path: str,
         document_text: str,
         request_id: str
-    )->Any:
+    )->Iterator[DocumentParserEvent]:
+        def callback(final_event_data: ParsedDocumentFinalEvent):
+            db_req = parsed_document_agent_to_dto(final_event_data,file_path,text_hash,request_id)
+            try:
+                self.parsed_document_create_update(db_req)
+            except Exception as e:
+                raise Exception(f"failed writing the document to db : {e} : body: {db_req}")
+
         try:
             text_hash = hashlib.sha256(document_text.strip().encode("utf-8")).hexdigest()
+            cached_data = get_cached_output(
+                    doctype="Parsed Document",
+                    key_field="name",
+                    key_value=text_hash,
+                    expected_type=ParsedDocumentFinalEvent,
+                    output_field="output"
+            )
+            if cached_data:
+                callback(cached_data)
+                yield {
+                    "event":"final" ,
+                    "data": cached_data
+                }
             for event in self.document_parser_agent.run(document_text):
+                yield event
                 if event["event"] == "final":
                     final_event_data = event["data"]
-                    db_req = parsed_document_agent_to_dto(final_event_data,file_path,text_hash,request_id)
-                    try:
-                        self.parsed_document_create_update(db_req)
-                    except Exception as e:
-                        raise Exception(f"failed writing the document to db : {e} : body: {db_req}")
-                    print("db req is ")
-                    print("db req is ",db_req)
-
+                    callback(final_event_data)
         except Exception as e:
-            raise Exception(e)
+            yield {"event" : "error" , "data" : str(e)}
 

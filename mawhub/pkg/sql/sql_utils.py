@@ -1,9 +1,12 @@
 import subprocess, shlex, frappe
+
+import json
+import frappe
+
 import frappe
 from pathlib import Path
-from typing import Dict, Iterable
+from typing import TypeVar, Optional, Callable, cast
 import frappe
-from frappe.model.document import Document
 import pymysql.cursors
 def exec_sql_file(sql_path: Path) -> None:
     """Execute a SQL file using mysql CLI (supports DELIMITER)."""
@@ -51,3 +54,31 @@ def run_sql(callback):
 
 
 
+
+
+def get_cached_output[T](
+    doctype: str,
+    key_field: str,
+    key_value: str,
+    expected_type: type[T],
+    output_field: str = "output",
+) -> Optional[T]:
+
+    name = frappe.db.exists(doctype, {key_field: key_value})
+    if not isinstance(name, str):
+        return None
+
+    raw_value = frappe.get_value(doctype, name, output_field)
+    if raw_value is None:
+        return None
+
+    print("raw is" , raw_value)
+    try:
+        parsed = json.loads(raw_value)
+    except Exception:
+        return None
+
+    # if not isinstance(parsed, expected_type):
+    #     return None
+    #
+    return parsed

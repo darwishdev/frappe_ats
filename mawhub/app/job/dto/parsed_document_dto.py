@@ -22,7 +22,9 @@ class ParsedDocumentDTO(TypedDict, total=False):
     meta_data: dict[str,str]
     request_id: str
     sections: List[ParsedDocumentSectionDTO]
-
+class ParsedDocumentOutput(TypedDict, total=False):
+    meta_data: dict[str,str]
+    sections: List[ParsedDocumentSectionDTO]
 class ParsedDocumentParseRequest(TypedDict, total=False):
     path: str
     parent_type: str

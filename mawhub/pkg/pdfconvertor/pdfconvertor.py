@@ -1,7 +1,9 @@
+import hashlib
 import os
 import frappe
 import pdfplumber
-
+from typing import Tuple
+from pathlib import Path
 
 def extract_text_from_pdf(pdf_path: str) -> str:
     # If the path starts with '/', prepend SITE_ROOT
@@ -21,3 +23,12 @@ def extract_text_from_pdf(pdf_path: str) -> str:
 
 
     return text
+
+def get_text_hash(text: str) -> str:
+    clean_text = text.strip().encode('utf-8')
+    return hashlib.sha256(clean_text).hexdigest()
+
+def get_document_content_and_hash(file_path: str) -> Tuple[str, str]:
+    txt = extract_text_from_pdf(file_path)
+    file_hash = get_text_hash(txt)
+    return txt, file_hash
