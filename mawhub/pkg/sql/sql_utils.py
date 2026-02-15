@@ -1,11 +1,9 @@
 import subprocess, shlex, frappe
-
 import json
 import frappe
-
 import frappe
 from pathlib import Path
-from typing import TypeVar, Optional, Callable, cast
+from typing import Tuple, Optional
 import frappe
 import pymysql.cursors
 def exec_sql_file(sql_path: Path) -> None:
@@ -62,7 +60,7 @@ def get_cached_output[T](
     key_value: str,
     expected_type: type[T],
     output_field: str = "output",
-) -> Optional[T]:
+) -> Optional[Tuple[str, T]]:
 
     name = frappe.db.exists(doctype, {key_field: key_value})
     if not isinstance(name, str):
@@ -72,7 +70,6 @@ def get_cached_output[T](
     if raw_value is None:
         return None
 
-    print("raw is" , raw_value)
     try:
         parsed = json.loads(raw_value)
     except Exception:
@@ -81,4 +78,4 @@ def get_cached_output[T](
     # if not isinstance(parsed, expected_type):
     #     return None
     #
-    return parsed
+    return name, parsed  # <-- now returns both

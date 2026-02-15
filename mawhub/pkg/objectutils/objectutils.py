@@ -25,21 +25,53 @@ def pick_keys_from_rows(rows: Sequence[dict[str, Any]], keys: Iterable[str]) -> 
     return [pick_keys(row, keys) for row in rows or []]
 
 
-def to_typed_dict[T](model_instance: BaseModel, target_type: T) -> T:
+def to_typed_dict[T](model_instance: BaseModel | dict[Any, Any] | Enum | str | bool | int | float | list | dict | None, target_type: T) -> T:
     """
-    Converts a Pydantic model to a dict and casts it to the target TypedDict.
+    Converts a Pydantic model (or other types) to a dict and casts it to the target TypedDict.
+    Handles BaseModel, primitives, lists, and nested structures.
 
-    :param model_instance: The Pydantic model object (or string)
+    :param model_instance: The value to convert (BaseModel, str, bool, int, list, dict, etc.)
     :param target_type: The TypedDict class you want the consumer to see
     """
-    return cast(T, model_instance.model_dump())
+    # Handle None
+    if model_instance is None:
+        return cast(T, None)
 
+    # Handle primitives (str, bool, int, float)
+    if isinstance(model_instance, (str, bool, int, float)):
+        return cast(T, model_instance)
 
+    # Handle lists
+    if isinstance(model_instance, list):
+        result = []
+        for item in model_instance:
+            if isinstance(item, BaseModel):
+                result.append(item.model_dump())
+            elif isinstance(item, (list, dict)):
+                result.append(to_typed_dict(item, type(item)))
+            else:
+                result.append(item)
+        return cast(T, result)
 
-def create_typed_dict_from_model(model: Type[BaseModel]) -> type:
-    """
-    Dynamically creates a TypedDict from a Pydantic BaseModel.
-    """
-    hints = get_type_hints(model)
-    # Use functional syntax: TypedDict(name, fields_dict)
-    return TypedDict(f"{model.__name__}Dict", hints)  # type: ignore
+    # Handle dicts
+    if isinstance(model_instance, dict):
+        result = {}
+        for key, value in model_instance.items():
+            if isinstance(value, BaseModel):
+                result[key] = value.model_dump()
+            elif isinstance(value, (list, dict)):
+                result[key] = to_typed_dict(value, type(value))
+            else:
+                result[key] = value
+        return cast(T, result)
+
+    # Handle BaseModel
+    if isinstance(model_instance, BaseModel):
+        # Check if it has 'items' attribute (like list wrappers)
+        if hasattr(model_instance, 'items'):
+            items = getattr(model_instance, 'items')
+            return cast(T, to_typed_dict(items, list))
+        return cast(T, model_instance.model_dump())
+
+    # Fallback - return as-is
+    return cast(T, model_instance)

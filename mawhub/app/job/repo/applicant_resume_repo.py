@@ -15,6 +15,8 @@ class ApplicantResumeRepo(AppRepo[ApplicantResumeDTO]):
             name_key="job_applicant",
             scalar_fields=[
                 "skills",
+                "request_id",
+                "file_path",
                 "summary",
                 "raw_resume_text",
                 "resume_hash",

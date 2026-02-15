@@ -1,11 +1,23 @@
-from typing import Dict,  Iterator, List, Literal, Type, TypedDict, cast, Callable, Optional
+from typing import Dict, Iterator, List, Literal, Type, TypedDict, cast, Callable, Optional, Union
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from frappe import Union
 from pydantic import BaseModel, Field
 from google import genai
 from google.genai import types
 
-class ApplicantExperience(BaseModel):
+from mawhub.app.job.dto import applicant_resume_dto
+from mawhub.pkg.objectutils.objectutils import to_typed_dict
+
+# Import DTO types directly
+from mawhub.app.job.dto.applicant_resume_dto import (
+    PersonalInfo as DTOPersonalInfo,
+    ApplicantExperience as DTOApplicantExperience,
+    ApplicantProject as DTOApplicantProject,
+    ApplicantEducation as DTOApplicantEducation
+)
+
+# --- 1. Models with 'Model' suffix ---
+
+class ApplicantExperienceModel(BaseModel):
     company: str = Field(
         description="Company or organization name exactly as written in the resume. Do not normalize."
     )
@@ -22,7 +34,7 @@ class ApplicantExperience(BaseModel):
         description="Responsibilities and achievements exactly as written. Preserve wording."
     )
 
-class ApplicantEducation(BaseModel):
+class ApplicantEducationModel(BaseModel):
     institution: str = Field(
         description="Institution or university name exactly as written."
     )
@@ -36,7 +48,7 @@ class ApplicantEducation(BaseModel):
         description="End or graduation date exactly as written."
     )
 
-class ApplicantProject(BaseModel):
+class ApplicantProjectModel(BaseModel):
     title: str = Field(
         description="Project name exactly as written."
     )
@@ -47,7 +59,7 @@ class ApplicantProject(BaseModel):
         description="Project URL if present. Otherwise return empty string."
     )
 
-class ApplicantLink(BaseModel):
+class ApplicantLinkModel(BaseModel):
     label: str = Field(
         description="Link label such as GitHub, LinkedIn, Portfolio exactly as written."
     )
@@ -55,23 +67,27 @@ class ApplicantLink(BaseModel):
         description="Full URL exactly as written."
     )
 
-class ExperienceList(BaseModel):
-    items: List[ApplicantExperience] = Field(
+class ExperienceListModel(BaseModel):
+    items: List[ApplicantExperienceModel] = Field(
         description="List of distinct work experience roles. Do not merge roles."
     )
 
-class ProjectList(BaseModel):
-    items: List[ApplicantProject] = Field(
+class ProjectListModel(BaseModel):
+    items: List[ApplicantProjectModel] = Field(
         description="List of projects. Each item must represent one project only."
     )
 
-class EducationList(BaseModel):
-    items: List[ApplicantEducation] = Field(
+class EducationListModel(BaseModel):
+    items: List[ApplicantEducationModel] = Field(
         description="List of education records. One record per degree or program."
     )
 
-SectionNames = Literal["personal" , "summary" , "skills" , "experience" , "projects" , "education"]
-class ResumeSection(BaseModel):
+class SkillListModel(BaseModel):
+    items: List[str] = Field(description="A list of technical and soft skills extracted from the text")
+
+SectionNames = Literal["personal", "summary", "skills", "experience", "projects", "education"]
+
+class ResumeSectionModel(BaseModel):
     name: SectionNames = Field(
         description="One of exactly: personal, summary, skills, experience, projects, education"
     )
@@ -79,55 +95,84 @@ class ResumeSection(BaseModel):
         description="Original resume text belonging to this section only. Do not rewrite."
     )
 
-class ChunkedResume(BaseModel):
-    sections: List[ResumeSection] = Field(
+class ChunkedResumeModel(BaseModel):
+    sections: List[ResumeSectionModel] = Field(
         description="Resume text split into the predefined section names only."
     )
-class SkillList(BaseModel):
-    items: List[str] = Field(description="A list of technical and soft skills extracted from the text")
-# --- 2. Workflow Logic ---
 
-class PersonalInfo(BaseModel):
+class PersonalInfoModel(BaseModel):
     name: str = Field(description="Full candidate name as written in the resume")
-
     email: str = Field(
         description="Email address from the resume. Return empty string if not found"
     )
-
     phone: str = Field(
         description="Phone number as written. Return empty string if missing"
     )
-
     location: str = Field(
         description="City/country or location text from the resume"
     )
-
     links: List[str] = Field(
         description="List of profile or portfolio URLs (LinkedIn, GitHub, website). Empty list if none"
     )
 
-AgentSection = Union[PersonalInfo ,str, SkillList,ExperienceList,ProjectList,EducationList]
+class SummaryModel(BaseModel):
+    summary: str = Field(
+        description="Summary of the profile"
+    )
+
+# --- 2. Type Aliases using DTO types ---
+
+AgentSection = Union[
+    PersonalInfoModel,
+    SummaryModel,
+    SkillListModel,
+    ExperienceListModel,
+    ProjectListModel,
+    EducationListModel
+]
+
+AgentSectionDict = Union[
+    DTOPersonalInfo,
+    List[str],
+    str,
+    List[DTOApplicantExperience],
+    List[DTOApplicantProject],
+    List[DTOApplicantEducation]
+]
+
+# --- 3. Event Types ---
+
 class AgentSectionEvent(TypedDict):
     name: SectionNames
-    content: AgentSection
+    content: AgentSectionDict
 
 class ResumeParserUpdateEvent(TypedDict):
     event: Literal["update"]
     data: AgentSectionEvent
 
+class AgentFinalEvent(TypedDict):
+    personal: DTOPersonalInfo
+    summary: str
+    skills: List[str]
+    experience: List[DTOApplicantExperience]
+    projects: List[DTOApplicantProject]
+    education: List[DTOApplicantEducation]
+
+class ResumeParserFinalEvent(TypedDict):
+    event: Literal["final"]
+    data: AgentFinalEvent
 
 class ResumeParserErrorEvent(TypedDict):
     event: Literal["error"]
     data: str
 
-
 ResumeParserEvent = Union[
-        ResumeParserUpdateEvent,
-        ResumeParserErrorEvent
+    ResumeParserUpdateEvent,
+    ResumeParserErrorEvent,
+    ResumeParserFinalEvent
 ]
 
-
-# ... (Wrapper Models: ExperienceList, ProjectList, EducationList, SkillList stay same)
+# --- 4. Workflow Logic ---
 
 class ResumeWorkflow:
     def __init__(
@@ -138,7 +183,7 @@ class ResumeWorkflow:
         self.client = client
         self.default_model = model_name
 
-    def agent_meta_labeler(self, raw_text: str, model_id: str) -> ChunkedResume:
+    def agent_meta_labeler(self, raw_text: str, model_id: str) -> ChunkedResumeModel:
         SYSTEM_INSTRUCTION = """
         You are a resume labeling engine.
 
@@ -175,13 +220,13 @@ class ResumeWorkflow:
                 top_p=0.1,
                 max_output_tokens=6000,
                 response_mime_type="application/json",
-                response_schema=ChunkedResume
+                response_schema=ChunkedResumeModel
             )
         )
-        return cast(ChunkedResume, response.parsed)
+        return cast(ChunkedResumeModel, response.parsed)
 
-    def extraction_worker(self, section_name: str, text_chunk: str, schema: Type, model_id:str)->AgentSection:
-        is_plain_text = (schema is str)
+    def extraction_worker(self, section_name: str, text_chunk: str, schema: Type,
+                          model_id: str) -> AgentSectionDict | str:
         GLOBAL_EXTRACTOR_INSTRUCTIONS = """
         You are a resume information extraction engine.
 
@@ -189,32 +234,35 @@ class ResumeWorkflow:
         - Extract ONLY from provided text
         - Do not infer missing values
         - Preserve original wording
-        - Follow the schema field descriptions strictly
         - Return empty values if missing
         """
         prompt = f"Extract the {section_name} from the following text.\n\nText:\n{text_chunk}"
-
         config_args = {
             "model": model_id,
             "contents": prompt,
             "config": types.GenerateContentConfig(
                 system_instruction=GLOBAL_EXTRACTOR_INSTRUCTIONS,
-                response_mime_type="text/plain" if is_plain_text else "application/json",
-                response_schema=None if is_plain_text else schema,
+                response_mime_type="application/json",
+                response_schema=schema,
                 temperature=0.0,
                 top_p=0.1,
             )
         }
 
         response = self.client.models.generate_content(**config_args)
-        return cast(AgentSection,response.parsed)
-
+        parsed = response.parsed
+        if hasattr(parsed, 'items'):
+            parsed_items = getattr(parsed, "items")
+            parsed_items_dict = to_typed_dict(parsed_items, AgentSectionDict)
+            return cast(AgentSectionDict, parsed_items_dict)
+        resp = to_typed_dict(parsed, AgentSectionDict)
+        return cast(AgentSectionDict, resp)
 
     def run(
             self,
             resume_text: str,
             model_overrides: Optional[Dict[str, str]] = None
-        )->Iterator[ResumeParserEvent]:
+    ) -> Iterator[ResumeParserEvent]:
         """
         model_overrides: Dict where key is step_id ('labeler', 'experience', etc.)
                          and value is the model name.
@@ -229,12 +277,12 @@ class ResumeWorkflow:
         chunked_data = self.agent_meta_labeler(resume_text, labeler_model)
 
         mapping = {
-            "personal": PersonalInfo,
-            "skills": SkillList,
-            "experience": ExperienceList,
-            "summary" : str,
-            "projects": ProjectList,
-            "education": EducationList
+            "personal": PersonalInfoModel,
+            "skills": SkillListModel,
+            "experience": ExperienceListModel,
+            "summary": SummaryModel,
+            "projects": ProjectListModel,
+            "education": EducationListModel
         }
 
         tasks = []
@@ -252,17 +300,26 @@ class ResumeWorkflow:
                 for name, text, schema, m_id in tasks
             }
 
+            final_response = {}
             for future in as_completed(future_to_section):
                 section_name = future_to_section[future]
                 try:
                     section_data = future.result()
-                    res_section : AgentSectionEvent = {
-                        "name" : section_name,
+
+                    if section_name == "summary" and isinstance(section_data, dict):
+                        section_data = section_data.get("summary", "")
+                    res_section: AgentSectionEvent = {
+                        "name": section_name,
                         "content": section_data,
                     }
                     yield {
                         "event": "update",
                         "data": res_section
                     }
+                    final_response[section_name] = section_data
                 except Exception as e:
                     yield {"event": "error", "data": str(e)}
+            yield {
+                "event": "final",
+                "data": cast(AgentFinalEvent, final_response)
+            }

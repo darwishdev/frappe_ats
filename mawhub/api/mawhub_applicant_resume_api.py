@@ -3,7 +3,6 @@ from typing import Iterator, List, cast
 from frappe import _
 import frappe
 from mawhub.app.job.dto.applicant_resume_dto import  ApplicantResumeDTO
-from mawhub.app.job.dto.job_applicant import JobApplicantCreateWithResume
 from mawhub.bootstrap import app_container
 from werkzeug.wrappers import Response
 
@@ -14,7 +13,9 @@ def applicant_resume_parse(path: str,job_opening_id: str, pipeline_step_id: str)
             app_container.job_usecase.applicant_resume.applicant_resume_parse(
                 path,
                 job_opening_id,
-                pipeline_step_id
+                pipeline_step_id,
+                "123"
+
             ),
             mimetype="text/event-stream")
     response.headers.update({

@@ -1,5 +1,7 @@
 from typing import List, NotRequired, Required, TypedDict
 
+# from mawhub.app.job.agent.resume_parser_agent import AgentFinalEvent
+
 class PersonalInfo(TypedDict, total=False):
     name: str
     email: Required[str]
@@ -28,13 +30,12 @@ class ApplicantProject(TypedDict, total=False):
     link: str
 
 
-class ApplicantLink(TypedDict, total=False):
-    label: str
-    url: str
 
 
 class ApplicantResumeDTO(TypedDict, total=False):
     job_applicant: Required[str]
+    request_id: Required[str]
+    file_path: Required[str]
     personal: Required[PersonalInfo]
     skills: NotRequired[str]
     summary: NotRequired[str]
@@ -43,5 +44,4 @@ class ApplicantResumeDTO(TypedDict, total=False):
     experience: NotRequired[List[ApplicantExperience]]
     education: NotRequired[List[ApplicantEducation]]
     projects: NotRequired[List[ApplicantProject]]
-    links: NotRequired[List[ApplicantLink]]
 
