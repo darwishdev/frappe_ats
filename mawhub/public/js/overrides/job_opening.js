@@ -6,7 +6,9 @@ frappe.ui.form.on("Job Opening", {
         console.log("frm is" , frm.attachments.attachment_uploaded)
         const original = frm.attachments.attachment_uploaded;
         console.log("proggesss")
-        frappe.realtime.on("job_info_progress", (data) => {
+        const room = `resume_parse:${frm.doc.name}`;
+        frappe.realtime.subscribe(room);
+        frappe.realtime.on(`resume_parser_progress:${frm.doc.name}`, (data) => {
             console.log("progress:", data);
         });
 

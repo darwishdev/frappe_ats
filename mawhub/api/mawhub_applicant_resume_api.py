@@ -9,23 +9,50 @@ from werkzeug.wrappers import Response
 
 @frappe.whitelist(methods=["POST","GET"])
 def applicant_resume_parse(path: str,job_opening_id: str, pipeline_step_id: str):
-    response = Response(
-            app_container.job_usecase.applicant_resume.applicant_resume_parse(
+    try:
+        frappe.enqueue(
+            method=applicant_resume_parse_bg,
+            queue="long",
+            timeout=800,
+            is_async=True,
+            now=False,
+            enqueue_after_commit=False,
+            at_front=True,
+            path=path,
+            job_opening_id=job_opening_id,
+            pipeline_step_id=pipeline_step_id,
+            user=frappe.session.user
+        )
+
+        return {
+            "status": "queued",
+            "message": "Document parsing started"
+        }
+
+    except Exception as e:
+        return {
+            "status": "error",
+            "message": f"Failed to enqueue job: {str(e)}"
+        }
+@frappe.whitelist(methods=["POST","GET"])
+def applicant_resume_parse_bg(path: str,job_opening_id: str, pipeline_step_id: str,user:str):
+    response = app_container.job_usecase.applicant_resume.applicant_resume_parse(
                 path,
                 job_opening_id,
                 pipeline_step_id,
                 "123"
 
-            ),
-            mimetype="text/event-stream")
-    response.headers.update({
-        "Cache-Control": "no-cache",
-        "X-Accel-Buffering": "no",  # Disables Nginx buffering for instant delivery
-        "Connection": "keep-alive"
-    })
+            )
+    print("sesison is" , user)
+    for value in response:
+        frappe.publish_realtime(
+            event=f"resume_parser_progress:{job_opening_id}",
+            message=value,
+            user=user
 
-    return response
+        )
 
+    return {}
 @frappe.whitelist(methods=["POST", "GET"])
 def applicant_resume_create_update(payload: ApplicantResumeDTO):
     return app_container.job_usecase.applicant_resume.applicant_resume_create_update(payload=payload)
