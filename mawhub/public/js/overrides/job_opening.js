@@ -155,14 +155,17 @@ frappe.ui.form.on("Job Opening", {
 
         });
         // Load custom Job Openings bundle if not already loaded
-        frappe.require("job_openings.bundle.js").then(() => {
-            if (!frappe.custom_job_openings) {
-                frappe.custom_job_openings = new frappe.ui.JobOpenings({
-                    wrapper: $(frm.wrapper).find(".form-layout"),
-                    page: frm.page || null,
-                    frm: frm,  // pass the actual frm
-                });
-            }
-        });
+        // Only render custom Vue app in edit mode (not when creating new document)
+        if (!frm.doc.name || !frm.doc.name.includes("new-job-opening")) {
+            frappe.require("job_openings.bundle.js").then(() => {
+                if (!frappe.custom_job_openings) {
+                    frappe.custom_job_openings = new frappe.ui.JobOpenings({
+                        wrapper: $(frm.wrapper).find(".form-layout"),
+                        page: frm.page || null,
+                        frm: frm,  // pass the actual frm
+                    });
+                }
+            });
+        }
     },
 });

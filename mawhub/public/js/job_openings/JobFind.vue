@@ -78,6 +78,7 @@ const allSelected = computed(() => {
   const filtered = filteredCandidates.value;
   return filtered.length > 0 && selectedCandidates.value.size === filtered.length;
 });
+console.log(frm);
 
 // Methods
 // example to use frm.call
@@ -273,10 +274,16 @@ const moveCandidateToStep = () => {
         label: 'Select Pipeline Step',
         options: stepOptions.value.map(step => step.label).join('\n'),
         reqd: 1
+      },
+      {
+        fieldtype: 'Small Text',
+        fieldname: 'comment',
+        label: 'Comment (Optional)',
+        description: 'Add a note about this move'
       }
     ],
     primary_action_label: 'Move',
-    primary_action: (values) => {
+    primary_action: async (values) => {
       const selectedStepLabel = values.target_step;
       const selectedStep = stepOptions.value.find(s => s.label === selectedStepLabel);
 
@@ -296,35 +303,108 @@ const moveCandidateToStep = () => {
         return;
       }
 
-      // TODO: Implement actual API call to move candidate
-      const formData = new FormData();
-      formData.append('names', JSON.stringify([activeCandidate.value.name]));
-      formData.append('pipeline_step', selectedStep.value);
+      try {
+        await frm.call('move_applicant_to_another_step', {
+          applicant_id: activeCandidate.value.job_applicant,
+          new_step_code: selectedStep.value,
+          comment: values.comment || ''
+        });
 
-      frappe.call({
-        method: "mawhub.api.mawhub_job_applicant_api.job_applicant_bulk_update",
-        args: {
-          payload: formData
-        },
-        callback: function(r) {
-          if (r.message) {
-            frappe.show_alert({
-              message: `Candidate moved to ${selectedStepLabel}`,
-              indicator: 'green'
-            });
-            dialog.hide();
-            // Refresh job data
-            getJobOpening();
-          }
-        },
-        error: function(r) {
-          frappe.msgprint({
-            title: 'Error',
-            message: 'Failed to move candidate',
-            indicator: 'red'
-          });
-        }
-      });
+        frappe.show_alert({
+          message: `Candidate moved to ${selectedStepLabel}`,
+          indicator: 'green'
+        });
+        dialog.hide();
+        // Refresh job data
+        getJobOpening();
+      } catch (error) {
+        frappe.msgprint({
+          title: 'Error',
+          message: 'Failed to move candidate',
+          indicator: 'red'
+        });
+        console.error('Failed to move candidate:', error);
+      }
+    }
+  });
+
+  dialog.show();
+};
+
+// Bulk move candidates to step
+const bulkMoveCandidates = () => {
+  if (selectedCandidates.value.size === 0) {
+    frappe.msgprint({
+      title: 'No Selection',
+      message: 'Please select at least one candidate to move',
+      indicator: 'orange'
+    });
+    return;
+  }
+
+  const dialog = new frappe.ui.Dialog({
+    title: `Move ${selectedCandidates.value.size} Candidate(s)`,
+    fields: [
+      {
+        fieldtype: 'Select',
+        fieldname: 'target_step',
+        label: 'Select Pipeline Step',
+        options: stepOptions.value.map(step => step.label).join('\n'),
+        reqd: 1
+      },
+      {
+        fieldtype: 'Small Text',
+        fieldname: 'comment',
+        label: 'Comment (Optional)',
+        description: 'Add a note about this bulk move'
+      }
+    ],
+    primary_action_label: 'Move All',
+    primary_action: async (values) => {
+      const selectedStepLabel = values.target_step;
+      const selectedStep = stepOptions.value.find(s => s.label === selectedStepLabel);
+
+      if (!selectedStep) {
+        frappe.msgprint('Please select a valid step');
+        return;
+      }
+
+      // Get applicant IDs from selected candidates
+      const applicantIds = Array.from(selectedCandidates.value)
+        .map(candidateId => {
+          const candidate = filteredCandidates.value.find(c => c.name === candidateId);
+          return candidate?.job_applicant;
+        })
+        .filter(Boolean);
+
+      if (applicantIds.length === 0) {
+        frappe.msgprint('No valid candidates to move');
+        return;
+      }
+
+      try {
+        await frm.call('move_applicants_to_another_step', {
+          applicant_ids: applicantIds,
+          new_step_code: selectedStep.value,
+          comment: values.comment || ''
+        });
+
+        frappe.show_alert({
+          message: `${applicantIds.length} candidate(s) moved to ${selectedStepLabel}`,
+          indicator: 'green'
+        });
+        dialog.hide();
+        // Clear selection and refresh
+        selectedCandidates.value.clear();
+        getJobOpening();
+      } catch (error) {
+        frappe.msgprint({
+          title: 'Error',
+          message: 'Failed to move candidates',
+          indicator: 'red'
+        });
+        console.error('Failed to bulk move candidates:', error);
+      }
     }
   });
 
@@ -522,10 +602,34 @@ const candidateActions = [
     label: "Delete",
     icon: "fa-trash",
     action: () => {
+      if (!activeCandidate.value) return;
+      
       frappe.confirm(
-        "Are you sure you want to delete this candidate?",
+        `Are you sure you want to delete ${activeCandidate.value.job_applicant}?`,
         () => {
-          frappe.msgprint("Candidate deleted");
+          frappe.call({
+            method: 'frappe.client.delete',
+            args: {
+              doctype: 'Job Applicant',
+              name: activeCandidate.value.job_applicant
+            },
+            callback: function(r) {
+              frappe.show_alert({
+                message: 'Candidate deleted successfully',
+                indicator: 'green'
+              });
+              // Refresh job data to update the list
+              getJobOpening();
+            },
+            error: function(err) {
+              frappe.msgprint({
+                title: 'Error',
+                message: 'Failed to delete candidate',
+                indicator: 'red'
+              });
+              console.error('Failed to delete candidate:', err);
+            }
+          });
         }
       );
     },
@@ -560,17 +664,17 @@ onMounted(() => {
               <button class="btn btn-sm btn-default" @click="showJobDescription">
                 <span class="fa fa-eye"></span> Show
               </button>
-              <button class="btn btn-sm btn-default" @click="editJob">
+              <!-- <button class="btn btn-sm btn-default" @click="editJob">
                 <span class="fa fa-edit"></span> Edit
-              </button>
+              </button> -->
             </div>
           </div>
         </div>
 
         <div class="jd-header-actions">
-          <button class="btn btn-default">
+          <!-- <button class="btn btn-default">
             <span class="fa fa-upload"></span> Upload Resume
-          </button>
+          </button> -->
           <button @click="addCandidates" class="btn btn-default">
             <span class="fa fa-user-plus"></span> Add candidates
           </button>
@@ -612,7 +716,7 @@ onMounted(() => {
                 {{ allSelected ? "Deselect All" : "Select All" }}
               </button>
               <div v-if="selectedCandidates.size > 0" class="jd-bulk-actions">
-                <button class="btn btn-xs btn-default">
+                <button class="btn btn-xs btn-default" @click="bulkMoveCandidates">
                   <span class="fa fa-arrow-right"></span> Bulk Move
                 </button>
                 <button class="btn btn-xs btn-default" @click="clearSelection">
@@ -659,11 +763,11 @@ onMounted(() => {
 
         <!-- Middle: Candidate details -->
         <div class="jd-middle">
-          <div class="jd-detail-card">
-            <div v-if="!activeCandidate" class="text-muted" style="padding: 40px; text-align: center;">
-              Select a candidate from the list
-            </div>
-            <div v-else>
+          <div v-if="!activeCandidate" class="text-muted" style="padding: 40px; text-align: center;">
+            Select a candidate from the list
+          </div>
+          <div v-else class="jd-middle-content">
+            <div class="jd-detail-card">
               <div class="jd-detail-head">
                 <div style="display: flex; align-items: center; gap: 12px;">
                   <div class="jd-avatar" style="width: 55px; height: 55px; font-size: 20px;">
@@ -713,26 +817,20 @@ onMounted(() => {
                 />
               </div>
             </div>
-          </div>
-        </div>
 
-        <!-- Right: Actions panel -->
-        <div class="jd-actions-panel">
-          <div v-if="!activeCandidate" class="text-muted" style="padding: 20px; text-align: center;">
-            Select a candidate
-          </div>
-          <div v-else class="jd-actions-content">
-            <h4 class="jd-actions-title">Actions</h4>
-            <div class="jd-actions-buttons">
-              <button
-                v-for="action in candidateActions"
-                :key="action.label"
-                :class="['btn', 'btn-sm', action.variant === 'danger' ? 'btn-danger' : 'btn-default', 'action-btn', 'flex', 'flex-column', 'items-center', 'p-3']"
-                @click="action.action"
-              >
-                <span :class="['pb-1', 'fa', action.icon]"></span>
-                <span>{{ action.label }}</span>
-              </button>
+            <!-- Actions at the bottom -->
+            <div class="jd-actions-bottom">
+              <div class="jd-actions-scroll">
+                <button
+                  v-for="action in candidateActions"
+                  :key="action.label"
+                  :class="['btn', 'btn-sm', action.variant === 'danger' ? 'btn-danger' : 'btn-default', 'jd-action-btn-horizontal']"
+                  @click="action.action"
+                >
+                  <span :class="['fa', action.icon]"></span>
+                  <span>{{ action.label }}</span>
+                </button>
+              </div>
             </div>
           </div>
         </div>

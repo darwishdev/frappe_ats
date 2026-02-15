@@ -108,6 +108,7 @@ class CustomJobOpening(JobOpening):
     # single applicant operations
     # -------------------------------------------------
 
+    @frappe.whitelist()
     def link_applicant_to_step(
         self,
         applicant_id: str,
@@ -135,6 +136,7 @@ class CustomJobOpening(JobOpening):
 
         return new_row
 
+    @frappe.whitelist()
     def remove_applicant_from_step(
         self,
         applicant_id: str,
@@ -152,6 +154,7 @@ class CustomJobOpening(JobOpening):
 
         return True
 
+    @frappe.whitelist()
     def move_applicant_to_another_step(
         self,
         applicant_id: str,
@@ -182,6 +185,7 @@ class CustomJobOpening(JobOpening):
     # bulk operations
     # -------------------------------------------------
 
+    @frappe.whitelist()
     def link_applicants_to_step(
         self,
         applicant_ids: List[str],
@@ -207,6 +211,7 @@ class CustomJobOpening(JobOpening):
 
         return created
 
+    @frappe.whitelist()
     def remove_applicants_from_step(
         self,
         applicant_ids: List[str],
@@ -220,6 +225,7 @@ class CustomJobOpening(JobOpening):
 
         return count
 
+    @frappe.whitelist()
     def move_applicants_to_another_step(
         self,
         applicant_ids: List[str],

@@ -124,63 +124,91 @@ div[data-page-route="List/Job Opening/List"] .frappe-list .list-row {
 
 .jd-body {
     display: grid;
-    grid-template-columns: 350px 1fr 190px;
+    grid-template-columns: 350px 1fr;
     gap: 14px;
     min-height: calc(100vh - 215px);
 }
 
 .jd-left,
-.jd-middle,
-.jd-actions-panel {
+.jd-middle {
     background: #ffffff66;
     border: 1px solid var(--border-color, #e6e6e6);
     border-radius: 10px;
 }
 
-.jd-actions-panel {
+.jd-middle {
     display: flex;
     flex-direction: column;
+    min-width: 0;
+    overflow: hidden;
 }
 
-.jd-actions-content {
-    padding: 14px;
+.jd-middle-content {
     display: flex;
     flex-direction: column;
     height: 100%;
+    overflow: hidden;
 }
 
-.jd-actions-title {
-    font-size: 14px;
-    font-weight: 700;
-    color: #111827;
-    margin: 0 0 12px 0;
-    padding-bottom: 10px;
-    border-bottom: 1px solid var(--border-color, #e6e6e6);
+.jd-detail-card {
+    flex: 1;
+    overflow-y: auto;
+    padding: 14px;
 }
 
-.jd-actions-buttons {
+.jd-actions-bottom {
+    position: sticky;
+    bottom: 0;
+    background: #ffffff;
+    border-top: 2px solid var(--border-color, #e6e6e6);
+    padding: 12px;
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.jd-actions-scroll {
     display: flex;
-    flex-direction: column;
-    gap: 6px;
+    gap: 8px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 4px 0 10px;
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e0 #f7fafc;
 }
 
-.jd-action-button {
-    width: 100%;
-    justify-content: center !important;
-    padding: 25px 12px !important;
-    font-size: 13px !important;
+.jd-actions-scroll::-webkit-scrollbar {
+    height: 6px;
+}
+
+.jd-actions-scroll::-webkit-scrollbar-track {
+    background: #f7fafc;
+    border-radius: 3px;
+}
+
+.jd-actions-scroll::-webkit-scrollbar-thumb {
+    background: #cbd5e0;
+    border-radius: 3px;
+}
+
+.jd-actions-scroll::-webkit-scrollbar-thumb:hover {
+    background: #a0aec0;
+}
+
+.jd-action-btn-horizontal {
     display: flex;
-    flex-direction: column;
     align-items: center;
     gap: 8px;
-}
-
-.jd-action-button span {
-    font-weight: 500;
-}
-
-.jd-action-icon {
+    white-space: nowrap;
+    padding: 10px 20px !important;
+    font-size: 13px !important;
     flex-shrink: 0;
+}
+
+.jd-action-btn-horizontal .fa {
+    font-size: 14px;
+}
+
+.jd-action-btn-horizontal span {
+    font-weight: 500;
 }
 
 .jd-left-top {
@@ -249,9 +277,7 @@ div[data-page-route="List/Job Opening/List"] .frappe-list .list-row {
     margin-top: 2px;
 }
 
-.jd-detail-card {
-    padding: 14px;
-}
+
 
 .jd-detail-head {
     display: flex;
@@ -377,8 +403,7 @@ div[data-page-route="List/Job Opening/List"] .frappe-list .list-row {
 }
 
 [data-theme="dark"] .jd-left,
-[data-theme="dark"] .jd-middle,
-[data-theme="dark"] .jd-actions-panel {
+[data-theme="dark"] .jd-middle {
     background: #2a2a2a;
     border-color: #3a3a3a;
 }
@@ -465,9 +490,26 @@ div[data-page-route="List/Job Opening/List"] .frappe-list .list-row {
     color: #4a90e2;
 }
 
-[data-theme="dark"] .jd-actions-title {
-    color: #f0f0f0;
-    border-bottom-color: #3a3a3a;
+[data-theme="dark"] .jd-actions-bottom {
+    background: #2a2a2a;
+    border-top-color: #3a3a3a;
+}
+
+[data-theme="dark"] .jd-actions-scroll {
+    scrollbar-color: #555 #2a2a2a;
+}
+
+[data-theme="dark"] .jd-actions-scroll::-webkit-scrollbar-track {
+    background: #2a2a2a;
+}
+
+[data-theme="dark"] .jd-actions-scroll::-webkit-scrollbar-thumb {
+    background: #555;
+    border-radius: 3px;
+}
+
+[data-theme="dark"] .jd-actions-scroll::-webkit-scrollbar-thumb:hover {
+    background: #777;
 }
 
 [data-theme="dark"] .info-section h4 {
