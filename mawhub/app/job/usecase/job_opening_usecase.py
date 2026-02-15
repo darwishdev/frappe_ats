@@ -1,15 +1,12 @@
-from warnings import filters
-from annotated_types import LowerCase
-from frappe import Any, LinkValidationError, Optional, _
+from frappe import Any, LinkValidationError,  _
 from typing import  Dict, List, Protocol
 
 import frappe
 from frappe.model.document import Document
 from mawhub.app.job.agent.document_parser_agent import DocumentParserWorkflow
 from mawhub.app.job.agent.job_opening_parser_agent import  JobOpeningEvent, JobOpeningParserWorkflow
-from mawhub.app.job.dto.job_opening import JobOpeningDTO, job_opening_create_request_from_agent, job_opening_list_sql_to_dto, job_opening_sql_to_dto
+from mawhub.app.job.dto.job_opening_dto import JobOpeningDTO, job_opening_create_request_from_agent, job_opening_list_sql_to_dto, job_opening_sql_to_dto
 from mawhub.app.job.repo.job_repo import  JobRepoInterface
-from mawhub.pkg.pdfconvertor.pdfconvertor import extract_text_from_pdf
 from mawhub.sqltypes.table_models import JobOpening
 
 

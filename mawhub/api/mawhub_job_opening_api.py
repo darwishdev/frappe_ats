@@ -1,6 +1,6 @@
 from typing import  List,  cast
 import frappe
-from mawhub.app.job.dto.job_opening import JobOpeningDTO
+from mawhub.app.job.dto.job_opening_dto import JobOpeningDTO
 from mawhub.bootstrap import app_container
 from typing import  List, cast
 from frappe import  _

@@ -2,7 +2,7 @@ from typing import List
 import frappe
 from frappe import  _
 from frappe.model.document import Document
-from mawhub.app.job.dto.job_applicant import  JobApplicantBulkUpdateRequest, JobApplicantCreateWithResume
+from mawhub.app.job.dto.job_applicant_dto import  JobApplicantBulkUpdateRequest, JobApplicantCreateWithResume
 from mawhub.bootstrap import app_container
 from typing import List
 

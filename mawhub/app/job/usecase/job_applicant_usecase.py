@@ -2,7 +2,7 @@ from typing import Dict, List, Protocol, cast
 
 import frappe
 from frappe.model.document import Document
-from mawhub.app.job.dto.job_applicant import JobApplicantBulkUpdateRequest
+from mawhub.app.job.dto.job_applicant_dto import JobApplicantBulkUpdateRequest
 from mawhub.app.job.repo.job_repo import JobRepoInterface
 from mawhub.sqltypes.table_models import JobApplicant
 

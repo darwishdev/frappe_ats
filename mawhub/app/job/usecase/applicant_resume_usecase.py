@@ -6,7 +6,7 @@ import frappe
 from frappe.model.document import Document
 from mawhub.app.job.agent.resume_parser_agent import AgentFinalEvent,  ResumeWorkflow
 from mawhub.app.job.dto.applicant_resume_dto import ApplicantResumeDTO
-from mawhub.app.job.dto.job_applicant import JobApplicantCreateWithResume
+from mawhub.app.job.dto.job_applicant_dto import JobApplicantCreateWithResume
 from mawhub.app.job.repo.job_repo import JobRepoInterface
 from mawhub.pkg.overrides import job_opening
 from mawhub.pkg.overrides.job_opening import CustomJobOpening

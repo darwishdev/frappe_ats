@@ -1,7 +1,7 @@
 from typing import List, Protocol
 import frappe
 
-from mawhub.app.job.dto.job_applicant import  JobApplicantBulkUpdateRequest
+from mawhub.app.job.dto.job_applicant_dto import  JobApplicantBulkUpdateRequest
 from mawhub.pkg.baseclasses.app_repo import AppRepo, AppRepoInterface
 from mawhub.sqltypes.table_models import JobApplicant
 

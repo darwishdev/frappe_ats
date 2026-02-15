@@ -1,6 +1,6 @@
 from typing import Protocol
 from mawhub.app.job.repo.applicant_resume_repo import ApplicantResumeRepo, ApplicantResumeRepoInterface
-from mawhub.app.job.repo.auth_repo import AuthRepo, AuthRepoInterface
+# from mawhub.app.job.repo.auth_repo import AuthRepo, AuthRepoInterface
 from mawhub.app.job.repo.interview_repo import InterviewRepo, InterviewRepoInterface
 from mawhub.app.job.repo.job_applicant_repo import JobApplicantRepo, JobApplicantRepoInterface
 from mawhub.app.job.repo.job_opening_repo import JobOpeningRepo, JobOpeningRepoInterface
@@ -11,7 +11,7 @@ class JobRepoInterface(Protocol):
     job_applicant: JobApplicantRepoInterface
     job_pipeline: JobPipelineRepoInterface
     interview: InterviewRepoInterface
-    auth: AuthRepoInterface
+    # auth: AuthRepoInterface
     applicant_resume : ApplicantResumeRepoInterface
     parsed_document : ParsedDocumentRepoInterface
 
@@ -20,7 +20,7 @@ class JobRepo:
     job_applicant: JobApplicantRepoInterface
     job_pipeline: JobPipelineRepoInterface
     interview: InterviewRepoInterface
-    auth: AuthRepoInterface
+    # auth: AuthRepoInterface
     applicant_resume : ApplicantResumeRepoInterface
     parsed_document : ParsedDocumentRepoInterface
 
@@ -31,7 +31,7 @@ class JobRepo:
         self.job_applicant = JobApplicantRepo()
         self.job_pipeline= JobPipelineRepo()
         self.interview = InterviewRepo()
-        self.auth = AuthRepo()
+        # self.auth = AuthRepo()
         self.applicant_resume = ApplicantResumeRepo()
         self.parsed_document = ParsedDocumentRepo()
 

@@ -8,7 +8,7 @@ from mawhub.app.job.agent.job_opening_parser_agent import JobOpeningParserWorkfl
 from mawhub.app.job.agent.resume_parser_agent import ResumeWorkflow
 from mawhub.app.job.repo.job_repo import JobRepoInterface
 from mawhub.app.job.usecase.applicant_resume_usecase import ApplicantResumeUsecase, ApplicantResumeUsecaseInterface
-from mawhub.app.job.usecase.auth_usecase import AuthUsecase, AuthUsecaseInterface
+# from mawhub.app.job.usecase.auth_usecase import AuthUsecase, AuthUsecaseInterface
 from mawhub.app.job.usecase.interview_usecase import InterviewUsecase, InterviewUsecaseInterface
 from mawhub.app.job.usecase.job_applicant_usecase import JobApplicantUsecase, JobApplicantUsecaseInterface
 from mawhub.app.job.usecase.job_opening_usecase import JobOpeningUsecase, JobOpeningUsecaseInterface
@@ -21,7 +21,7 @@ class JobUseCaseInterface(Protocol):
     job_applicant: JobApplicantUsecaseInterface
     job_pipeline: JobPipelineUsecaseInterface
     interview: InterviewUsecaseInterface
-    auth: AuthUsecaseInterface
+    # auth: AuthUsecaseInterface
     parsed_document: ParsedDocumentUsecaseInterface
     applicant_resume: ApplicantResumeUsecaseInterface
     job_agent: JobOpeningParserWorkflow
@@ -35,7 +35,7 @@ class JobUseCase:
     job_applicant: JobApplicantUsecaseInterface
     job_pipeline: JobPipelineUsecaseInterface
     interview: InterviewUsecaseInterface
-    auth: AuthUsecaseInterface
+    # auth: AuthUsecaseInterface
     applicant_resume: ApplicantResumeUsecaseInterface
     parsed_document: ParsedDocumentUsecaseInterface
     resume_agent: ResumeWorkflow
@@ -61,7 +61,7 @@ class JobUseCase:
         self.parsed_document = ParsedDocumentUsecase(job_repo,doc_parser,job_agent)
         self.job_applicant = JobApplicantUsecase(job_repo)
         self.interview = InterviewUsecase(job_repo)
-        self.auth = AuthUsecase(job_repo)
+        # self.auth = AuthUsecase(job_repo)
         self.applicant_resume = ApplicantResumeUsecase(job_repo , resume_agent)
 
 
