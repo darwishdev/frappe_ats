@@ -90,66 +90,85 @@
             "keep_closed": 1
         },
         {
-            "type": "Link",
-            "label": "Interview Round",
-            "link_to": "Interview Round",
-            "link_type": "DocType",
-            "icon": "",
-            "indent": 1,
-            "child": 1
+         "type": "Link",
+         "label": "Questions Template",
+         "link_to": "Question Template",
+         "link_type": "DocType",
+         "icon": "",
+         "indent": 1,
+         "child": 1
         },
         {
-            "type": "Link",
-            "label": "Job Pipeline",
-            "link_to": "Job Opening",
-            "link_type": "DocType",
-            "icon": "",
-            "indent": 1,
-            "child": 1
+         "type": "Link",
+         "label": "Meeting Log",
+         "link_to": "Meeting Log",
+         "link_type": "DocType",
+         "icon": "",
+         "indent": 1,
+         "child": 1
+        },
+
+        {
+         "type": "Link",
+         "label": "Interview Round",
+         "link_to": "Interview Round",
+         "link_type": "DocType",
+         "icon": "",
+         "indent": 1,
+         "child": 1
         },
         {
-            "type": "Link",
-            "label": "Project Template",
-            "link_to": "Project Template",
-            "link_type": "DocType",
-            "icon": "",
-            "indent": 1,
-            "child": 1
+         "type": "Link",
+         "label": "Job Pipeline",
+         "link_to": "Job Opening",
+         "link_type": "DocType",
+         "icon": "",
+         "indent": 1,
+         "child": 1
         },
         {
-            "type": "Link",
-            "label": "Email Setup",
-            "link_to": "Email Account",
-            "link_type": "DocType",
-            "icon": "",
-            "indent": 1,
-            "child": 1
+         "type": "Link",
+         "label": "Project Template",
+         "link_to": "Project Template",
+         "link_type": "DocType",
+         "icon": "",
+         "indent": 1,
+         "child": 1
         },
         {
-            "type": "Section Break",
-            "label": "Reports",
-            "icon": "bar-chart",
-            "indent": 0,
-            "collapsible": 1,
-            "keep_closed": 1
+         "type": "Link",
+         "label": "Email Setup",
+         "link_to": "Email Account",
+         "link_type": "DocType",
+         "icon": "",
+         "indent": 1,
+         "child": 1
         },
         {
-            "type": "Link",
-            "label": "Recruitment Analytics",
-            "link_to": "Recruitment Analytics",
-            "link_type": "Report",
-            "icon": "",
-            "indent": 1,
-            "child": 1
+         "type": "Section Break",
+         "label": "Reports",
+         "icon": "bar-chart",
+         "indent": 0,
+         "collapsible": 1,
+         "keep_closed": 1
         },
         {
-            "type": "Link",
-            "label": "Job Applicant Source",
-            "link_to": "Job Applicant Source",
-            "link_type": "Report",
-            "icon": "",
-            "indent": 1,
-            "child": 1
+         "type": "Link",
+         "label": "Recruitment Analytics",
+         "link_to": "Recruitment Analytics",
+         "link_type": "Report",
+         "icon": "",
+         "indent": 1,
+         "child": 1
+        },
+        {
+         "type": "Link",
+         "label": "Job Applicant Source",
+         "link_to": "Job Applicant Source",
+         "link_type": "Report",
+         "icon": "",
+         "indent": 1,
+         "child": 1
         }
  ],
  "modified": "2026-02-07 23:57:18.964405",

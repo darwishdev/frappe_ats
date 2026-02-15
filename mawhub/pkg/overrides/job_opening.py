@@ -16,6 +16,10 @@ class CustomJobOpening(JobOpening):
     # lifecycle
     # -------------------------------------------------
 
+    @frappe.whitelist()
+    def fetch_job_info(self):
+        job_info = self.as_dict()
+        return job_info
     def before_save(self) -> None:
         if self.is_new():
             return

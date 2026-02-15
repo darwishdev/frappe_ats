@@ -1,22 +1,5 @@
 frappe.listview_settings['Job Opening'] = {
     onload: function(listview) {
-        // Override the module
-console.log("overrideee")
-        // listview.render_header = function() {
-        //     // Clear existing content
-        //     this.$result.empty();
-        //
-        //     // Your custom HTML instead of datatable
-        //     this.$result.html(`
-        //         <div class="custom-table-wrapper" style="padding: 15px;">
-        //             <h3>Custom karem</h3>
-        //             <div id="custom-data-container"></div>
-        //         </div>
-        //     `);
-        // };
-        // Override the render method to replace datatable
-
-        // Add custom button
         listview.page.add_inner_button('Add From JD', function() {
             new frappe.ui.FileUploader({
                 make_attachments: 0, // Don't attach to a specific doc yet
@@ -50,8 +33,6 @@ console.log("overrideee")
                     });
                 }
             });
-            console.log(listview.data)
-            frappe.msgprint('Custom button clicked');
         });
     },
     formatters: {
@@ -80,5 +61,7 @@ console.log("overrideee")
             return `<div class="job-pipeline-steps">${stepsHtml}</div>`;
         }
     },
-    filters: [["status", "=", "Open"]],
+    filters: [[
+        "status", "=", "Open"
+    ]],
 };
