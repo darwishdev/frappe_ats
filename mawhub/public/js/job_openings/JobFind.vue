@@ -14,17 +14,19 @@ const frm = proxy.$frm;
 
 // State
 const job = ref(null);
-const steps = ref({});
-const activeStep = ref("All");
+const steps = ref([]);
+const activeStep = ref(null);
 const activeCandidateId = ref(null);
 const selectedCandidates = ref(new Set());
 const searchQuery = ref("");
 const loading = ref(false);
 const activeTab = ref("profile");
 
-console.log("routesss")
-// console.log(frappe.get_route())
-const jobId = ref(frappe.get_route()[2]);
+// Get job ID and optional step code from route/query
+const route = frappe.get_route();
+const jobId = ref(route[2]);
+// Get step from query parameter if provided
+const initialStepCode = ref(frappe.utils.get_url_arg('step') || null);
 
 // Tab configuration
 const tabs = [
@@ -48,21 +50,23 @@ const stepOptions = computed(() => {
   if (!job.value?.steps) return [];
   return job.value.steps.map((step) => ({
     label: step.step_name,
-    value: step.step_id,
+    value: step.step_code,
   }));
 });
 
 const filteredCandidates = computed(() => {
-  const currentStepData = steps.value[activeStep.value];
-  if (!currentStepData?.candidates) return [];
+  if (!job.value?.steps_map || !activeStep.value) return [];
+  
+  const candidates = job.value.steps_map[activeStep.value] || [];
+  if (!candidates.length) return [];
 
   if (!searchQuery.value) {
-    return currentStepData.candidates;
+    return candidates;
   }
 
   const query = searchQuery.value.toLowerCase();
-  return currentStepData.candidates.filter((c) =>
-    c.applicant_name?.toLowerCase().includes(query) ||
+  return candidates.filter((c) =>
+    c.job_applicant?.toLowerCase().includes(query) ||
     c.applicant_email?.toLowerCase().includes(query)
   );
 });
@@ -81,63 +85,58 @@ const allSelected = computed(() => {
 console.log(frm);
 
 // Methods
-// example to use frm.call
-// const getJobOpening = async () => {
-//   loading.value = true;
-//
-//   try {
-//     const result = await frm.call("print_hello" ,
-//     {
-//       param1: "Ahmed",   // string argument
-//       param2: 42         // integer argument
-//     }); // matches Python method name
-//     console.log("Server response:", result);      // should print "hello from server!"
-//   } catch (error) {
-//     console.error(error);
-//   } finally {
-//     loading.value = false;
-//   }
-// };
-const getJobOpening = () => {
+const getJobOpening = async () => {
   loading.value = true;
 
-  frappe.call({
-    method: "mawhub.api.mawhub_job_opening_api.job_opening_find",
-    args: {
-      job: jobId.value,
-    },
-    callback: function(res) {
-      loading.value = false;
-      if (res.message) {
-        job.value = res.message;
-        // Build steps object
-        setPipelineSteps(res.message.steps);
-        frappe.show_alert({
-          message: "Job details loaded successfully",
-          indicator: "green"
-        });
-      }
-    },
-    error: function(r) {
-      loading.value = false;
-      frappe.msgprint({
-        title: "Error", message: "Failed to load job details",
-        indicator: "red"
+  try {
+    const result = await frm.call("fetch_job_info", {
+      job: jobId.value,   
+      name: jobId.value 
+    });
+    
+    console.log("Server response:", result);
+    
+    if (result.message) {
+      job.value = result.message;
+      
+      // Populate steps directly from the steps array
+      setPipelineSteps(result.message.steps);
+      
+      frappe.show_alert({
+        message: "Job details loaded successfully",
+        indicator: "green"
       });
-      console.error(r);
     }
-  });
+  } catch (error) {
+    console.error(error);
+    frappe.msgprint({
+      title: "Error",
+      message: "Failed to load job details",
+      indicator: "red"
+    });
+  } finally {
+    loading.value = false;
+  }
 };
 
 const setPipelineSteps = (stepsData) => {
-  const stepsObj = {};
-  stepsData.forEach((step) => {
-    stepsObj[step.step_id] = step
-  });
-  steps.value = stepsObj;
-  // Set first candidate as active if available
-  if (steps.value[activeStep.value]?.candidates?.length > 0) {
-    activeCandidateId.value = steps.value[activeStep.value].candidates[0].name;
+  steps.value = stepsData;
+  
+  // Set active step: prioritize route parameter, fallback to first step
+  if (!activeStep.value && steps.value.length > 0) {
+    if (initialStepCode.value) {
+      // Check if the step code from route exists in the steps
+      const stepExists = steps.value.some(step => step.step_code === initialStepCode.value);
+      activeStep.value = stepExists ? initialStepCode.value : steps.value[0].step_code;
+    } else {
+      activeStep.value = steps.value[0].step_code;
+    }
+  }
+  
+  // Set first candidate as active if available (candidates are in steps_map)
+  const candidates = job.value?.steps_map?.[activeStep.value] || [];
+  if (candidates.length > 0) {
+    activeCandidateId.value = candidates[0].name;
   }
 };
 
@@ -249,10 +248,6 @@ const showJobDescription = () => {
   dialog.fields_dict.job_description_content.$wrapper.html(container);
 };
 
-
-const editJob = () => {
-  frappe.set_route('job-opening', jobId.value);
-};
 
 const addCandidates = () => {
   frappe.set_route('job-applicant', 'new-job-applicant' , {
@@ -411,6 +406,204 @@ const bulkMoveCandidates = () => {
   dialog.show();
 };
 
+// Assign Candidate Dialog
+const assignCandidate = () => {
+  if (!activeCandidate.value) return;
+
+  const dialog = new frappe.ui.Dialog({
+    title: `Assign ${activeCandidate.value.job_applicant}`,
+    fields: [
+      {
+        fieldtype: 'MultiSelectPills',
+        fieldname: 'assign_to',
+        label: 'Assign To',
+        reqd: 1,
+        get_data: function(txt) {
+          return frappe.db.get_link_options('User', txt, {
+            user_type: 'System User',
+            enabled: 1
+          });
+        }
+      },
+      {
+        fieldtype: 'Date',
+        fieldname: 'date',
+        label: 'Complete By',
+        default: frappe.datetime.add_days(frappe.datetime.get_today(), 7)
+      },
+      {
+        fieldtype: 'Select',
+        fieldname: 'priority',
+        label: 'Priority',
+        options: 'Low\nMedium\nHigh',
+        default: 'Medium'
+      },
+      {
+        fieldtype: 'Small Text',
+        fieldname: 'description',
+        label: 'Comment'
+      }
+    ],
+    primary_action_label: 'Assign',
+    primary_action: (values) => {
+      if (!values.assign_to || values.assign_to.length === 0) {
+        frappe.msgprint({
+          title: 'Validation Error',
+          message: 'Please select at least one user to assign',
+          indicator: 'orange'
+        });
+        return;
+      }
+
+      // Prepare description (wrap in HTML if provided)
+      let description = values.description || '';
+      if (description) {
+        description = `<div class="ql-editor read-mode"><p>${description}</p></div>`;
+      }
+
+      frappe.call({
+        method: 'frappe.desk.form.assign_to.add',
+        args: {
+          doctype: 'Job Applicant',
+          name: activeCandidate.value.job_applicant,
+          assign_to: values.assign_to,
+          date: values.date || null,
+          priority: values.priority || 'Medium',
+          description: description,
+          assign_to_me: 0,
+          bulk_assign: values.assign_to.length > 1 ? true : false
+        },
+        callback: function(res) {
+          frappe.show_alert({
+            message: `Assigned to ${values.assign_to.join(', ')}`,
+            indicator: 'green'
+          });
+          dialog.hide();
+        },
+        error: function(err) {
+          frappe.msgprint({
+            title: 'Error',
+            message: 'Failed to assign candidate',
+            indicator: 'red'
+          });
+          console.error('Failed to assign candidate:', err);
+        }
+      });
+    }
+  });
+
+  dialog.show();
+};
+
+// Share Candidate Dialog
+const shareCandidate = () => {
+  if (!activeCandidate.value) return;
+
+  const dialog = new frappe.ui.Dialog({
+    title: `Share ${activeCandidate.value.job_applicant}`,
+    fields: [
+      {
+        fieldtype: 'Link',
+        fieldname: 'user',
+        label: 'User',
+        options: 'User',
+        reqd: 1,
+        description: 'Select user to share with'
+      },
+      {
+        fieldtype: 'Section Break',
+        label: 'Permissions'
+      },
+      {
+        fieldtype: 'Check',
+        fieldname: 'read',
+        label: 'Read',
+        default: 1
+      },
+      {
+        fieldtype: 'Column Break'
+      },
+      {
+        fieldtype: 'Check',
+        fieldname: 'write',
+        label: 'Write',
+        default: 0
+      },
+      {
+        fieldtype: 'Column Break'
+      },
+      {
+        fieldtype: 'Check',
+        fieldname: 'submit',
+        label: 'Submit',
+        default: 0
+      },
+      {
+        fieldtype: 'Column Break'
+      },
+      {
+        fieldtype: 'Check',
+        fieldname: 'share',
+        label: 'Share',
+        default: 0
+      },
+      {
+        fieldtype: 'Section Break'
+      },
+      {
+        fieldtype: 'Check',
+        fieldname: 'notify',
+        label: 'Notify user by email',
+        default: 1
+      }
+    ],
+    primary_action_label: 'Share',
+    primary_action: (values) => {
+      if (!values.user) {
+        frappe.msgprint({
+          title: 'Validation Error',
+          message: 'Please select a user to share with',
+          indicator: 'orange'
+        });
+        return;
+      }
+
+      frappe.call({
+        method: 'frappe.share.add',
+        args: {
+          doctype: 'Job Applicant',
+          name: activeCandidate.value.job_applicant,
+          user: values.user,
+          read: values.read ? 1 : 0,
+          write: values.write ? 1 : 0,
+          submit: values.submit ? 1 : 0,
+          share: values.share ? 1 : 0,
+          notify: values.notify ? 1 : 0
+        },
+        callback: function(res) {
+          if (res.message) {
+            frappe.show_alert({
+              message: `Shared with ${values.user}`,
+              indicator: 'green'
+            });
+            dialog.hide();
+          }
+        },
+        error: function(err) {
+          frappe.msgprint({
+            title: 'Error',
+            message: 'Failed to share candidate',
+            indicator: 'red'
+          });
+          console.error('Failed to share candidate:', err);
+        }
+      });
+    }
+  });
+
+  dialog.show();
+};
+
 // Assign Interview Dialog
 const assignInterview = () => {
   if (!activeCandidate.value) return;
@@ -561,9 +754,7 @@ const candidateActions = [
   {
     label: "Share Candidate",
     icon: "fa-share",
-    action: () => {
-      frappe.msgprint("Share Candidate clicked");
-    },
+    action: shareCandidate,
     variant: "default"
   },
   {
@@ -575,11 +766,9 @@ const candidateActions = [
     variant: "default"
   },
   {
-    label: "Print",
-    icon: "fa-print",
-    action: () => {
-      frappe.msgprint("Send Email clicked");
-    },
+    label: "Assign",
+    icon: "fa-user-plus",
+    action: assignCandidate,
     variant: "default"
   },
   {
@@ -685,13 +874,13 @@ onMounted(() => {
       <div class="jd-pipeline-container">
         <div class="jd-pipeline">
           <div
-            v-for="step in Object.values(steps)"
-            :key="step.step_id"
-            :class="['jd-step', { active: activeStep === step.step_id }]"
-            @click="changeStep(step.step_id)"
+            v-for="step in steps"
+            :key="step.step_code"
+            :class="['jd-step', { active: activeStep === step.step_code }]"
+            @click="changeStep(step.step_code)"
           >
             {{ step.step_name }}
-            <span class="count">{{ step.candidate_count || 0 }}</span>
+            <span class="count">{{ step.applicant_count || 0 }}</span>
           </div>
         </div>
         <button class="btn btn-sm btn-default">

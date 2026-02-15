@@ -1,13 +1,45 @@
 frappe.listview_settings['Job Opening'] = {
     onload: function(listview) {
-
-        frappe.call({
-            method: "mawhub.job_opening_step_list",
-            type: "GET",
-            args: {job_names : ""}
-        }).then(resp => {
-            console.log("resp is" , resp)
-        })
+        // Store pipeline data for use in formatters
+        listview.pipeline_data = {};
+        
+        setTimeout(() => {
+            frappe.call({
+                method: "mawhub.job_opening_step_list",
+                type: "GET",
+                args: {job_names : listview.data.map(d => d.name).join(',')}
+            }).then(resp => {
+                console.log("resp is" , resp);
+                if (resp.message) {
+                    listview.pipeline_data = resp.message;
+                    
+                    // Update DOM directly for each job
+                    Object.keys(resp.message).forEach(jobName => {
+                        const container = document.getElementById(`pipeline-steps-${jobName}`);
+                        if (container) {
+                            const pipeline_steps = resp.message[jobName] || [];
+                            
+                            if (pipeline_steps.length === 0) {
+                                container.innerHTML = '<span class="text-muted">No steps</span>';
+                            } else {
+                                const stepsHtml = pipeline_steps.map(step => `
+                                    <div class="pipeline-step" 
+                                         data-job="${jobName}" 
+                                         data-step="${step.step_code}"
+                                         style="cursor: pointer;"
+                                         onclick="window.location.hash = '#job-opening/${jobName}?step=${step.step_code}'">
+                                        <span class="step-count">${step.applicants_count || 0}</span>
+                                        <span class="step-label">${step.step_name}</span>
+                                    </div>
+                                `).join('');
+                                
+                                container.innerHTML = stepsHtml;
+                            }
+                        }
+                    });
+                }
+            });
+        }, 600);
 
         listview.page.add_inner_button('Add From JD', function() {
             new frappe.ui.FileUploader({
@@ -46,28 +78,10 @@ frappe.listview_settings['Job Opening'] = {
     },
     formatters: {
         description(value, field, doc) {
-            console.log(field);
-            console.log(value);
-            console.log(doc);
-
-            // Static pipeline steps for now - will be dynamic later
-            const pipeline_steps = [
-                { label: "Online Interview", count: 0 },
-                { label: "Offer", count: 0 },
-                { label: "Final Interview", count: 0 },
-                // { label: "Screening", count: 0 },
-                // { label: "Hired", count: 0 }
-            ];
-
-
-            const stepsHtml = pipeline_steps.map(step => `
-                <div class="pipeline-step">
-                <span class="step-count">${step.count}</span>
-                <span class="step-label">${step.label}</span>
-                </div>
-                `).join('');
-
-            return `<div class="job-pipeline-steps">${stepsHtml}</div>`;
+            // Return a container with unique ID that will be populated via DOM manipulation
+            return `<div class="job-pipeline-steps" id="pipeline-steps-${doc.name}">
+                        <span class="text-muted">Loading...</span>
+                    </div>`;
         }
     },
     filters: [[
