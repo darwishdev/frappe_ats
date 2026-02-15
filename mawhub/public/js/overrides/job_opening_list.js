@@ -1,5 +1,14 @@
 frappe.listview_settings['Job Opening'] = {
     onload: function(listview) {
+
+        frappe.call({
+            method: "mawhub.job_opening_step_list",
+            type: "GET",
+            args: {job_names : ""}
+        }).then(resp => {
+            console.log("resp is" , resp)
+        })
+
         listview.page.add_inner_button('Add From JD', function() {
             new frappe.ui.FileUploader({
                 make_attachments: 0, // Don't attach to a specific doc yet
@@ -53,10 +62,10 @@ frappe.listview_settings['Job Opening'] = {
 
             const stepsHtml = pipeline_steps.map(step => `
                 <div class="pipeline-step">
-                    <span class="step-count">${step.count}</span>
-                    <span class="step-label">${step.label}</span>
+                <span class="step-count">${step.count}</span>
+                <span class="step-label">${step.label}</span>
                 </div>
-            `).join('');
+                `).join('');
 
             return `<div class="job-pipeline-steps">${stepsHtml}</div>`;
         }

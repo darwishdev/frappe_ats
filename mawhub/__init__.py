@@ -10,6 +10,7 @@ from mawhub.api.mawhub_job_opening_api import (
 job_opening_parse,
         job_opening_create_update,
         job_opening_list,
+        job_opening_step_list,
         job_opening_find,
 )
 
@@ -49,5 +50,6 @@ __all__ = [
     "applicant_resume_parse",
     # "job_applicant_create",
     # "applicant_resume_create_update",
+    "job_opening_step_list",
     "job_applicant_bulk_update",
 ]

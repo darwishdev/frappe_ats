@@ -4,8 +4,6 @@
 frappe.ui.form.on("Job Opening", {
     refresh(frm) {
         console.log("frm is" , frm.attachments.attachment_uploaded)
-
-
         const original = frm.attachments.attachment_uploaded;
 
         frm.attachments.attachment_uploaded = function(attachment) {
@@ -63,54 +61,10 @@ frappe.ui.form.on("Job Opening", {
                 console.log("res is" , res)
             })
         })
-        frm.add_custom_button("Add From Resume", () => {
-            new frappe.ui.FileUploader({
-                make_attachments: 0,
-                on_success: (file_doc) => {
-
-                    frappe.call({
-                        method: "mawhub.applicant_resume_parse",
-                        args: {
-                            path: file_doc.file_url,
-                            job_opening_id: frm.doc.name,
-                            pipeline_step_id: "TE"   // change or make dynamic
-                        },
-                        callback: function(r) {
-
-                            if (r.message && r.message.request_id) {
-                                const req_id = r.message.request_id;
-
-                                frappe.show_alert({
-                                    message: __("Processing Resume in background..."),
-                                    indicator: "blue"
-                                });
-
-                                // listen for realtime event
-                                frappe.realtime.on(
-                                    "resume_parsing_done_" + req_id,
-                                    (data) => {
-                                        frappe.msgprint({
-                                            title: __("Resume Parsed"),
-                                            indicator: "green",
-                                            message: __(
-                                                `Applicant <b>${data.applicant_name}</b> created.`
-                                            )
-                                        });
-
-                                        frm.reload_doc();
-                                    }
-                                );
-                            }
-                        }
-                    });
-
-                }
-            });
-
-        });
         // Load custom Job Openings bundle if not already loaded
         // Only render custom Vue app in edit mode (not when creating new document)
-        if (!frm.doc.name || !frm.doc.name.includes("new-job-opening")) {
+        if (false && !frm.doc.name || !frm.doc.name.includes("new-job-opening")) {
+            return
             frappe.require("job_openings.bundle.js").then(() => {
                 if (!frappe.custom_job_openings) {
                     frappe.custom_job_openings = new frappe.ui.JobOpenings({
