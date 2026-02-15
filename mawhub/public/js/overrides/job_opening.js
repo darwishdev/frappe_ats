@@ -5,6 +5,10 @@ frappe.ui.form.on("Job Opening", {
     refresh(frm) {
         console.log("frm is" , frm.attachments.attachment_uploaded)
         const original = frm.attachments.attachment_uploaded;
+        console.log("proggesss")
+        frappe.realtime.on("job_info_progress", (data) => {
+            console.log("progress:", data);
+        });
 
         frm.attachments.attachment_uploaded = function(attachment) {
             // 1️⃣ call original behavior
@@ -63,8 +67,7 @@ frappe.ui.form.on("Job Opening", {
         })
         // Load custom Job Openings bundle if not already loaded
         // Only render custom Vue app in edit mode (not when creating new document)
-        if (false && !frm.doc.name || !frm.doc.name.includes("new-job-opening")) {
-            return
+        if (!frm.doc.name || !frm.doc.name.includes("new-job-opening")) {
             frappe.require("job_openings.bundle.js").then(() => {
                 if (!frappe.custom_job_openings) {
                     frappe.custom_job_openings = new frappe.ui.JobOpenings({

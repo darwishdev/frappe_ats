@@ -23,6 +23,11 @@ class CustomJobOpening(JobOpening):
     def fetch_job_info(self):
         steps_rows = self.get("custom_pipeline_steps") or []
         applicants_rows = self.get("custom_applicants") or []
+        frappe.publish_realtime(
+                event="job_info_progress",
+                message={"status": "started"},
+                user=frappe.session.user
+            )
 
         # -------------------------
         # step index
