@@ -22,19 +22,8 @@ frappe.ui.form.on("Job Opening", {
                 console.log("res is" , res)
             })
         })
-        // Load custom Job Openings bundle if not already loaded
-        // Only render custom Vue app in edit mode (not when creating new document)
-        // if (!frm.doc.name || !frm.doc.name.includes("new-job-opening")) {
-            //     frappe.require("job_openings.bundle.js").then(() => {
-                //         if (!frappe.custom_job_openings) {
-                    //             frappe.custom_job_openings = new frappe.ui.JobOpenings({
-                        //                 wrapper: $(frm.wrapper).find(".form-layout"),
-                        //                 page: frm.page || null,
-                        //                 frm: frm,  // pass the actual frm
-                        //             });
-                    //         }
-                //     });
-            // }
+        
+
     },
 });
 function ensure_vue_root(frm) {
@@ -71,15 +60,25 @@ function toggle_custom_view(frm) {
         $layout.hide();
         vue_wrapper.show();
 
-        if (!frappe.custom_job_openings) {
-            frappe.require("job_openings.bundle.js").then(() => {
-                frappe.custom_job_openings = new frappe.ui.JobOpenings({
-                    wrapper: vue_wrapper,
-                    page: frm.page || null,
-                    frm: frm,
-                });
-            });
+        // Destroy existing Vue instance if it exists
+        if (frappe.custom_job_openings) {
+            // Clean up the old instance
+            if (typeof frappe.custom_job_openings.$destroy === 'function') {
+                frappe.custom_job_openings.$destroy();
+            }
+            // Clear the wrapper content
+            vue_wrapper.empty();
+            frappe.custom_job_openings = null;
         }
+
+        // Always create a new Vue app instance with current job context
+        frappe.require("job_openings.bundle.js").then(() => {
+            frappe.custom_job_openings = new frappe.ui.JobOpenings({
+                wrapper: vue_wrapper,
+                page: frm.page || null,
+                frm: frm,
+            });
+        });
 
     } else {
         vue_wrapper.hide();

@@ -11,6 +11,7 @@ import ApplicantComments from "./components/ApplicantComments.vue";
 const { proxy } = getCurrentInstance();
 const frappe = proxy.$frappe;
 const frm = proxy.$frm;
+console.log(frm);
 
 // State
 const job = ref(null);
@@ -945,6 +946,7 @@ const candidateActions = [
 ];
 
 onMounted(() => {
+  jobId.value = frappe.get_route()[2];
   getJobOpening();
 });
 </script>
