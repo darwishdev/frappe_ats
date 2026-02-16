@@ -1,5 +1,6 @@
 import hashlib
 from typing import   Iterator, List, Protocol
+import frappe
 from frappe.model.document import Document
 from mawhub.app.job.agent.document_parser_agent import  DocumentParserEvent, DocumentParserWorkflow, ParsedDocumentFinalEvent
 from mawhub.app.job.agent.job_opening_parser_agent import JobOpeningParserWorkflow
@@ -14,7 +15,7 @@ class ParsedDocumentUsecaseInterface(Protocol):
             file_path:str,
             document_text:str,
             request_id:str
-    )->Iterator[DocumentParserEvent]: ...
+    )->Iterator[dict]: ...
 	def parsed_document_bulk_create(
         self,
         payload:List[ParsedDocumentDTO],
@@ -54,11 +55,13 @@ class ParsedDocumentUsecase:
         file_path: str,
         document_text: str,
         request_id: str
-    )->Iterator[DocumentParserEvent]:
+    )->Iterator[dict]:
         def callback(final_event_data: ParsedDocumentFinalEvent):
             db_req = parsed_document_agent_to_dto(final_event_data,file_path,text_hash,request_id)
             try:
-                self.parsed_document_create_update(db_req)
+                parsed_doc = self.parsed_document_create_update(db_req)
+                frappe.db.commit()
+                return parsed_doc
             except Exception as e:
                 raise Exception(f"failed writing the document to db : {e} : body: {db_req}")
 
@@ -73,17 +76,27 @@ class ParsedDocumentUsecase:
             )
             if cache_result:
                 cache_name , cached_data = cache_result
-                print(f"cache name is {cache_name}")
-                callback(cached_data)
                 yield {
                     "event":"final" ,
                     "data": cached_data
                 }
+                doc = callback(cached_data)
+                yield {
+                    "event":"db_save" ,
+                    "data": str(doc.name)
+                }
+                return
+
             for event in self.document_parser_agent.run(document_text):
-                yield event
+                yield {"event" : event["event"] ,"data" : event["data"]}
                 if event["event"] == "final":
                     final_event_data = event["data"]
-                    callback(final_event_data)
+                    doc = callback(final_event_data)
+                    yield {
+                        "event":"db_save" ,
+                        "data": str(doc.name)
+                    }
+                    print(f"finalevent is {event['event']}")
         except Exception as e:
             yield {"event" : "error" , "data" : str(e)}
 

@@ -225,8 +225,6 @@ class DocumentParserWorkflow:
         document_text: str,
         model_overrides: Optional[Dict[str, str]] = None
     ) -> Iterator[DocumentParserEvent]:
-        print("text coming from the pdf")
-        print(document_text)
         overrides = model_overrides or {}
         cache_key = self.get_text_hash(document_text)
         if self.get_cache_fn:

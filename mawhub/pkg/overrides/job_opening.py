@@ -200,8 +200,32 @@ class CustomJobOpening(JobOpening):
                 "steps_map": steps_map,
                 }
         return job_info
+    def sync_pipeline_steps(self):
+        pipeline_name = self.get("custom_pipeline")
+        if not pipeline_name:
+            return
+
+        pipeline_doc = frappe.get_doc("Job Pipeline", pipeline_name)
+
+        source_steps = pipeline_doc.get("steps") or []
+        if not source_steps:
+            return
+
+        # rebuild table (simplest + safest)
+        self.set("custom_pipeline_steps", [])
+
+        for step in source_steps:
+            self.append("custom_pipeline_steps", {
+                "step_name": step.get("step_name"),
+                "step_code": step.get("step_code"),
+                "step_type": step.get("step_type"),
+                # copy only the fields that actually exist in Pipeline Step child doctype
+            })
     def before_save(self) -> None:
+
+        self.sync_pipeline_steps()
         if self.is_new():
+            self.sync_pipeline_steps()
             return
 
         self.handle_applicant_invalidation()

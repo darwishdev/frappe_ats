@@ -1,8 +1,12 @@
 frappe.listview_settings['Job Opening'] = {
     onload: function(listview) {
         // Store pipeline data for use in formatters
+
+        frappe.realtime.on(`document_parser`, (data) => {
+            console.log("parser progress:", data);
+        });
         listview.pipeline_data = {};
-        
+
         setTimeout(() => {
             frappe.call({
                 method: "mawhub.job_opening_step_list",
@@ -12,19 +16,19 @@ frappe.listview_settings['Job Opening'] = {
                 console.log("resp is" , resp);
                 if (resp.message) {
                     listview.pipeline_data = resp.message;
-                    
+
                     // Update DOM directly for each job
                     Object.keys(resp.message).forEach(jobName => {
                         const container = document.getElementById(`pipeline-steps-${jobName}`);
                         if (container) {
                             const pipeline_steps = resp.message[jobName] || [];
-                            
+
                             if (pipeline_steps.length === 0) {
                                 container.innerHTML = '<span class="text-muted">No steps</span>';
                             } else {
                                 const stepsHtml = pipeline_steps.map(step => `
-                                    <div class="pipeline-step" 
-                                         data-job="${jobName}" 
+                                    <div class="pipeline-step"
+                                         data-job="${jobName}"
                                          data-step="${step.step_code}"
                                          style="cursor: pointer;"
                                          onclick="window.location.hash = '#job-opening/${jobName}?step=${step.step_code}'">
@@ -32,7 +36,7 @@ frappe.listview_settings['Job Opening'] = {
                                         <span class="step-label">${step.step_name}</span>
                                     </div>
                                 `).join('');
-                                
+
                                 container.innerHTML = stepsHtml;
                             }
                         }

@@ -41,7 +41,8 @@ def parsed_document_parse(path: str):
             at_front=True,
             file_path=path,
             document_text=full_text,
-            request_id=request_id
+            request_id=request_id,
+            user=frappe.session.user
         )
         frappe.enqueue(
             method="mawhub.api.mawhub_job_opening_api.job_opening_parse",
@@ -70,36 +71,42 @@ def parsed_document_parse(path: str):
             "message": f"Failed to enqueue job: {str(e)}"
         }
 @frappe.whitelist(methods=["POST", "GET"], allow_guest=True)
-def parsed_document_parse_bg(file_path:str ,document_text: str, request_id: str):
-    print("bg loadeddd")
+def parsed_document_parse_bg(file_path:str ,document_text: str, request_id: str,user:str):
     if document_text == "":
         document_text = extract_text_from_pdf(file_path)
-    return app_container.job_usecase.parsed_document.parse_document(file_path,document_text,request_id),
-    future_doc =executor.submit(
-        full_text
-    )
-    future_job = executor.submit(
-        app_container.job_usecase.job_opening.job_opening_parse,
-        full_text
-    )
-    # with ThreadPoolExecutor(max_workers=2) as executor:
-    #     # Submit both tasks
+    events = app_container.job_usecase.parsed_document.parse_document(file_path,document_text,request_id)
+    for event in events:
+        frappe.publish_realtime(
+            event=f"document_parser",
+            message=event,
+            user=user
+        )
     #
-    #     # Wait for both to complete and get results
-    #     doc = future_doc.result()
-    #     job = future_job.result()
-
-    return "bye"
+    # future_doc =executor.submit(
+    #     full_text
+    # )
+    # future_job = executor.submit(
+    #     app_container.job_usecase.job_opening.job_opening_parse,
+    #     full_text
+    # )
+    # # with ThreadPoolExecutor(max_workers=2) as executor:
+    # #     # Submit both tasks
+    # #
+    # #     # Wait for both to complete and get results
+    # #     doc = future_doc.result()
+    # #     job = future_job.result()
+    #
+    # return "bye"
     # payload : ParsedDocumentParseRequest = {
     #     "path" : path,
     #     "parent_type" : parent_type,
     #     "parent_id" : parent_id
     # }
-    full_text = extract_text_from_pdf(path)
-    doc =  app_container.job_usecase.parsed_document.parse_document(full_text)
-    job =  app_container.job_usecase.job_opening.job_opening_parse(full_text)
-    return "bye"
-    # for event in agent_events:
+    # full_text = extract_text_from_pdf(path)
+    # doc =  app_container.job_usecase.parsed_document.parse_document(full_text)
+    # job =  app_container.job_usecase.job_opening.job_opening_parse(full_text)
+    # return "bye"
+    # # for event in agent_events:
     #     print("event is")
     #     print(event)
     #     if event["event"] == "final":
