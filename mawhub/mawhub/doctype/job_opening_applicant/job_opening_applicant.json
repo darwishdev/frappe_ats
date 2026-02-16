@@ -7,7 +7,7 @@
  "engine": "InnoDB",
  "field_order": [
   "job_applicant",
-  "step",
+  "step_code",
   "invalidated_at",
   "invalidated_by",
   "column_break_cava",
@@ -35,13 +35,6 @@
    "fieldtype": "Column Break"
   },
   {
-   "fieldname": "step",
-   "fieldtype": "Link",
-   "label": "Step",
-   "options": "Pipeline Step",
-   "reqd": 1
-  },
-  {
    "fieldname": "comment",
    "fieldtype": "Small Text",
    "label": "Comment"
@@ -56,13 +49,20 @@
    "fieldtype": "Link",
    "label": "Invalidated By",
    "options": "User"
+  },
+  {
+   "fieldname": "step_code",
+   "fieldtype": "Data",
+   "label": "Step Code",
+   "options": "Pipeline Step",
+   "reqd": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-02-06 21:14:02.841024",
+ "modified": "2026-02-16 16:16:03.655971",
  "modified_by": "Administrator",
  "module": "Mawhub",
  "name": "Job Opening Applicant",

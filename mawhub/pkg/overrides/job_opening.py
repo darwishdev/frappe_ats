@@ -32,15 +32,17 @@ class CustomJobOpening(JobOpening):
         # -------------------------
         # step index
         # -------------------------
-        step_id_to_row = {s.name: s for s in steps_rows}
+        step_id_to_row = {s.step_code: s for s in steps_rows}
 
         # -------------------------
         # group applicants by step_code
         # -------------------------
-        steps_map: Dict[str, List[JobPipelineStepApplicantDTO]] = {}
+        steps_map: Dict[str, List[JobPipelineStepApplicantDTO]] = {
+                "All" : []
+        }
 
         for a in applicants_rows:
-            step_row = step_id_to_row.get(a.get("step"))
+            step_row = step_id_to_row.get(a.get("step_code"))
             if not step_row:
                 continue
             if a.get("invalidated_at"):
@@ -54,13 +56,20 @@ class CustomJobOpening(JobOpening):
                 "applicant_resume": a.get("applicant_resume"),
                 "comment": a.get("comment") or "",
             }
-
+            steps_map['All'].append(dto)
             steps_map.setdefault(step_code, []).append(dto)
 
         # -------------------------
         # steps list
         # -------------------------
-        steps: List[JobPipelineStepDTO] = []
+        steps: List[JobPipelineStepDTO] = [{
+                "name": 'All',
+                "step_code": "All",
+                "step_name": "All",
+                "step_type": "All",
+                "step_idx": 1,
+                "applicant_count": len(applicants_rows),
+            }]
 
         for s in steps_rows:
             step_code = s.get("step_code")
@@ -205,7 +214,7 @@ class CustomJobOpening(JobOpening):
         if not pipeline_name:
             return
 
-        pipeline_doc = frappe.get_doc("Job Pipeline", pipeline_name)
+        pipeline_doc = frappe.get_doc("Job Pipeline", str(pipeline_name))
 
         source_steps = pipeline_doc.get("steps") or []
         if not source_steps:
@@ -222,13 +231,11 @@ class CustomJobOpening(JobOpening):
                 # copy only the fields that actually exist in Pipeline Step child doctype
             })
     def before_save(self) -> None:
-
-        self.sync_pipeline_steps()
         if self.is_new():
             self.sync_pipeline_steps()
             return
 
-        self.handle_applicant_invalidation()
+        # self.handle_applicant_invalidation()
         self.ensure_project()
 
     # -------------------------------------------------
@@ -269,7 +276,7 @@ class CustomJobOpening(JobOpening):
         steps: List[Document] = self.get_pipeline_steps()
         if not steps:
             frappe.throw(_("Job Opening has no pipeline steps"))
-        return str(steps[0].name)
+        return str(steps[0].get("step_code"))
 
     def find_step_by_code(self, step_code: str) -> Optional[Document]:
         steps: List[Document] = self.get_pipeline_steps()
@@ -279,16 +286,10 @@ class CustomJobOpening(JobOpening):
                 None
                 )
 
-    def resolve_step_name(self, step_code: Optional[str]) -> str:
-        if not step_code or step_code in ("null", "all"):
+    def resolve_step_code(self, step_code: Optional[str]) -> str:
+        if not step_code or step_code in ("" ,"null", "all","All"):
             return self.get_default_step_name()
-
-        step: Optional[Document] = self.find_step_by_code(step_code)
-        if not step:
-            err = _(f"Step code '{step_code}' not found in pipeline")
-            raise frappe.ValidationError(err)
-
-        return str(step.name)
+        return step_code
 
     # -------------------------------------------------
     # applicant table helpers
@@ -324,20 +325,21 @@ class CustomJobOpening(JobOpening):
             resume_id: str,
             comment: Optional[str] = None,
             ) -> Document:
-        step_name: str = self.resolve_step_name(step_code)
-
+        step: str = self.resolve_step_code(step_code)
         if not isinstance(self.get("custom_applicants"), list):
             self.set("custom_applicants", [])
 
         existing: Optional[Document] = self._get_active_applicant_row(applicant_id)
 
         if existing:
+            if existing.get("step_code") == step:
+                raise frappe.ValidationError(f"Applicant: {applicant_id} is already on this step :{step_code}")
             existing.set("invalidated_at", now_datetime())
             existing.set("invalidated_by", frappe.session.user)
 
         new_row: Document = self.append("custom_applicants", {
             "job_applicant": applicant_id,
-            "step": step_name,
+            "step_code": step,
             "applicant_resume": resume_id,
             "comment": comment,
             })
@@ -455,7 +457,7 @@ class CustomJobOpening(JobOpening):
             new_step_code: str,
             comment: Optional[str] = None
             ) -> Document:
-        step_name: str = self.resolve_step_name(new_step_code)
+        new_step: str = self.resolve_step_code(new_step_code)
 
         row: Optional[Document] = self._get_active_applicant_row(applicant_id)
         if not row:
@@ -468,7 +470,7 @@ class CustomJobOpening(JobOpening):
 
         new_row: Document = self.append("custom_applicants", {
             "job_applicant": applicant_id,
-            "step": step_name,
+            "step_code": new_step,
             "applicant_resume": resume_id,
             "comment": comment,
             })
@@ -585,31 +587,31 @@ class CustomJobOpening(JobOpening):
     # invalidation tracker
     # -------------------------------------------------
 
-    def handle_applicant_invalidation(self) -> None:
-        old_doc: Optional[Document] = self.get_doc_before_save()
-        if not old_doc:
-            return
-
-        if not self.has_value_changed("custom_applicants"):
-            return
-
-        new_rows = self.get("custom_applicants")
-        old_rows = old_doc.get("custom_applicants")
-
-        if not isinstance(new_rows, list) or not isinstance(old_rows, list):
-            return
-
-        new_names = {r.name for r in new_rows}
-
-        for row in old_rows:
-            if row.name in new_names:
-                continue
-
-            self.append("custom_applicants", {
-                **row.as_dict(),
-                "invalidated_at": now_datetime(),
-                "invalidated_by": frappe.session.user
-                })
+    # def handle_applicant_invalidation(self) -> None:
+    #     old_doc: Optional[Document] = self.get_doc_before_save()
+    #     if not old_doc:
+    #         return
+    #
+    #     if not self.has_value_changed("custom_applicants"):
+    #         return
+    #
+    #     new_rows = self.get("custom_applicants")
+    #     old_rows = old_doc.get("custom_applicants")
+    #
+    #     if not isinstance(new_rows, list) or not isinstance(old_rows, list):
+    #         return
+    #
+    #     new_names = {r.name for r in new_rows}
+    #
+    #     for row in old_rows:
+    #         if row.name in new_names:
+    #             continue
+    #
+    #         self.append("custom_applicants", {
+    #             **row.as_dict(),
+    #             "invalidated_at": now_datetime(),
+    #             "invalidated_by": frappe.session.user
+    #             })
 
     # -------------------------------------------------
     # history

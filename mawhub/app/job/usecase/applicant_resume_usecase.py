@@ -155,7 +155,9 @@ class ApplicantResumeUsecase:
         except Exception:
             frappe.log_error(frappe.get_traceback(), "PDF Read Failed")
             raise ResumeParseError("Failed to read document")
-        def callback(name:str , event_data: AgentFinalEvent):
+        print("usecase")
+        def callback(name:str , event_data: AgentFinalEvent)->Document:
+            print("callback")
             try:
                 job_applicant_params = job_applicant_dto_from_agent(event_data , path)
                 applicant_doc = self.repo.job_applicant.create_or_update(job_applicant_params)
@@ -165,13 +167,9 @@ class ApplicantResumeUsecase:
                     step=step,
                     resume_id=name,
                 )
+                return applicant_doc
 
-                yield {
-                        "event" : "callback_called" ,
-                        "data" : {
-                            "applicant_name" : str(applicant_doc.name)
-                            }
-                       }
+
             except Exception:
                 frappe.log_error(frappe.get_traceback(), "Callback Failed")
                 raise ResumePersistenceError("Applicant creation/link failed")
@@ -188,23 +186,26 @@ class ApplicantResumeUsecase:
             )
             if cached_result:
                 cached_name , cached = cached_result
-                callback(cached_name , cached)
                 yield {"event" : "final" , "data" : cached}
+                doc = callback(cached_name , cached)
+                yield {"event" : "applicant_creation" , "data" : {"name" : str(doc.name)}}
                 return
         except Exception:
             frappe.log_error(frappe.get_traceback(), "Resume Cache Read Failed")
-        try:
-            for event in self.resume_agent.run(document_text):
-                if event["event"] == "final":
-                    final_event = event["data"]
-                # json_data = json.dumps(event , default=str)
-                yield {
-                        "event" : event["event"],
-                        "data" : event["data"]
-                        }
-        except Exception:
-            frappe.log_error(frappe.get_traceback(), "Resume Agent Failed")
-            raise ResumeAgentError("AI agent failed")
+        if not cached:
+            try:
+                for event in self.resume_agent.run(document_text):
+                    print("final")
+                    if event["event"] == "final":
+                        final_event = event["data"]
+                    # json_data = json.dumps(event , default=str)
+                    yield {
+                            "event" : event["event"],
+                            "data" : event["data"]
+                            }
+            except Exception:
+                frappe.log_error(frappe.get_traceback(), "Resume Agent Failed")
+                raise ResumeAgentError("AI agent failed")
 
         if not final_event:
             return
@@ -216,7 +217,9 @@ class ApplicantResumeUsecase:
                     path)
             resume_doc = self.applicant_resume_create_update(res_dto)
             yield {"event" : "resume_creation" , "data" : {"name" : str(resume_doc.name)}}
-            callback(str(resume_doc.name) , final_event)
+            print("resume creatation")
+            doc = callback(str(resume_doc.name) , final_event)
+            yield {"event" : "applicant_creation" , "data" : {"name" : str(doc.name)}}
         except Exception as e:
             frappe.log_error(frappe.get_traceback(), "Resume Agent Failed")
             frappe.db.rollback()
