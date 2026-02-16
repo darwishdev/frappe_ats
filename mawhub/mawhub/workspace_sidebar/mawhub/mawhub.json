@@ -5,15 +5,15 @@
  "header_icon": "work",
  "idx": 0,
  "items": [
-  {
+{
    "child": 0,
    "collapsible": 1,
-   "icon": "list",
+   "icon": "layout-dashboard",
    "indent": 0,
    "keep_closed": 0,
-   "label": "Home",
-   "link_to": "Mawhub",
-   "link_type": "Workspace",
+   "label": "Dashboard",
+   "link_to": "Recruitment",
+   "link_type": "Dashboard",
    "show_arrow": 0,
    "type": "Link"
   },

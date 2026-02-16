@@ -64,14 +64,16 @@ class ParsedDocumentUsecase:
 
         try:
             text_hash = hashlib.sha256(document_text.strip().encode("utf-8")).hexdigest()
-            cached_data = get_cached_output(
+            cache_result = get_cached_output(
                     doctype="Parsed Document",
                     key_field="name",
                     key_value=text_hash,
                     expected_type=ParsedDocumentFinalEvent,
                     output_field="output"
             )
-            if cached_data:
+            if cache_result:
+                cache_name , cached_data = cache_result
+                print(f"cache name is {cache_name}")
                 callback(cached_data)
                 yield {
                     "event":"final" ,

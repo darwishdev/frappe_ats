@@ -72,10 +72,6 @@ def parsed_document_parse(path: str):
 @frappe.whitelist(methods=["POST", "GET"], allow_guest=True)
 def parsed_document_parse_bg(file_path:str ,document_text: str, request_id: str):
     print("bg loadeddd")
-    print("bg loadeddd")
-    print("bg loadeddd")
-    print("bg loadeddd")
-    print("bg loadeddd")
     if document_text == "":
         document_text = extract_text_from_pdf(file_path)
     return app_container.job_usecase.parsed_document.parse_document(file_path,document_text,request_id),

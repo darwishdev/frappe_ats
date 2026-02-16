@@ -1,6 +1,6 @@
 from __future__ import annotations
 import json
-from typing import TYPE_CHECKING, List, Optional, Dict
+from typing import TYPE_CHECKING, List, Optional, Dict, cast
 
 import frappe
 from frappe import _
@@ -338,6 +338,92 @@ class CustomJobOpening(JobOpening):
 
         return True
 
+
+
+    @frappe.whitelist()
+    def copy_applicant_to_another_job(
+            self,
+            applicant_id: str,
+            new_job_name: str,
+            new_step_code: str,
+            comment: Optional[str] = None
+            ):
+        row: Optional[Document] = self._get_active_applicant_row(applicant_id)
+        if not row:
+            raise frappe.ValidationError(_("Applicant not exists on this job"))
+
+        resume_id  = row.get("applicant_resume")
+        new_job = frappe.get_doc("Job Opening" , new_job_name)
+        if not new_job:
+            raise frappe.NotFound("destination_job_not_found")
+
+        new_job_doc = cast(CustomJobOpening, new_job)
+        new_job_doc.link_applicant_to_step(
+                applicant_id=applicant_id,
+                step_code=new_step_code,
+                resume_id=str(resume_id),
+                comment=comment
+                )
+        return row
+    @frappe.whitelist()
+    def move_applicant_to_another_job(
+            self,
+            applicant_id: str,
+            new_job_name: str,
+            new_step_code: str,
+            comment: Optional[str] = None
+            ):
+        applicant_row = self.copy_applicant_to_another_job(applicant_id,new_job_name,new_step_code,comment)
+        applicant_row.set("invalidated_at", now_datetime())
+        applicant_row.set("invalidated_by", frappe.session.user)
+        return applicant_row
+
+    @frappe.whitelist()
+    def move_applicants_to_another_job(
+            self,
+            applicant_ids: List[str],
+            new_job_name: str,
+            new_step_code: str,
+            comment: Optional[str] = None
+            ):
+        moved_rows = []
+
+        for applicant_id in applicant_ids or []:
+            row = self.move_applicant_to_another_job(
+                applicant_id=applicant_id,
+                new_job_name=new_job_name,
+                new_step_code=new_step_code,
+                comment=comment
+            )
+            if row:
+                moved_rows.append(row)
+
+        return moved_rows
+
+
+    @frappe.whitelist()
+    def copy_applicants_to_another_job(
+            self,
+            applicant_ids: List[str],
+            new_job_name: str,
+            new_step_code: str,
+            comment: Optional[str] = None
+            ):
+        copied_rows = []
+
+        for applicant_id in applicant_ids or []:
+            row = self.copy_applicant_to_another_job(
+                applicant_id=applicant_id,
+                new_job_name=new_job_name,
+                new_step_code=new_step_code,
+                comment=comment
+            )
+            if row:
+                copied_rows.append(row)
+
+        return copied_rows
+
+        # return new_row
     @frappe.whitelist()
     def move_applicant_to_another_step(
             self,
@@ -429,6 +515,7 @@ class CustomJobOpening(JobOpening):
                     )
 
         return moved
+
 
     # -------------------------------------------------
     # validation
