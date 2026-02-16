@@ -382,7 +382,6 @@ class CustomJobOpening(JobOpening):
         new_job = frappe.get_doc("Job Opening" , new_job_name)
         if not new_job:
             raise frappe.NotFound("destination_job_not_found")
-
         new_job_doc = cast(CustomJobOpening, new_job)
         new_job_doc.link_applicant_to_step(
                 applicant_id=applicant_id,
@@ -390,6 +389,9 @@ class CustomJobOpening(JobOpening):
                 resume_id=str(resume_id),
                 comment=comment
                 )
+        new_job_doc.save()
+
+        print("new_job is" , new_job_doc.get("custom_applicants"))
         return row
     @frappe.whitelist()
     def move_applicant_to_another_job(

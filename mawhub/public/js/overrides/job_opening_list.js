@@ -11,7 +11,7 @@ frappe.listview_settings['Job Opening'] = {
             frappe.call({
                 method: "mawhub.job_opening_step_list",
                 type: "GET",
-                args: {job_names : listview.data.map(d => d.name).join(',')}
+                args: {job_names : ''}
             }).then(resp => {
                 console.log("resp is" , resp);
                 if (resp.message) {
@@ -88,7 +88,10 @@ frappe.listview_settings['Job Opening'] = {
                     </div>`;
         }
     },
-    filters: [[
+    filters: [
+        [
         "status", "=", "Open"
-    ]],
+    ],
+    ["owner", "=", "Administrator"]
+    ],
 };
