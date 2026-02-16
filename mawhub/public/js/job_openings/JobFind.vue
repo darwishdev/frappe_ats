@@ -604,6 +604,126 @@ const shareCandidate = () => {
   dialog.show();
 };
 
+// Copy to Job Dialog
+const copyToJob = () => {
+  if (!activeCandidate.value) return;
+
+  const dialog = new frappe.ui.Dialog({
+    title: `Copy ${activeCandidate.value.job_applicant} to Another Job`,
+    fields: [
+      {
+        fieldtype: 'Link',
+        fieldname: 'new_job_name',
+        label: 'Destination Job',
+        options: 'Job Opening',
+        reqd: 1,
+        description: 'Select the job to copy this candidate to',
+        get_query: function() {
+          return {
+            filters: {
+              name: ['!=', jobId.value],
+              status: 'Open'
+            }
+          };
+        },
+        onchange: function() {
+          const selectedJob = this.get_value();
+          if (selectedJob) {
+            // Fetch steps for selected job
+            frappe.call({
+              method: 'frappe.client.get',
+              args: {
+                doctype: 'Job Opening',
+                name: selectedJob
+              },
+              callback: function(r) {
+                if (r.message && r.message.custom_pipeline_steps) {
+                  const steps = r.message.custom_pipeline_steps;
+                  const stepOptions = steps.map(s => s.step_name).join('\n');
+                  dialog.set_df_property('new_step', 'options', stepOptions);
+                }
+              }
+            });
+          }
+        }
+      },
+      {
+        fieldtype: 'Select',
+        fieldname: 'new_step',
+        label: 'Target Step',
+        reqd: 1,
+        description: 'Select which step to add the candidate to'
+      },
+      {
+        fieldtype: 'Small Text',
+        fieldname: 'comment',
+        label: 'Comment (Optional)',
+        description: 'Add a note about this copy operation'
+      }
+    ],
+    primary_action_label: 'Copy Candidate',
+    primary_action: async (values) => {
+      if (!values.new_job_name) {
+        frappe.msgprint({
+          title: 'Validation Error',
+          message: 'Please select a destination job',
+          indicator: 'orange'
+        });
+        return;
+      }
+
+      if (!values.new_step) {
+        frappe.msgprint({
+          title: 'Validation Error',
+          message: 'Please select a target step',
+          indicator: 'orange'
+        });
+        return;
+      }
+
+      // Get step_code from step_name
+      frappe.call({
+        method: 'frappe.client.get',
+        args: {
+          doctype: 'Job Opening',
+          name: values.new_job_name
+        },
+        callback: function(r) {
+          if (r.message && r.message.custom_pipeline_steps) {
+            const steps = r.message.custom_pipeline_steps;
+            const selectedStep = steps.find(s => s.step_name === values.new_step);
+            
+            if (selectedStep) {
+              // Now call the copy method
+              frm.call('copy_applicant_to_another_job', {
+                applicant_id: activeCandidate.value.job_applicant,
+                new_job_name: values.new_job_name,
+                new_step_code: selectedStep.step_code,
+                comment: values.comment || ''
+              }).then(() => {
+                frappe.show_alert({
+                  message: `Candidate copied to ${values.new_job_name}`,
+                  indicator: 'green'
+                });
+                dialog.hide();
+              }).catch((error) => {
+                frappe.msgprint({
+                  title: 'Error',
+                  message: 'Failed to copy candidate to another job',
+                  indicator: 'red'
+                });
+                console.error('Failed to copy candidate:', error);
+              });
+            }
+          }
+        }
+      });
+    }
+  });
+
+  dialog.show();
+};
+
 // Assign Interview Dialog
 const assignInterview = () => {
   if (!activeCandidate.value) return;
@@ -774,9 +894,7 @@ const candidateActions = [
   {
     label: "Copy To Job",
     icon: "fa-copy",
-    action: () => {
-      frappe.msgprint("Copy To Job clicked");
-    },
+    action: copyToJob,
     variant: "default"
   },
   {
