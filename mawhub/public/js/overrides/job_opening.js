@@ -8,6 +8,8 @@ frappe.ui.form.on("Job Opening", {
         console.log("proggesss")
         const room = `resume_parse:${frm.doc.name}`;
         frappe.realtime.subscribe(room);
+        console.log(room);
+        
         frappe.realtime.on(`resume_parser_progress:${frm.doc.name}`, (data) => {
             console.log("progress:", data);
         });
@@ -70,7 +72,7 @@ frappe.ui.form.on("Job Opening", {
         // Load custom Job Openings bundle if not already loaded
         // Only render custom Vue app in edit mode (not when creating new document)
         if (!frm.doc.name || !frm.doc.name.includes("new-job-opening")) {
-            return
+            // return
             frappe.require("job_openings.bundle.js").then(() => {
                 if (!frappe.custom_job_openings) {
                     frappe.custom_job_openings = new frappe.ui.JobOpenings({
