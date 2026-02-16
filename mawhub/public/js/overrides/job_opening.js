@@ -9,10 +9,22 @@ frappe.ui.form.on("Job Opening", {
         frappe.realtime.on(`resume_parser_progress:${frm.doc.name}`, (data) => {
             console.log("progress:", data);
         });
-        frm._custom_vue_mode = frm._custom_vue_mode || false;
+        
+        // Initialize custom view mode as true (start with Vue view)
+        if (frm._custom_vue_mode === undefined) {
+            frm._custom_vue_mode = true;
+        }
+        
+        // Always reinitialize the custom Vue view on refresh to handle navigation between jobs
+        if (frm._custom_vue_mode && (!frm.doc.name || !frm.doc.name.includes("new-job-opening"))) {
+            setTimeout(() => {
+                initialize_custom_view(frm);
+            }, 100);
+        }
+        
         frm.attachments.attachment_uploaded = (attachment) => attachment_uploaded(frm,attachment)
         frm.add_custom_button(
-            __("Toggle Custom View"),
+            __("Edit Job"),
             () => toggle_custom_view(frm),
             __("View")
         );
@@ -22,8 +34,6 @@ frappe.ui.form.on("Job Opening", {
                 console.log("res is" , res)
             })
         })
-        
-
     },
 });
 function ensure_vue_root(frm) {
@@ -46,6 +56,47 @@ function ensure_vue_root(frm) {
 
     frm._vue_root_ready = true;
 }
+
+function initialize_custom_view(frm) {
+    if (!frm._vue_root_ready) {
+        ensure_vue_root(frm);
+        setTimeout(() => initialize_custom_view(frm), 100);
+        return;
+    }
+
+    const $layout = $(frm.wrapper).find(".form-layout");
+    const vue_wrapper = $("#custom-vue-root");
+
+    // Hide form, show Vue view
+    $layout.hide();
+    vue_wrapper.show();
+
+    // Create new Vue instance
+    create_vue_instance(frm, vue_wrapper);
+}
+
+function create_vue_instance(frm, vue_wrapper) {
+    // Destroy existing Vue instance if it exists
+    if (frappe.custom_job_openings) {
+        // Clean up the old instance
+        if (typeof frappe.custom_job_openings.$destroy === 'function') {
+            frappe.custom_job_openings.$destroy();
+        }
+        // Clear the wrapper content
+        vue_wrapper.empty();
+        frappe.custom_job_openings = null;
+    }
+
+    // Always create a new Vue app instance with current job context
+    frappe.require("job_openings.bundle.js").then(() => {
+        frappe.custom_job_openings = new frappe.ui.JobOpenings({
+            wrapper: vue_wrapper,
+            page: frm.page || null,
+            frm: frm,
+        });
+    });
+}
+
 function toggle_custom_view(frm) {
     if (!frm._vue_root_ready) {
         ensure_vue_root(frm);
@@ -56,33 +107,26 @@ function toggle_custom_view(frm) {
 
     frm._custom_vue_mode = !frm._custom_vue_mode;
 
+    // Find and update the button text
+    const toggle_button = $(frm.wrapper).find('.btn:contains("Edit Job"), .btn:contains("View Job")').filter(function() {
+        return $(this).text().trim() === "Edit Job" || $(this).text().trim() === "View Job";
+    });
+
     if (frm._custom_vue_mode) {
         $layout.hide();
         vue_wrapper.show();
 
-        // Destroy existing Vue instance if it exists
-        if (frappe.custom_job_openings) {
-            // Clean up the old instance
-            if (typeof frappe.custom_job_openings.$destroy === 'function') {
-                frappe.custom_job_openings.$destroy();
-            }
-            // Clear the wrapper content
-            vue_wrapper.empty();
-            frappe.custom_job_openings = null;
-        }
-
-        // Always create a new Vue app instance with current job context
-        frappe.require("job_openings.bundle.js").then(() => {
-            frappe.custom_job_openings = new frappe.ui.JobOpenings({
-                wrapper: vue_wrapper,
-                page: frm.page || null,
-                frm: frm,
-            });
-        });
-
+        // Create new Vue instance with current context
+        create_vue_instance(frm, vue_wrapper);
+        
+        // Update button text
+        toggle_button.text(__("Edit Job"));
     } else {
         vue_wrapper.hide();
         $layout.show();
+        
+        // Update button text
+        toggle_button.text(__("View Job"));
     }
 }
 function attachment_uploaded(frm,attachment) {
