@@ -34,7 +34,7 @@ const tabs = [
   { key: "profile", label: "Profile" },
   { key: "timeline", label: "Timeline" },
   { key: "communication", label: "Communication" },
-  { key: "review", label: "Review" },
+  // { key: "review", label: "Review" },
   { key: "comments", label: "Comments" },
 ];
 
@@ -605,12 +605,15 @@ const shareCandidate = () => {
   dialog.show();
 };
 
-// Copy to Job Dialog
-const copyToJob = () => {
+// Transfer Candidate to Job (Copy or Move)
+const transferCandidateToJob = (action = 'copy') => {
   if (!activeCandidate.value) return;
 
+  const actionLabel = action === 'copy' ? 'Copy' : 'Move';
+  const actionMethod = action === 'copy' ? 'copy_applicant_to_another_job' : 'move_applicant_to_another_job';
+
   const dialog = new frappe.ui.Dialog({
-    title: `Copy ${activeCandidate.value.job_applicant} to Another Job`,
+    title: `${actionLabel} ${activeCandidate.value.job_applicant} to Another Job`,
     fields: [
       {
         fieldtype: 'Link',
@@ -618,7 +621,7 @@ const copyToJob = () => {
         label: 'Destination Job',
         options: 'Job Opening',
         reqd: 1,
-        description: 'Select the job to copy this candidate to',
+        description: `Select the job to ${action} this candidate to`,
         get_query: function() {
           return {
             filters: {
@@ -659,10 +662,10 @@ const copyToJob = () => {
         fieldtype: 'Small Text',
         fieldname: 'comment',
         label: 'Comment (Optional)',
-        description: 'Add a note about this copy operation'
+        description: `Add a note about this ${action} operation`
       }
     ],
-    primary_action_label: 'Copy Candidate',
+    primary_action_label: `${actionLabel} Candidate`,
     primary_action: async (values) => {
       if (!values.new_job_name) {
         frappe.msgprint({
@@ -695,25 +698,29 @@ const copyToJob = () => {
             const selectedStep = steps.find(s => s.step_name === values.new_step);
             
             if (selectedStep) {
-              // Now call the copy method
-              frm.call('copy_applicant_to_another_job', {
+              // Call the appropriate method based on action
+              frm.call(actionMethod, {
                 applicant_id: activeCandidate.value.job_applicant,
                 new_job_name: values.new_job_name,
                 new_step_code: selectedStep.step_code,
                 comment: values.comment || ''
               }).then(() => {
                 frappe.show_alert({
-                  message: `Candidate copied to ${values.new_job_name}`,
+                  message: `Candidate ${action === 'copy' ? 'copied' : 'moved'} to ${values.new_job_name}`,
                   indicator: 'green'
                 });
                 dialog.hide();
+                // Refresh job data if moved (to remove from current list)
+                if (action === 'move') {
+                  getJobOpening();
+                }
               }).catch((error) => {
                 frappe.msgprint({
                   title: 'Error',
-                  message: 'Failed to copy candidate to another job',
+                  message: `Failed to ${action} candidate to another job`,
                   indicator: 'red'
                 });
-                console.error('Failed to copy candidate:', error);
+                console.error(`Failed to ${action} candidate:`, error);
               });
             }
           }
@@ -723,6 +730,16 @@ const copyToJob = () => {
   });
 
   dialog.show();
+};
+
+// Copy to Job Dialog
+const copyToJob = () => {
+  transferCandidateToJob('copy');
+};
+
+// Move to Job Dialog
+const moveToJob = () => {
+  transferCandidateToJob('move');
 };
 
 // Assign Interview Dialog
@@ -901,9 +918,7 @@ const candidateActions = [
   {
     label: "Move To Job",
     icon: "fa-edit",
-    action: () => {
-      frappe.msgprint("Move To Job clicked");
-    },
+    action: moveToJob,
     variant: "default"
   },
   {
@@ -913,30 +928,24 @@ const candidateActions = [
       if (!activeCandidate.value) return;
       
       frappe.confirm(
-        `Are you sure you want to delete ${activeCandidate.value.job_applicant}?`,
+        `Are you sure you want to remove ${activeCandidate.value.job_applicant} from this job?`,
         () => {
-          frappe.call({
-            method: 'frappe.client.delete',
-            args: {
-              doctype: 'Job Applicant',
-              name: activeCandidate.value.job_applicant
-            },
-            callback: function(r) {
-              frappe.show_alert({
-                message: 'Candidate deleted successfully',
-                indicator: 'green'
-              });
-              // Refresh job data to update the list
-              getJobOpening();
-            },
-            error: function(err) {
-              frappe.msgprint({
-                title: 'Error',
-                message: 'Failed to delete candidate',
-                indicator: 'red'
-              });
-              console.error('Failed to delete candidate:', err);
-            }
+          frm.call('remove_applicant_from_step', {
+            applicant_id: activeCandidate.value.job_applicant
+          }).then(() => {
+            frappe.show_alert({
+              message: 'Candidate removed successfully',
+              indicator: 'green'
+            });
+            // Refresh job data to update the list
+            getJobOpening();
+          }).catch((error) => {
+            frappe.msgprint({
+              title: 'Error',
+              message: 'Failed to remove candidate',
+              indicator: 'red'
+            });
+            console.error('Failed to remove candidate:', error);
           });
         }
       );
@@ -1003,9 +1012,7 @@ onMounted(() => {
             <span class="count">{{ step.applicant_count || 0 }}</span>
           </div>
         </div>
-        <button class="btn btn-sm btn-default">
-          <span class="fa fa-cog"></span> Edit Pipeline
-        </button>
+
       </div>
 
       <!-- Body -->

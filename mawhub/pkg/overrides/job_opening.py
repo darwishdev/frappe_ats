@@ -345,7 +345,7 @@ class CustomJobOpening(JobOpening):
             })
 
         return new_row
-
+     
     @frappe.whitelist()
     def remove_applicant_from_step(
             self,
