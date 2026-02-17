@@ -6,13 +6,17 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "job_applicant",
   "step_code",
-  "invalidated_at",
-  "invalidated_by",
+  "column_break_kcfn",
+  "job_applicant",
   "column_break_cava",
   "applicant_resume",
-  "comment"
+  "section_break_raxm",
+  "comment",
+  "section_break_asdj",
+  "invalidated_at",
+  "column_break_ciyo",
+  "invalidated_by"
  ],
  "fields": [
   {
@@ -24,6 +28,7 @@
    "reqd": 1
   },
   {
+   "allow_in_quick_entry": 1,
    "fieldname": "applicant_resume",
    "fieldtype": "Link",
    "label": "Applicant Resume",
@@ -51,18 +56,35 @@
    "options": "User"
   },
   {
+   "allow_in_quick_entry": 1,
    "fieldname": "step_code",
    "fieldtype": "Data",
    "label": "Step Code",
    "options": "Pipeline Step",
    "reqd": 1
+  },
+  {
+   "fieldname": "column_break_kcfn",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_raxm",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "section_break_asdj",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_ciyo",
+   "fieldtype": "Column Break"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-02-16 16:16:03.655971",
+ "modified": "2026-02-17 01:54:20.942145",
  "modified_by": "Administrator",
  "module": "Mawhub",
  "name": "Job Opening Applicant",

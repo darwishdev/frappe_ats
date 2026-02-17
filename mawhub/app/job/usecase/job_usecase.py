@@ -1,11 +1,9 @@
 from typing import Protocol
 
-from google.genai.client import Client
 
-from mawhub.app.job.agent.document_parser_agent import DocumentParserWorkflow
-from mawhub.app.job.agent.email_agent import CommunicationWorkflow
-from mawhub.app.job.agent.job_opening_parser_agent import JobOpeningParserWorkflow
-from mawhub.app.job.agent.resume_parser_agent import ResumeWorkflow
+from mawhub.app.job.agent.document_parser.document_parser_agent import DocumentParserWorkflow
+from mawhub.app.job.agent.job_opening_parser.job_opening_parser_agent import JobOpeningParserWorkflow
+from mawhub.app.job.agent.resume_parser.resume_parser_agent import ResumeWorkflow
 from mawhub.app.job.repo.job_repo import JobRepoInterface
 from mawhub.app.job.usecase.applicant_resume_usecase import ApplicantResumeUsecase, ApplicantResumeUsecaseInterface
 # from mawhub.app.job.usecase.auth_usecase import AuthUsecase, AuthUsecaseInterface
@@ -21,47 +19,37 @@ class JobUseCaseInterface(Protocol):
     job_applicant: JobApplicantUsecaseInterface
     job_pipeline: JobPipelineUsecaseInterface
     interview: InterviewUsecaseInterface
-    # auth: AuthUsecaseInterface
     parsed_document: ParsedDocumentUsecaseInterface
     applicant_resume: ApplicantResumeUsecaseInterface
-    job_agent: JobOpeningParserWorkflow
-    resume_agent: ResumeWorkflow
-
-    communication_agent: CommunicationWorkflow
-    document_parser_agent: DocumentParserWorkflow
+    # job_agent: JobOpeningParserWorkflow
+    # resume_agent: ResumeWorkflow
+    #
+    # communication_agent: CommunicationWorkflow
+    # document_parser_agent: DocumentParserWorkflow
 
 class JobUseCase:
     job_opening: JobOpeningUsecaseInterface
     job_applicant: JobApplicantUsecaseInterface
     job_pipeline: JobPipelineUsecaseInterface
     interview: InterviewUsecaseInterface
-    # auth: AuthUsecaseInterface
     applicant_resume: ApplicantResumeUsecaseInterface
     parsed_document: ParsedDocumentUsecaseInterface
-    resume_agent: ResumeWorkflow
-    job_agent: JobOpeningParserWorkflow
-    communication_agent: CommunicationWorkflow
-    document_parser_agent: DocumentParserWorkflow
+    # resume_agent: ResumeWorkflow
+    # job_agent: JobOpeningParserWorkflow
+    # document_parser_agent: DocumentParserWorkflow
     def __init__(
         self,
-        gemini_api_client: Client,
         job_repo: JobRepoInterface,
+        resume_parser_agent: ResumeWorkflow,
+        job_opening_parser_agent: JobOpeningParserWorkflow,
+        document_parser_agent: DocumentParserWorkflow,
     ):
-        model_name = 'gemini-2.5-flash-lite'
-        resume_agent = ResumeWorkflow(client=gemini_api_client,model_name=model_name)
-        communication_workflow = CommunicationWorkflow(client=gemini_api_client,model_name=model_name)
-        job_agent = JobOpeningParserWorkflow(client=gemini_api_client,model_name=model_name,get_cache_fn=get_ai_cache ,set_cache_fn=set_ai_cache)
-        doc_parser = DocumentParserWorkflow(client=gemini_api_client,model_name=model_name , get_cache_fn=get_ai_cache ,set_cache_fn=set_ai_cache)
-        self.resume_agent = resume_agent
-        self.communication_agent = communication_workflow
-        self.job_agent = job_agent
-        self.document_parser_agent = doc_parser
-        self.job_opening = JobOpeningUsecase(job_repo,job_agent,doc_parser)
+        self.job_opening = JobOpeningUsecase(job_repo,job_opening_parser_agent)
         self.job_pipeline= JobPipelineUsecase(job_repo)
-        self.parsed_document = ParsedDocumentUsecase(job_repo,doc_parser,job_agent)
+        self.parsed_document = ParsedDocumentUsecase(job_repo,document_parser_agent)
         self.job_applicant = JobApplicantUsecase(job_repo)
         self.interview = InterviewUsecase(job_repo)
         # self.auth = AuthUsecase(job_repo)
-        self.applicant_resume = ApplicantResumeUsecase(job_repo , resume_agent)
+        self.applicant_resume = ApplicantResumeUsecase(job_repo , resume_parser_agent)
 
 

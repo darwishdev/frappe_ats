@@ -1,32 +1,31 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "prompt",
+ "autoname": "field:resume_hash",
  "creation": "2026-01-19 15:43:15.345081",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "request_id",
+  "resume_hash",
+  "email",
+  "phone",
+  "location",
+  "column_break_bxra",
   "file_path",
-  "skills",
+  "links",
+  "section_break_ngpl",
   "summary",
-  "raw_resume_text",
+  "section_break_taxn",
+  "output",
   "experience",
   "education",
   "projects",
-  "links",
-  "resume_hash"
+  "skills"
  ],
  "fields": [
   {
-   "fieldname": "request_id",
-   "fieldtype": "Data",
-   "label": "Request Id",
-   "reqd": 1
-  },
-  {
    "fieldname": "skills",
-   "fieldtype": "Text Editor",
+   "fieldtype": "Long Text",
    "label": "Skills"
   },
   {
@@ -35,15 +34,9 @@
    "label": "Summary"
   },
   {
-   "fieldname": "resume_hash",
-   "fieldtype": "Data",
-   "label": "Resume Hash",
-   "unique": 1
-  },
-  {
-   "fieldname": "raw_resume_text",
+   "fieldname": "output",
    "fieldtype": "Long Text",
-   "label": "Raw Resume Text"
+   "label": "Output"
   },
   {
    "fieldname": "experience",
@@ -65,7 +58,7 @@
   },
   {
    "fieldname": "links",
-   "fieldtype": "Table",
+   "fieldtype": "Small Text",
    "label": "Links",
    "options": "Applicant Link"
   },
@@ -76,16 +69,51 @@
    "label": "File Path",
    "reqd": 1,
    "unique": 1
+  },
+  {
+   "fieldname": "resume_hash",
+   "fieldtype": "Data",
+   "label": "Resume Hash",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "section_break_taxn",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "email",
+   "fieldtype": "Data",
+   "label": "Email",
+   "reqd": 1
+  },
+  {
+   "fieldname": "phone",
+   "fieldtype": "Data",
+   "label": "Phone"
+  },
+  {
+   "fieldname": "location",
+   "fieldtype": "Data",
+   "label": "Location"
+  },
+  {
+   "fieldname": "column_break_bxra",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_ngpl",
+   "fieldtype": "Section Break"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-02-07 01:49:38.229223",
+ "modified": "2026-02-16 20:10:35.849191",
  "modified_by": "Administrator",
  "module": "Mawhub",
  "name": "Applicant Resume",
- "naming_rule": "Set by user",
+ "naming_rule": "By fieldname",
  "owner": "Administrator",
  "permissions": [
   {

@@ -4,43 +4,8 @@ from typing import Optional, TypedDict, cast
 from pydantic import BaseModel, Field
 from google.genai import types, Client
 from typing import  Optional, Callable
-# ----------------------------
-# LLM Schema for JobOpening Extraction (fully documented)
-# ----------------------------
-class JobOpeningSchema(BaseModel):
-    job_title: str = Field(
-        ...,
-        description="The title of the job opening, e.g., 'Software Engineer', 'Product Manager'."
-    )
-    designation: Optional[str] = Field(
-        default=None,
-        description="The role or level of the position, e.g., 'Senior', 'Junior', 'Lead'."
-    )
-    customer: Optional[str] = Field(
-        default=None,
-        description="The name of the company offering the job."
-    )
-    location: Optional[str] = Field(
-        default=None,
-        description="The geographical location of the job (city, country, remote status)."
-    )
-    planned_vacancies: int = Field(
-        default=1,
-        description="The planned number of positions intended to be filled."
-    )
-    vacancies: int = Field(
-        default=1,
-        description="The actual number of open positions currently available."
-    )
-    lower_range: float = Field(
-        default=0.0,
-        description="The minimum salary for the position (numerical, in company's currency)."
-    )
-    upper_range: float = Field(
-        default=0.0,
-        description="The maximum salary for the position (numerical, in company's currency)."
-    )
 
+from mawhub.app.job.agent.job_opening_parser_agent import JobOpeningSchema
 
 # ----------------------------
 # TypedDict for final event output
@@ -107,15 +72,6 @@ Task:
 """
 
         try:
-            cache_key = self.get_text_hash(full_text) + "job_opening_parser_agent"
-            cache_model = self.default_model
-            if self.get_cache_fn:
-                print("cache caclllaeddd")
-                cached = self.get_cache_fn(cache_key, cache_model)
-                if isinstance(cached,str):
-                    cached = json.loads(cached)
-                if cached:
-                    return cached
             response = self.client.models.generate_content(
                 model=self.default_model,
                 contents=prompt,
@@ -128,11 +84,6 @@ Task:
             parsed_resp = cast(JobOpeningSchema, response.parsed)
             response = self.job_opening_schema_to_event(parsed_resp)
 
-            try:
-                if self.set_cache_fn:
-                    self.set_cache_fn(cache_key, cache_model, response)
-            except Exception as e:
-                pass
             return response
 
         except Exception as e:

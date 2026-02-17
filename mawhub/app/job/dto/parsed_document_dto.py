@@ -9,17 +9,20 @@ class ParsedSection(TypedDict, total=False):
     name: str
     description: NotRequired[str]
     bullet_points: NotRequired[List[str]]
-    footer: NotRequired[List[str]]
+    is_number_list: NotRequired[bool]
+    footer: NotRequired[str]
 
 class ParsedDocumentSectionDTO(TypedDict, total=False):
     title: str
     description: NotRequired[str]
     bullet_points: NotRequired[List[str]]
+    is_number_list: NotRequired[bool]
+    footer: NotRequired[str]
 
 class ParsedDocumentDTO(TypedDict, total=False):
     file_path: str
     file_hash: str
-    meta_data: dict[str,str]
+    metadata: dict[str,str]
     request_id: str
     sections: List[ParsedDocumentSectionDTO]
 class ParsedDocumentOutput(TypedDict, total=False):

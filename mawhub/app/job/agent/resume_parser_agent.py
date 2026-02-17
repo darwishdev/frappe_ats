@@ -1,14 +1,14 @@
-from typing import Dict, Iterator, List, Literal, Type, TypedDict, cast, Callable, Optional, Union
+from typing import Dict, Iterator, List, Literal, Type, TypedDict, cast,  Optional, Union
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pydantic import BaseModel, Field
 from google import genai
 from google.genai import types
 
-from mawhub.app.job.dto import applicant_resume_dto
 from mawhub.pkg.objectutils.objectutils import to_typed_dict
 
 # Import DTO types directly
 from mawhub.app.job.dto.applicant_resume_dto import (
+    ApplicantResumeDTO,
     PersonalInfo as DTOPersonalInfo,
     ApplicantExperience as DTOApplicantExperience,
     ApplicantProject as DTOApplicantProject,
@@ -55,16 +55,11 @@ class ApplicantProjectModel(BaseModel):
     description: str = Field(
         description="Project description exactly as written. Do not summarize."
     )
+    stack: str = Field(
+        description="Stack used inside the project"
+    )
     link: str = Field(
         description="Project URL if present. Otherwise return empty string."
-    )
-
-class ApplicantLinkModel(BaseModel):
-    label: str = Field(
-        description="Link label such as GitHub, LinkedIn, Portfolio exactly as written."
-    )
-    url: str = Field(
-        description="Full URL exactly as written."
     )
 
 class ExperienceListModel(BaseModel):
@@ -150,17 +145,10 @@ class ResumeParserUpdateEvent(TypedDict):
     event: Literal["update"]
     data: AgentSectionEvent
 
-class AgentFinalEvent(TypedDict):
-    personal: DTOPersonalInfo
-    summary: str
-    skills: List[str]
-    experience: List[DTOApplicantExperience]
-    projects: List[DTOApplicantProject]
-    education: List[DTOApplicantEducation]
 
 class ResumeParserFinalEvent(TypedDict):
     event: Literal["final"]
-    data: AgentFinalEvent
+    data: ApplicantResumeDTO
 
 class ResumeParserErrorEvent(TypedDict):
     event: Literal["error"]
@@ -186,7 +174,6 @@ class ResumeWorkflow:
     def agent_meta_labeler(self, raw_text: str, model_id: str) -> ChunkedResumeModel:
         SYSTEM_INSTRUCTION = """
         You are a resume labeling engine.
-
         Your task is to analyze raw resume text and return a JSON object
         with the following sections only:
         - personal
@@ -300,14 +287,11 @@ class ResumeWorkflow:
                 for name, text, schema, m_id in tasks
             }
 
-            final_response = {}
+            final_response : dict[SectionNames,AgentSectionDict] = {}
             for future in as_completed(future_to_section):
                 section_name = future_to_section[future]
                 try:
                     section_data = future.result()
-
-                    if section_name == "summary" and isinstance(section_data, dict):
-                        section_data = section_data.get("summary", "")
                     res_section: AgentSectionEvent = {
                         "name": section_name,
                         "content": section_data,
@@ -319,7 +303,21 @@ class ResumeWorkflow:
                     final_response[section_name] = section_data
                 except Exception as e:
                     yield {"event": "error", "data": str(e)}
+            final_event_dto = self.final_to_dto(final_response)
             yield {
                 "event": "final",
-                "data": cast(AgentFinalEvent, final_response)
+                "data": final_event_dto
             }
+
+    def final_to_dto(self,final_event: dict[SectionNames,AgentSectionDict] )->ApplicantResumeDTO:
+        personl = cast(dict ,final_event["personal"])
+        summary = cast(dict ,final_event["summary"])
+        return {
+            "resume_hash" : "",
+            "applicant_name" : personl.get("name") or "",
+            "email" : personl.get("email") or "",
+            "location" : personl.get("location") or "",
+            "phone" : personl.get("phone") or "",
+            "summary" : summary["summary"],
+            "file_path" : "",
+                }

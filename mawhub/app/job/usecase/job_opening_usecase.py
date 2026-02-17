@@ -3,7 +3,6 @@ from typing import  Dict, List, Protocol
 
 import frappe
 from frappe.model.document import Document
-from mawhub.app.job.agent.document_parser_agent import DocumentParserWorkflow
 from mawhub.app.job.agent.job_opening_parser_agent import  JobOpeningEvent, JobOpeningParserWorkflow
 from mawhub.app.job.dto.job_opening_dto import JobOpeningDTO, job_opening_create_request_from_agent, job_opening_list_sql_to_dto, job_opening_sql_to_dto
 from mawhub.app.job.repo.job_repo import  JobRepoInterface
@@ -32,16 +31,13 @@ class JobOpeningUsecaseInterface(Protocol):
 class JobOpeningUsecase:
     repo: JobRepoInterface
     job_agent: JobOpeningParserWorkflow
-    document_parser_agent: DocumentParserWorkflow
     def __init__(
         self,
         repo: JobRepoInterface,
         job_agent: JobOpeningParserWorkflow,
-        document_parser_agent: DocumentParserWorkflow,
     ):
         self.repo = repo
         self.job_agent = job_agent
-        self.document_parser_agent = document_parser_agent
 
     def ensure_designation(self, designation_name: str) -> str:
         """Finds or creates Designation based on 'designation_name'."""
@@ -89,8 +85,6 @@ class JobOpeningUsecase:
         document_text: str,
         request_id: str,
     ) -> JobOpeningEvent:
-        print("called herererererer")
-        print(document_text)
         response = self.job_agent.run(document_text)
         designation_name = None
         if response.get("designation"):

@@ -1,14 +1,11 @@
 import hashlib
-import json
-from typing import  Any, Iterator, List,  Protocol,  cast
+from typing import   Iterator, List,  Protocol,  cast
 
 import frappe
 from frappe.model.document import Document
-from mawhub.app.job.agent.resume_parser_agent import AgentFinalEvent,  ResumeWorkflow
+from mawhub.app.job.agent.resume_parser.resume_parser_agent import ResumeWorkflow
 from mawhub.app.job.dto.applicant_resume_dto import ApplicantResumeDTO
-from mawhub.app.job.dto.job_applicant_dto import JobApplicantCreateWithResume
 from mawhub.app.job.repo.job_repo import JobRepoInterface
-from mawhub.pkg.overrides import job_opening
 from mawhub.pkg.overrides.job_opening import CustomJobOpening
 from mawhub.pkg.pdfconvertor.pdfconvertor import  get_document_content_and_hash
 from mawhub.pkg.sql.sql_utils import get_cached_output
@@ -18,7 +15,7 @@ class ResumeAgentError(Exception): ...
 class ResumePersistenceError(Exception): ...
 class JobLinkError(Exception): ...
 # Even simpler version - just map essential fields
-def job_applicant_dto_from_agent(agent_final: AgentFinalEvent,path:str) -> JobApplicant:
+def job_applicant_dto_from_agent(agent_final: ApplicantResumeDTO,path:str) -> JobApplicant:
     """Minimal conversion with only essential fields mapped."""
     personal = agent_final.get("personal", {})
     resp : JobApplicant = {
@@ -33,47 +30,9 @@ def job_applicant_dto_from_agent(agent_final: AgentFinalEvent,path:str) -> JobAp
         # "country": personal.get("location", ""),
     }
     return resp
-def applicant_resume_dto_from_agent(
-    final: AgentFinalEvent,
-    resume_hash:str,
-    request_id:str,
-    file_path:str,
-) -> ApplicantResumeDTO:
-    personal = final["personal"]
-    email = personal["email"]
 
-    dto: ApplicantResumeDTO = {
-        "job_applicant": email,
-        "request_id": request_id,
-        "raw_resume_text" : json.dumps(final , default=str),
-        "file_path": file_path,
-        "personal": personal,
-        "resume_hash": resume_hash
-    }
-
-    # optional fields — add only if present & not empty
-
-    if final.get("summary"):
-        dto["summary"] = final["summary"]
-
-    skills_list = final.get("skills")
-    if skills_list:
-        dto["skills"] = ", ".join(skills_list)
-
-    if final.get("experience"):
-        dto["experience"] = final["experience"]
-
-    if final.get("education"):
-        dto["education"] = final["education"]
-
-    if final.get("projects"):
-        dto["projects"] = final["projects"]
-
-    return dto
 class ApplicantResumeUsecaseInterface(Protocol):
 	def applicant_resume_create_update(self, payload: ApplicantResumeDTO)->Document: ...
-	def job_applicant_create_with_resume(self, payload: JobApplicantCreateWithResume)->Document: ...
-
 	def applicant_resume_parse(
         self,
         path:str,
@@ -156,14 +115,14 @@ class ApplicantResumeUsecase:
             frappe.log_error(frappe.get_traceback(), "PDF Read Failed")
             raise ResumeParseError("Failed to read document")
         print("usecase")
-        def callback(name:str , event_data: AgentFinalEvent)->Document:
+        def callback(name:str , event_data: ApplicantResumeDTO)->Document:
             print("callback")
             try:
                 job_applicant_params = job_applicant_dto_from_agent(event_data , path)
                 applicant_doc = self.repo.job_applicant.create_or_update(job_applicant_params)
                 self.job_applicant_link_with_job_opening(
                     job=job,
-                    email=event_data["personal"]["email"],
+                    email=event_data["email"],
                     step=step,
                     resume_id=name,
                 )
@@ -174,7 +133,7 @@ class ApplicantResumeUsecase:
                 frappe.log_error(frappe.get_traceback(), "Callback Failed")
                 raise ResumePersistenceError("Applicant creation/link failed")
 
-        final_event : AgentFinalEvent | None = None
+        final_event : ApplicantResumeDTO | None = None
         cached = None
         try:
             cached_result = get_cached_output(
@@ -182,7 +141,7 @@ class ApplicantResumeUsecase:
                 output_field="raw_resume_text",
                 key_value=document_text_hash,
                 key_field="resume_hash",
-                expected_type=AgentFinalEvent
+                expected_type=ApplicantResumeDTO
             )
             if cached_result:
                 cached_name , cached = cached_result
@@ -210,12 +169,12 @@ class ApplicantResumeUsecase:
         if not final_event:
             return
         try:
-            res_dto = applicant_resume_dto_from_agent(
-                    final_event,
-                    document_text_hash,
-                    request_id,
-                    path)
-            resume_doc = self.applicant_resume_create_update(res_dto)
+            # res_dto = applicant_resume_dto_from_agent(
+            #         final_event,
+            #         document_text_hash,
+            #         request_id,
+            #         path)
+            resume_doc = self.applicant_resume_create_update(final_event)
             yield {"event" : "resume_creation" , "data" : {"name" : str(resume_doc.name)}}
             print("resume creatation")
             doc = callback(str(resume_doc.name) , final_event)
@@ -227,6 +186,8 @@ class ApplicantResumeUsecase:
                 frappe.get_traceback(),
                 "Applicant Resume Save Failed"
             )
+
+            yield {"event" : "error" , "data" : f"unexpected error: {str(e)}"}
             raise ResumePersistenceError(
-                f"resume_save_failed request_id={request_id}"
+                f"resume_save_failed"
             ) from e

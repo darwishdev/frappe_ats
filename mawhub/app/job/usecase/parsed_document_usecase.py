@@ -2,8 +2,7 @@ import hashlib
 from typing import   Iterator, List, Protocol
 import frappe
 from frappe.model.document import Document
-from mawhub.app.job.agent.document_parser_agent import  DocumentParserEvent, DocumentParserWorkflow, ParsedDocumentFinalEvent
-from mawhub.app.job.agent.job_opening_parser_agent import JobOpeningParserWorkflow
+from mawhub.app.job.agent.document_parser.document_parser_agent import  DocumentParserWorkflow
 from mawhub.app.job.dto.parsed_document_dto import ParsedDocumentDTO,   ParsedDocumentWithSections, parsed_document_agent_to_dto,  parsed_document_dto_to_sql
 from mawhub.app.job.repo.job_repo import JobRepoInterface
 from mawhub.pkg.sql.sql_utils import get_cached_output
@@ -24,16 +23,13 @@ class ParsedDocumentUsecaseInterface(Protocol):
 class ParsedDocumentUsecase:
     repo: JobRepoInterface
     document_parser_agent: DocumentParserWorkflow
-    job_opening_parser_agent: JobOpeningParserWorkflow
     def __init__(
         self,
         repo: JobRepoInterface,
         document_parser_agent: DocumentParserWorkflow,
-        job_opening_parser_agent: JobOpeningParserWorkflow
     ):
         self.repo = repo
         self.document_parser_agent = document_parser_agent
-        self.job_opening_parser_agent = job_opening_parser_agent
 
     def parsed_document_create_update(self, payload: ParsedDocumentDTO)->Document:
         sql_params = parsed_document_dto_to_sql(payload)
@@ -56,14 +52,14 @@ class ParsedDocumentUsecase:
         document_text: str,
         request_id: str
     )->Iterator[dict]:
-        def callback(final_event_data: ParsedDocumentFinalEvent):
-            db_req = parsed_document_agent_to_dto(final_event_data,file_path,text_hash,request_id)
+        def callback(final_event_data: ParsedDocumentDTO):
+            # db_req = parsed_document_agent_to_dto(final_event_data,file_path,text_hash,request_id)
             try:
-                parsed_doc = self.parsed_document_create_update(db_req)
+                parsed_doc = self.parsed_document_create_update(final_event_data)
                 frappe.db.commit()
                 return parsed_doc
             except Exception as e:
-                raise Exception(f"failed writing the document to db : {e} : body: {db_req}")
+                raise Exception(f"failed writing the document to db : {e} : body: {final_event_data}")
 
         try:
             text_hash = hashlib.sha256(document_text.strip().encode("utf-8")).hexdigest()
@@ -71,7 +67,7 @@ class ParsedDocumentUsecase:
                     doctype="Parsed Document",
                     key_field="name",
                     key_value=text_hash,
-                    expected_type=ParsedDocumentFinalEvent,
+                    expected_type=ParsedDocumentDTO,
                     output_field="output"
             )
             if cache_result:

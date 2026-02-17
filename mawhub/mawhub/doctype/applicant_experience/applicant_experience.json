@@ -11,6 +11,8 @@
   "role",
   "column_break_pduk",
   "duration",
+  "column_break_mjts",
+  "to_date",
   "section_break_anrn",
   "responsibilities"
  ],
@@ -39,10 +41,11 @@
    "sticky": 1
   },
   {
+   "allow_in_quick_entry": 1,
    "fieldname": "duration",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "Duration"
+   "label": "From Date"
   },
   {
    "fieldname": "responsibilities",
@@ -60,14 +63,24 @@
   {
    "fieldname": "section_break_anrn",
    "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_mjts",
+   "fieldtype": "Column Break"
+  },
+  {
+   "allow_in_quick_entry": 1,
+   "fieldname": "to_date",
+   "fieldtype": "Data",
+   "label": "To Date"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-01-21 13:40:37.115085",
- "modified_by": "ahmed@mawhub.io",
+ "modified": "2026-02-17 01:53:25.293018",
+ "modified_by": "Administrator",
  "module": "Mawhub",
  "name": "Applicant Experience",
  "owner": "Administrator",

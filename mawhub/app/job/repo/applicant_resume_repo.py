@@ -12,14 +12,18 @@ class ApplicantResumeRepo(AppRepo[ApplicantResumeDTO]):
     def __init__(self):
         super().__init__(
             doc_name="Applicant Resume",
-            name_key="job_applicant",
+            name_key="resume_hash",
             scalar_fields=[
+                "resume_hash",
                 "skills",
                 "request_id",
                 "file_path",
+                "links",
+                "email",
+                "phone",
+                "location",
                 "summary",
-                "raw_resume_text",
-                "resume_hash",
+                "output",
             ],
             child_tables={
                 "experience": "experience",

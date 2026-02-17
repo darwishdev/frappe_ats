@@ -6,13 +6,15 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
+  "question_type",
+  "column_break_leyo",
   "question",
   "column_break_uujq",
-  "answer",
-  "question_type"
+  "answer"
  ],
  "fields": [
   {
+   "allow_in_quick_entry": 1,
    "fieldname": "question",
    "fieldtype": "Data",
    "in_list_view": 1,
@@ -29,18 +31,23 @@
    "label": "Answer"
   },
   {
+   "allow_in_quick_entry": 1,
    "fieldname": "question_type",
    "fieldtype": "Select",
    "label": "Question Type",
    "options": "Number\nParagraph\nBullet Points",
    "reqd": 1
+  },
+  {
+   "fieldname": "column_break_leyo",
+   "fieldtype": "Column Break"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-02-15 16:06:22.963389",
+ "modified": "2026-02-17 01:54:46.114564",
  "modified_by": "Administrator",
  "module": "Mawhub",
  "name": "Question Template Item",
