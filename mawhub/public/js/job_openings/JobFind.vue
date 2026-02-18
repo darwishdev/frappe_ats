@@ -200,21 +200,23 @@ const transformedParsedData = computed(() => {
         .replace(/^_+|_+$/g, "");
 
       let bulletPoints = [];
-      if (section.pullet_points) {
-        try {
-          bulletPoints =
-            typeof section.pullet_points === "string"
-              ? JSON.parse(section.pullet_points)
-              : section.pullet_points;
-        } catch (e) {
-          console.error("Failed to parse bullet points:", e);
-          bulletPoints = [];
+      if (section.bullet_points) {
+        // Handle newline-delimited string format
+        if (typeof section.bullet_points === "string") {
+          bulletPoints = section.bullet_points
+            .split('\n')
+            .map(point => point.trim())
+            .filter(point => point.length > 0);
+        } else if (Array.isArray(section.bullet_points)) {
+          bulletPoints = section.bullet_points;
         }
       }
 
       transformed[key] = {
         description: section.description || "",
-        bullet_points: Array.isArray(bulletPoints) ? bulletPoints : [],
+        bullet_points: bulletPoints,
+        footer: section.footer || "",
+        is_number_list: section.is_number_list || 0
       };
     });
   }

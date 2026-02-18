@@ -625,7 +625,7 @@ function formatDateTime(dateTimeStr) {
 .profile-exp-role {
   font-size: 18px;
   font-weight: 700;
-  color: #f5f5f6;
+  color: #000000;
   margin: 0 0 4px 0;
 }
 

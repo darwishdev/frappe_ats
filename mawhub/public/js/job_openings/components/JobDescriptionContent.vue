@@ -249,7 +249,7 @@ const parsedDataObject = computed(() => {
             v-if="section.bullet_points && section.bullet_points.length > 0"
             class="jdd-bullet-points"
           >
-            <ul>
+            <ul :class="{ 'jdd-numbered-list': section.is_number_list }">
               <li
                 v-for="(point, idx) in section.bullet_points"
                 :key="idx"
@@ -438,6 +438,10 @@ const parsedDataObject = computed(() => {
   margin: 0;
   padding-left: 20px;
   list-style-type: disc;
+}
+
+.jdd-bullet-points ul.jdd-numbered-list {
+  list-style-type: decimal;
 }
 
 .jdd-bullet-points li {
