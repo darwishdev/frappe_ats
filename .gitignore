@@ -4,6 +4,8 @@ __pycache__/
 *$py.class
 *.pyc
 *.py~
+mawhub/fixtures/google_settings.json
+mawhub/fixtures/social_login_key.json
 
 # Distribution / packaging
 .Python
