@@ -236,12 +236,12 @@ class CustomJobOpening(JobOpening):
                 # copy only the fields that actually exist in Pipeline Step child doctype
             })
     def before_save(self) -> None:
+        self.ensure_project()
         if self.is_new():
             self.sync_pipeline_steps()
             return
 
         # self.handle_applicant_invalidation()
-        self.ensure_project()
 
     # -------------------------------------------------
     # project
@@ -635,3 +635,4 @@ class CustomJobOpening(JobOpening):
                 r for r in self.get_applicant_rows()
                 if r.get("job_applicant") == applicant_id
                 ]
+

@@ -33,6 +33,16 @@ fixtures = [
         ]
     },
     {
+        "doctype": "Google Settings",
+    },
+    {
+        "doctype": "OAuth Client",
+    },
+
+    {
+        "doctype": "Social Login Key",
+    },
+    {
         "doctype": "Project Template",
         "filters": [
             ["name", "=", "Job Opening"]

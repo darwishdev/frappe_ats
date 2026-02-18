@@ -13,6 +13,7 @@ from mawhub.pkg.overrides.job_opening import CustomJobOpening
 from mawhub.pkg.pdfconvertor.pdfconvertor import  get_document_content_and_hash
 from mawhub.pkg.sql.sql_utils import ensure_designation, get_cached_output
 class DocumentTextParserError(Exception): ...
+class ApplicantResumeCreationError(Exception): ...
 class ApplicantCreationError(Exception): ...
 class ResumeCreationError(Exception): ...
 class AgentGenerationError(Exception): ...
@@ -150,7 +151,11 @@ class ApplicantResumeUsecase:
                     raise AgentGenerationError(f"agent never returned final event")
 
 
-                resume_doc = self.applicant_resume_create_update(final_event , file_path=path ,file_hash=document_text_hash)
+                try:
+                    resume_doc = self.applicant_resume_create_update(final_event , file_path=path ,file_hash=document_text_hash)
+
+                except Exception as e:
+                    raise ApplicantResumeCreationError(f"applicant_resume_creation: {str(e)}")
                 _publish({"event" : "resume_creation" , "data" : {"name" : resume_doc.name}})
                 applicant_doc = create_applicant(final_event)
                 applicant_resume_name = str(resume_doc.name)
@@ -160,4 +165,5 @@ class ApplicantResumeUsecase:
         except Exception as e:
             _publish(self.new_error_event(str(e) , None))
             raise e
+
 

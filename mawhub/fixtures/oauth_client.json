@@ -1,0 +1,31 @@
+[
+ {
+  "allowed_roles": [
+   {
+    "role": "All"
+   }
+  ],
+  "app_name": "TAL",
+  "client_id": "gm5uh51467",
+  "client_secret": "7b9f681337",
+  "client_uri": null,
+  "contacts": null,
+  "default_redirect_uri": "oauth/callback",
+  "docstatus": 0,
+  "doctype": "OAuth Client",
+  "grant_type": "Authorization Code",
+  "logo_uri": null,
+  "modified": "2026-02-18 17:58:02.141100",
+  "name": "gm5uh51467",
+  "policy_uri": null,
+  "redirect_uris": "oauth/callback",
+  "response_type": "Code",
+  "scopes": "all openid",
+  "skip_authorization": 0,
+  "software_id": null,
+  "software_version": null,
+  "token_endpoint_auth_method": "Client Secret Basic",
+  "tos_uri": null,
+  "user": null
+ }
+]
