@@ -4,8 +4,6 @@ __pycache__/
 *$py.class
 *.pyc
 *.py~
-mawhub/fixtures/google_settings.json
-mawhub/fixtures/social_login_key.json
 
 # Distribution / packaging
 .Python
@@ -15,8 +13,8 @@ downloads/
 eggs/
 mawhub/fixtures/google_settings.json
 mawhub/fixtures/social_login_key.json
-public/node_modules
-public/ats2
+mawhub/public/node_modules
+mawhub/public/ats2
 .eggs/
 lib64/
 parts/
