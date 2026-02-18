@@ -28,15 +28,16 @@ div[data-page-route="List/Job Opening/List"] .frappe-list .list-row {
 .pipeline-step .step-count {
     font-size: 24px;
     font-weight: 600;
-    /* color: #caccd0; */
+    color: #111827;
     line-height: 1;
 }
 
 .pipeline-step .step-label {
     font-size: 12px;
-    color: #6b7280;
+    color: #374151;
     text-align: center;
     line-height: 1.2;
+    font-weight: 500;
 }
 
 /* Make sure the description column has enough space */
@@ -574,4 +575,17 @@ div[data-page-route="List/Job Opening/List"] .frappe-list .list-row {
 [data-theme="dark"] .btn-danger:hover {
     background: #6a2525;
     border-color: #7a3030;
+}
+
+/* Pipeline Steps Dark Mode */
+[data-theme="dark"] .pipeline-step {
+    background: #333;
+}
+
+[data-theme="dark"] .pipeline-step .step-count {
+    color: #f0f0f0;
+}
+
+[data-theme="dark"] .pipeline-step .step-label {
+    color: #a0a0a0;
 }

@@ -48,7 +48,7 @@ frappe.listview_settings['Job Opening'] = {
             html = `<div class="flex gap-4">`
             for (const step of steps) {
                 console.log("step is" , step)
-                html +=  `  <div class="pipeline-step"
+                html +=  `  <div class="pipeline-step mx-2"
                 data-job="${jobName}"
                 data-step="${step.step_code}"
                 style="cursor: pointer;"
