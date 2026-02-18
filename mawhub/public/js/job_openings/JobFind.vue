@@ -6,6 +6,7 @@ import ApplicantTimeline from "./components/ApplicantTimeline.vue";
 import ApplicantCommunication from "./components/ApplicantCommunication.vue";
 import ApplicantReview from "./components/ApplicantReview.vue";
 import ApplicantComments from "./components/ApplicantComments.vue";
+import ApplicantResume from "./components/ApplicantResume.vue";
 
 // Access frappe instance
 const { proxy } = getCurrentInstance();
@@ -32,6 +33,7 @@ const initialStepCode = ref(frappe.utils.get_url_arg('step') || null);
 // Tab configuration
 const tabs = [
   { key: "profile", label: "Profile" },
+  { key: "resume", label: "Resume" },
   { key: "timeline", label: "Timeline" },
   { key: "communication", label: "Communication" },
   // { key: "review", label: "Review" },
@@ -40,6 +42,7 @@ const tabs = [
 
 const tabComponents = {
   profile: ApplicantProfile,
+  resume: ApplicantResume,
   timeline: ApplicantTimeline,
   communication: ApplicantCommunication,
   review: ApplicantReview,
