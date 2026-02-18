@@ -1,11 +1,9 @@
 import hashlib
-import json
 from typing import Optional, TypedDict, cast
-from pydantic import BaseModel, Field
 from google.genai import types, Client
 from typing import  Optional, Callable
 
-from mawhub.app.job.agent.job_opening_parser_agent import JobOpeningSchema
+from mawhub.app.job.agent.job_opening_parser.types import JobOpeningSchema
 
 # ----------------------------
 # TypedDict for final event output

@@ -2,8 +2,12 @@ frappe.listview_settings['Job Opening'] = {
     onload: function(listview) {
         // Store pipeline data for use in formatters
 
+
+        frappe.realtime.on(`job_parser`, (data) => {
+            console.log("job parser progress:", data);
+        });
         frappe.realtime.on(`document_parser`, (data) => {
-            console.log("parser progress:", data);
+            console.log("doc parser progress:", data);
         });
         listview.pipeline_data = {};
 

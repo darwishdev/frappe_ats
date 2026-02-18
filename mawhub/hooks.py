@@ -15,6 +15,30 @@ override_doctype_class = {
 cli_commands = {
     "sqlgen": "mawhub.commands.sqlgen.sqlgen",
 }
+fixtures = [
+    {
+        "doctype": "Job Pipeline",
+        "filters": [
+            ["name", "=", "Main"]
+        ]
+    },
+    {
+        "doctype": "Holiday List",
+
+    },
+    {
+        "doctype": "Task",
+        "filters": [
+            ["is_template", "=", True]
+        ]
+    },
+    {
+        "doctype": "Project Template",
+        "filters": [
+            ["name", "=", "Job Opening"]
+        ]
+    }
+]
 # Apps
 # ------------------
 override_whitelisted_methods = {

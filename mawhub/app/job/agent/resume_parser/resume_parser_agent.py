@@ -6,7 +6,12 @@ from google import genai
 from google.genai import types
 from mawhub.pkg.objectutils.objectutils import to_typed_dict
 from mawhub.app.job.agent.resume_parser.types import AgentSectionDict, ChunkedResumeModel, EducationListModel, ExperienceListModel, PersonalInfoModel, ProjectListModel, SectionNames, SkillListModel, SummaryModel
-from mawhub.app.job.dto.applicant_resume_dto import ApplicantResumeDTO
+from mawhub.app.job.dto.applicant_resume_dto import (
+        ApplicantResumeDTO,
+        ApplicantEducation as DTOApplicantEducation,
+        ApplicantExperience as DTOApplicantExperience,
+        ApplicantProject as DTOApplicantProject,
+        )
 
 
 class AgentSectionEvent(TypedDict):
@@ -91,18 +96,57 @@ class ResumeWorkflow:
         resp = to_typed_dict(parsed, AgentSectionDict)
         return cast(AgentSectionDict, resp)
 
-    def final_to_dto(self,final_event: dict[SectionNames,AgentSectionDict] )->ApplicantResumeDTO:
-        personl = cast(dict ,final_event["personal"])
-        summary = cast(dict ,final_event["summary"])
-        return {
-            "resume_hash" : "",
-            "applicant_name" : personl.get("name") or "",
-            "email" : personl.get("email") or "",
-            "location" : personl.get("location") or "",
-            "phone" : personl.get("phone") or "",
-            "summary" : summary["summary"],
-            "file_path" : "",
-                }
+
+    def final_to_dto(
+        self,
+        final_event: dict[SectionNames, AgentSectionDict]
+    ) -> ApplicantResumeDTO:
+
+        personal = cast(dict, final_event["personal"])
+        summary_model = cast(dict, final_event.get("summary", ""))
+
+        summary_text = (
+            summary_model["summary"]
+            if isinstance(summary_model, dict)
+            else summary_model
+        )
+
+        dto: ApplicantResumeDTO = {
+            "file_hash": "",          # ✅ must be provided
+            "job_title": personal.get("job_title", ""),
+            "applicant_name": personal.get("name", ""),
+            "email": personal.get("email", ""),
+            "phone": personal.get("phone", ""),
+            "location": personal.get("location", ""),
+            "file_path": "",              # ✅ must be provided
+            "summary": summary_text or "",
+        }
+
+        # ---------- optional structured sections ----------
+
+        if "skills" in final_event:
+            skills = cast(list[str], final_event["skills"])
+            dto["skills"] = "\n".join(skills)
+
+        if "experience" in final_event:
+            dto["experience"] = cast(
+                list[DTOApplicantExperience],
+                final_event["experience"]
+            )
+
+        if "education" in final_event:
+            dto["education"] = cast(
+                list[DTOApplicantEducation],
+                final_event["education"]
+            )
+
+        if "projects" in final_event:
+            dto["projects"] = cast(
+                list[DTOApplicantProject],
+                final_event["projects"]
+            )
+
+        return dto
     def run(
             self,
             resume_text: str,
@@ -110,7 +154,7 @@ class ResumeWorkflow:
     ) -> Iterator[ResumeParserEvent]:
         """
         model_overrides: Dict where key is step_id ('labeler', 'experience', etc.)
-                         and value is the model name.
+        and value is the model name.
         """
         overrides = model_overrides or {}
 

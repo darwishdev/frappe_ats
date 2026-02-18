@@ -1,32 +1,31 @@
-from frappe import Any, LinkValidationError,  _
-from typing import  Dict, List, Protocol
+import json
+from frappe import Any, LinkValidationError, Optional,  _
+from typing import  Dict, List, Protocol, cast
 
 import frappe
 from frappe.model.document import Document
-from mawhub.app.job.agent.job_opening_parser_agent import  JobOpeningEvent, JobOpeningParserWorkflow
-from mawhub.app.job.dto.job_opening_dto import JobOpeningDTO, job_opening_create_request_from_agent, job_opening_list_sql_to_dto, job_opening_sql_to_dto
+from mawhub.app.job.agent.job_opening_parser.job_opening_parser_agent import  JobOpeningEvent, JobOpeningParserWorkflow
+# from mawhub.app.job.dto.job_opening_dto import JobOpeningDTO, job_opening_create_request_from_agent, job_opening_list_sql_to_dto, job_opening_sql_to_dto
+from mawhub.app.job.dto.job_opening_dto import job_opening_create_request_from_agent
+from mawhub.app.job.repo.job_opening_repo import JobOpeningDBModel
 from mawhub.app.job.repo.job_repo import  JobRepoInterface
-from mawhub.sqltypes.table_models import JobOpening
 
 
 class JobOpeningUsecaseInterface(Protocol):
-    def job_opening_list(
-        self,
-        filters: Dict[str,Any],
-    ) -> List[JobOpeningDTO]: ...
+    def job_opening_step_list(
+            self,
+            job_names:Optional[str],
+            )-> Any: ...
     def job_opening_create_update(
         self,
-        payload: JobOpening,
+        payload: JobOpeningDBModel,
     ) -> Document: ...
     def job_opening_parse(
         self,
         document_text: str,
+        user:str,
         request_id:str
     ) -> JobOpeningEvent: ...
-    def job_opening_find(
-        self,
-        job: str,
-    ) -> JobOpeningDTO: ...
 
 class JobOpeningUsecase:
     repo: JobRepoInterface
@@ -83,9 +82,24 @@ class JobOpeningUsecase:
     def job_opening_parse(
         self,
         document_text: str,
+        user:str,
         request_id: str,
     ) -> JobOpeningEvent:
         response = self.job_agent.run(document_text)
+        frappe.publish_realtime(
+            event=f"job_parser",
+            message={
+               "job_title": response.get("job_title"),
+               "designation": response.get("designation"),
+               "customer": response.get("customer"),
+               "location": response.get("location"),
+               "planned_vacancies": response.get("planned_vacancies"),
+               "vacancies": response.get("planned_vacancies"),
+               "lower_range": response.get("lower_range"),
+               "upper_range": response.get("upper_range")
+                },
+            user=user
+        )
         designation_name = None
         if response.get("designation"):
             designation_name = self.ensure_designation(str(response["designation"]))
@@ -102,22 +116,25 @@ class JobOpeningUsecase:
                 response,
                 designation_id=designation_name,
                 customer_id=customer_name,
+                request_id=request_id,
                 location_id=location_name
         )
-        self.job_opening_create_update(db_create_req)
+        job = self.job_opening_create_update(db_create_req)
+        frappe.publish_realtime(
+            event=f"job_parser",
+            message={
+               "name": job.name,
+                },
+            user=user
+        )
+
         return response
 
-    def job_opening_list(
-        self,
-        filters: Dict[str,Any],
-    ) -> List[JobOpeningDTO]:
-        db_rows = self.repo.job_opening.job_opening_list(filters)
-        return job_opening_list_sql_to_dto(db_rows)
 
 
     def job_opening_create_update(
         self,
-        payload: JobOpening,
+        payload: JobOpeningDBModel,
     ) -> Document:
         """
         Create or update a JobOpening.
@@ -199,10 +216,21 @@ class JobOpeningUsecase:
             # If it's a different LinkValidationError, just raise
             raise ValueError(f"{str(e)}")
 
-    def job_opening_find(
-        self,
-        job: str,
-    ) -> JobOpeningDTO:
-        db_rows = self.repo.job_opening.job_opening_find(job)
-        return job_opening_sql_to_dto(db_rows)
-
+    def job_opening_step_list(
+            self,
+            job_names: Optional[str],
+            )-> Any:
+        resp = frappe.db.sql("""
+                SELECT get_job_opening_step_stats(%s) job
+                """,
+                (job_names,),
+                pluck=True)
+        if not resp or not isinstance(resp,list):
+            print(f"response is not list : {resp}")
+            return None
+        resp_row = resp[0]
+        if not resp_row or not isinstance(resp_row,str):
+            print(f"record is not string : {resp_row}")
+            return None
+        parsed = json.loads(resp_row)
+        return  parsed

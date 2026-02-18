@@ -1,16 +1,20 @@
-from typing import Iterable, Dict, List
+from typing import Iterable, Dict, List, Union
 import frappe
 from frappe.model.document import Document
-
+FieldSpec = Union[List[str], Dict[str, str]]
+def _normalize_fields(spec: FieldSpec) -> Dict[str, str]:
+    if isinstance(spec, dict):
+        return spec
+    return {f: f for f in spec}
 def create_or_update_doc(
     *,
     doctype: str,
     name: str,
     name_key: str,
     payload: dict,
-    scalar_fields: Iterable[str],
-    child_tables: Dict[str, str],
-    ignore_permissions: bool = True,
+    scalar_fields: FieldSpec,
+    child_tables: FieldSpec | None,
+    ignore_permissions: bool = False,
 ) -> Document:
     """
     Generic create/update helper for Frappe documents.
@@ -29,18 +33,20 @@ def create_or_update_doc(
     else:
         doc = frappe.new_doc(doctype)
         doc.set(name_key,name)
-
+    scalar_map = _normalize_fields(scalar_fields)
     # Scalar fields
-    for field in scalar_fields:
-        if field in payload:
-            doc.set(field, payload[field])
-
-    # Child tables
-    for payload_key, fieldname in child_tables.items():
+    for payload_key, fieldname in scalar_map.items():
         if payload_key in payload:
-            doc.set(fieldname, [])
-            for row in payload[payload_key] or []:
-                doc.append(fieldname, row)
+            doc.set(fieldname, payload[payload_key])
+
+    if child_tables:
+        child_map = _normalize_fields(child_tables)
+        # Child tables
+        for payload_key, fieldname in child_map.items():
+            if payload_key in payload:
+                doc.set(fieldname, [])
+                for row in payload[payload_key] or []:
+                    doc.append(fieldname, row)
 
     doc.save(ignore_permissions=ignore_permissions)
     frappe.db.commit()
@@ -52,8 +58,8 @@ def bulk_create_docs(
     doctype: str,
     items: Iterable[dict],
     name_key: str,
-    scalar_fields: Iterable[str],
-    child_tables: Dict[str, str],
+    scalar_fields: FieldSpec,
+    child_tables: FieldSpec | None,
     ignore_permissions: bool = True,
 ) -> List[Document]:
     """
@@ -75,17 +81,18 @@ def bulk_create_docs(
 
         doc = frappe.new_doc(doctype)
         doc.name = name
-
-        # Scalar fields
-        for field in scalar_fields:
-            if field in payload:
-                doc.set(field, payload[field])
+        scalar_map = _normalize_fields(scalar_fields)
+        for payload_key, fieldname in scalar_map.items():
+            if payload_key in payload:
+                doc.set(fieldname, payload[payload_key])
 
         # Child tables
-        for payload_key, fieldname in child_tables.items():
-            if payload_key in payload:
-                for row in payload[payload_key] or []:
-                    doc.append(fieldname, row)
+        if child_tables:
+            child_map = _normalize_fields(child_tables)
+            for payload_key, fieldname in child_map.items():
+                if payload_key in payload:
+                    for row in payload[payload_key] or []:
+                        doc.append(fieldname, row)
 
         # Performance flags (safe for bulk import)
         doc.flags.ignore_version = True

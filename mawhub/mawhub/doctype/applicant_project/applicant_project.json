@@ -29,6 +29,11 @@
    "fieldtype": "Data",
    "label": "Tech Stack"
   },
+{
+   "fieldname": "project_link",
+   "fieldtype": "Data",
+   "label": "project_link"
+  },
   {
    "fieldname": "section_break_xqit",
    "fieldtype": "Section Break"

@@ -91,6 +91,7 @@ class ChunkedResumeModel(BaseModel):
 
 class PersonalInfoModel(BaseModel):
     name: str = Field(description="Full candidate name as written in the resume")
+    job_title: str = Field(description="The most recent job title for the candidate")
     email: str = Field(
         description="Email address from the resume. Return empty string if not found"
     )

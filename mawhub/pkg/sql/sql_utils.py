@@ -3,7 +3,7 @@ import json
 import frappe
 import frappe
 from pathlib import Path
-from typing import Tuple, Optional
+from typing import Tuple, Optional, cast
 import frappe
 import pymysql.cursors
 def exec_sql_file(sql_path: Path) -> None:
@@ -58,24 +58,25 @@ def get_cached_output[T](
     doctype: str,
     key_field: str,
     key_value: str,
-    expected_type: type[T],
-    output_field: str = "output",
-) -> Optional[Tuple[str, T]]:
+    expected_type: type[T]
+) -> Tuple[Optional[str], Optional[T]]:
 
     name = frappe.db.exists(doctype, {key_field: key_value})
+    print(f"name is {name} while doctype is : {doctype} , filter wiht {key_field} = {key_value}")
     if not isinstance(name, str):
-        return None
+        return None , None
 
-    raw_value = frappe.get_value(doctype, name, output_field)
-    if raw_value is None:
-        return None
+    doc = frappe.get_doc(doctype, name)
+    return str(doc.name) , cast(T,doc.as_dict())
 
-    try:
-        parsed = json.loads(raw_value)
-    except Exception:
-        return None
+def ensure_designation(designation_name: str) -> str:
+    exists = frappe.db.exists("Designation", {"designation_name": designation_name})
+    if isinstance(exists,str):
+        return exists
 
-    # if not isinstance(parsed, expected_type):
-    #     return None
-    #
-    return name, parsed  # <-- now returns both
+    doc = frappe.get_doc({
+        "doctype": "Designation",
+        "designation_name": designation_name
+    }).insert(ignore_permissions=True)
+
+    return str(doc.name)

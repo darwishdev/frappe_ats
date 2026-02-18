@@ -91,5 +91,11 @@ def after_migrate():
     install_custom_fields(CUSTOMFIELDS_PATH)
     run_sql_dir(SQL_DIR)
     seed_app_roles(ROLES_CONFIG, domain="mawhub.io")
+    mawhub_company = frappe.get_doc("Company" , "Mawhub")
+    if mawhub_company:
+        mawhub_company.set("default_holiday_list" , "Saudi Arabia")
+        mawhub_company.save()
+        frappe.db.commit()
     return {"ok" : True}
+
 

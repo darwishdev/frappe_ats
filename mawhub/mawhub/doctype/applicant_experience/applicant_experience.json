@@ -10,7 +10,7 @@
   "column_break_dfwt",
   "role",
   "column_break_pduk",
-  "duration",
+  "from_date",
   "column_break_mjts",
   "to_date",
   "section_break_anrn",
@@ -42,7 +42,7 @@
   },
   {
    "allow_in_quick_entry": 1,
-   "fieldname": "duration",
+   "fieldname": "from_date",
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "From Date"

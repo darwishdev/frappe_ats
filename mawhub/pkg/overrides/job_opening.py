@@ -12,6 +12,7 @@ from mawhub.app.job.dto.job_opening_dto import JobPipelineStepApplicantDTO, JobP
 if TYPE_CHECKING:
     from frappe.model.document import Document
 
+class JobLinkError(Exception): ...
 
 class CustomJobOpening(JobOpening):
 
@@ -67,7 +68,7 @@ class CustomJobOpening(JobOpening):
                 "step_code": "All",
                 "step_name": "All",
                 "step_type": "All",
-                "step_idx": 1,
+                "step_idx": len(steps_map['All']),
                 "applicant_count": len(applicants_rows),
             }]
 
@@ -93,14 +94,18 @@ class CustomJobOpening(JobOpening):
                 filters={
                     "request_id" : self.get("custom_parse_request_id")
                     },
-                fields=["name" , "output"],
+                fields=["name" , "file_path" ,  "metadata" ],
                 )
 
         parsed_docs = []
         for doc in docs:
-            doc_map = {}
-            doc_map[doc["name"]] = json.loads(doc["output"])
-            parsed_docs.append(doc_map)
+            doc["sections"] = frappe.get_all(
+                "Parsed Document Section",
+                filters={"parent": doc["name"]},
+                fields=["title" , "description" , "bullet_points" , "footer" , "is_number_list"],
+                order_by="idx asc",
+            )
+            parsed_docs.append(doc)
         print(parsed_docs , self.get("custom_parse_request_id"))
         # lower_range = str(lower_obj.get("parsedValue", ""))
         # upper_range = str(upper_obj.get("parsedValue", ""))
@@ -326,14 +331,16 @@ class CustomJobOpening(JobOpening):
             comment: Optional[str] = None,
             ) -> Document:
         step: str = self.resolve_step_code(step_code)
+        print("Step is " , step)
         if not isinstance(self.get("custom_applicants"), list):
             self.set("custom_applicants", [])
 
         existing: Optional[Document] = self._get_active_applicant_row(applicant_id)
+        print("Existing is " , existing)
 
         if existing:
             if existing.get("step_code") == step:
-                raise frappe.ValidationError(f"Applicant: {applicant_id} is already on this step :{step_code}")
+                raise JobLinkError(f"Applicant: {applicant_id} is already on this step :{step_code}")
             existing.set("invalidated_at", now_datetime())
             existing.set("invalidated_by", frappe.session.user)
 
@@ -344,8 +351,12 @@ class CustomJobOpening(JobOpening):
             "comment": comment,
             })
 
+        print("New Row is " , new_row)
+        self.save()
+        print("Step is " , new_row)
+        frappe.db.commit()
         return new_row
-     
+
     @frappe.whitelist()
     def remove_applicant_from_step(
             self,

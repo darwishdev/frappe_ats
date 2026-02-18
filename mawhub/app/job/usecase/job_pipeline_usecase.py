@@ -1,12 +1,10 @@
-from typing import Protocol, cast
+from typing import Protocol
 from frappe.model.document import Document
-from mawhub.app.job.dto.job_pipeline_dto import JobPipelineCreateRequest
-from mawhub.app.job.repo.job_pipeline_repo import JobPipelineRepoInterface
 from mawhub.app.job.repo.job_repo import JobRepoInterface
-from mawhub.sqltypes.table_models import JobPipeline
+from mawhub.mawhub.doctype.job_pipeline.job_pipeline import JobPipelineDBModel
 
 class JobPipelineUsecaseInterface(Protocol):
-	def job_pipeline_create_update(self, payload: JobPipelineCreateRequest)->Document: ...
+	def job_pipeline_create_update(self, payload: JobPipelineDBModel)->Document: ...
 
 class JobPipelineUsecase:
     repo: JobRepoInterface
@@ -16,7 +14,6 @@ class JobPipelineUsecase:
     ):
         self.repo = repo
 
-    def job_pipeline_create_update(self, payload: JobPipelineCreateRequest)->Document:
-        params = cast(JobPipeline , payload)
-        return self.repo.job_pipeline.create_or_update(params)
+    def job_pipeline_create_update(self, payload: JobPipelineDBModel)->Document:
+        return self.repo.job_pipeline.create_or_update(payload)
 

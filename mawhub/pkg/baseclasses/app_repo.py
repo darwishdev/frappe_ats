@@ -1,7 +1,7 @@
 from typing import List, Generic, Protocol, TypeVar, cast
 from frappe.model.document import Document
 
-from mawhub.pkg.sql.crud_utils import bulk_create_docs, create_or_update_doc
+from mawhub.pkg.sql.crud_utils import FieldSpec, bulk_create_docs, create_or_update_doc
 
 PayloadT = TypeVar("PayloadT")
 
@@ -12,16 +12,16 @@ class AppRepoInterface(Protocol, Generic[PayloadT]):
 class AppRepo(Generic[PayloadT]):
     doc_name: str
     name_key: str
-    scalar_fields: List[str]
-    child_tables: dict[str, str]
+    scalar_fields: FieldSpec
+    child_tables: FieldSpec
 
     def __init__(
         self,
         *,
         doc_name: str,
         name_key: str,
-        scalar_fields: List[str],
-        child_tables: dict[str, str] | None = None,
+        scalar_fields: List[str] | dict[str, str],
+        child_tables: FieldSpec | None = None,
     ):
         self.doc_name = doc_name
         self.name_key = name_key

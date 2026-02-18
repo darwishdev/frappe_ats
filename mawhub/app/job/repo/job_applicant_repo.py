@@ -1,53 +1,96 @@
-from typing import List, Protocol
+from typing import List, Literal, NotRequired, Protocol, TypedDict
 import frappe
 
-from mawhub.app.job.dto.job_applicant_dto import  JobApplicantBulkUpdateRequest
 from mawhub.pkg.baseclasses.app_repo import AppRepo, AppRepoInterface
-from mawhub.sqltypes.table_models import JobApplicant
+# from mawhub.sqltypes.table_models import JobApplicant
 
 
-class JobApplicantRepoInterface(AppRepoInterface[JobApplicant] , Protocol):
-    def job_applicant_bulk_update(self, payload: JobApplicantBulkUpdateRequest)->List[str]: ...
+class JobApplicantDBModel(TypedDict):
+    name: NotRequired[str]
+    # -------------------------
+    # core fields
+    # -------------------------
+    applicant_name: str
+    email_id: str
+
+    status: Literal[
+        "Open",
+        "Replied",
+        "Rejected",
+        "Hold",
+        "Accepted",
+    ]
+
+    phone_number: NotRequired[str]
+    country: NotRequired[str]
+
+    # -------------------------
+    # job link
+    # -------------------------
+    job_title: NotRequired[str]          # Link -> Job Opening
+    designation: NotRequired[str]        # Link -> Designation
+
+    # -------------------------
+    # source fields
+    # -------------------------
+    source: NotRequired[str]             # Link -> Job Applicant Source
+    source_name: NotRequired[str]        # Link -> Employee
+    employee_referral: NotRequired[str]  # Link -> Employee Referral
+
+    applicant_rating: float | None
+
+    # -------------------------
+    # resume fields
+    # -------------------------
+    cover_letter: NotRequired[str]       # Text
+    resume_attachment: NotRequired[str]  # Attach
+    resume_link: NotRequired[str]
+    notes: NotRequired[str]
+
+    # -------------------------
+    # salary expectation
+    # -------------------------
+    currency: NotRequired[str]
+    lower_range: float | None
+    upper_range: float | None
+class JobApplicantRepoInterface(AppRepoInterface[JobApplicantDBModel] , Protocol):
     def job_applicant_find(self, name: str,job: str)->dict: ...
 
 
-class JobApplicantRepo(AppRepo[JobApplicant]):
+class JobApplicantRepo(AppRepo[JobApplicantDBModel]):
     def __init__(self):
         super().__init__(
             doc_name="Job Applicant",
             name_key="name",
             scalar_fields=[
+                "name",
+
                 "applicant_name",
                 "email_id",
+                "status",
                 "phone_number",
                 "country",
+
                 "job_title",
                 "designation",
-                "status",
+
                 "source",
                 "source_name",
                 "employee_referral",
                 "applicant_rating",
-                "notes",
+
                 "cover_letter",
                 "resume_attachment",
                 "resume_link",
+                "notes",
+
                 "currency",
                 "lower_range",
-                "upper_range",
-                "custom_pipeline_step",
+                "upper_range"
             ],
             child_tables={
             },
         )
-    # def job_applicant_update(self, payload: JobApplicantUpdateRequest)->str:
-    #     doc = frappe.get_doc("Job Applicant",payload.get("name"))
-    #     doc.set('status' , payload.get('status'))
-    #     doc.set('custom_pipeline_step' , payload.get('pipeline_step'))
-    #     doc.save(ignore_permissions=True)
-    #     frappe.db.commit()
-    #     return payload.get('name')
-
 
 
     def job_applicant_find(self, name: str,job: str)->dict:
@@ -107,24 +150,3 @@ class JobApplicantRepo(AppRepo[JobApplicant]):
             "interviews" : interviews,
         }
 
-        return response
-    def job_applicant_bulk_update(self, payload: JobApplicantBulkUpdateRequest)->List[str]:
-        sql_stmt = """
-        UPDATE `tabJob Applicant` a
-        set
-        a.status = %(status)s ,
-        a.custom_pipeline_step = %(pipeline_step)s
-        where a.name in  %(names)s
-        """
-        params = {
-                "status": payload["status"],
-                "pipeline_step": payload["pipeline_step"],
-                "names": tuple(payload["names"]),  # IMPORTANT
-                }
-        try:
-            frappe.db.sql(sql_stmt,params)
-            frappe.db.commit()
-        except Exception as e:
-            frappe.db.rollback()
-            raise e
-        return payload.get('names')

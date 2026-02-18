@@ -1,4 +1,9 @@
-from typing import List, NotRequired, Required, TypedDict
+from typing import  Required, TypedDict
+
+from mawhub.mawhub.doctype.applicant_education.applicant_education import ApplicantEducationDBModel
+from mawhub.mawhub.doctype.applicant_experience.applicant_experience import ApplicantExperienceDBModel
+from mawhub.mawhub.doctype.applicant_project.applicant_project import ApplicantProjectDBModel
+from mawhub.mawhub.doctype.applicant_resume.applicant_resume import ApplicantResumeDBModel
 
 # from mawhub.app.job.agent.resume_parser_agent import AgentFinalEvent
 #
@@ -8,40 +13,19 @@ class PersonalInfo(TypedDict, total=False):
     phone: str
     location: str
 #
-class ApplicantExperience(TypedDict, total=False):
-    company: str
-    role: str
-    from_date: str
-    to_date: str
-    description: str
+class ApplicantExperience(ApplicantExperienceDBModel, total=False):
+    pass
 
 
-class ApplicantEducation(TypedDict, total=False):
-    institution: str
-    degree: str
-    from_date: str
-    to_date: str
+class ApplicantEducation(ApplicantEducationDBModel, total=False):
+    pass
 
 
-class ApplicantProject(TypedDict, total=False):
-    title: str
-    description: str
-    stack: str
-    link: str
+class ApplicantProject(ApplicantProjectDBModel, total=False):
+    pass
 
 
 
 
-class ApplicantResumeDTO(TypedDict, total=False):
-    resume_hash: Required[str]
-    applicant_name: Required[str]
-    email: Required[str]
-    phone: NotRequired[str]
-    file_path: Required[str]
-    location: NotRequired[str]
-    skills: NotRequired[str]
-    summary: NotRequired[str]
-    experience: NotRequired[List[ApplicantExperience]]
-    education: NotRequired[List[ApplicantEducation]]
-    projects: NotRequired[List[ApplicantProject]]
-
+class ApplicantResumeDTO(ApplicantResumeDBModel, total=False):
+    pass

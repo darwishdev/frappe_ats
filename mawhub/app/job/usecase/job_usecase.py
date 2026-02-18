@@ -7,36 +7,24 @@ from mawhub.app.job.agent.resume_parser.resume_parser_agent import ResumeWorkflo
 from mawhub.app.job.repo.job_repo import JobRepoInterface
 from mawhub.app.job.usecase.applicant_resume_usecase import ApplicantResumeUsecase, ApplicantResumeUsecaseInterface
 # from mawhub.app.job.usecase.auth_usecase import AuthUsecase, AuthUsecaseInterface
-from mawhub.app.job.usecase.interview_usecase import InterviewUsecase, InterviewUsecaseInterface
 from mawhub.app.job.usecase.job_applicant_usecase import JobApplicantUsecase, JobApplicantUsecaseInterface
 from mawhub.app.job.usecase.job_opening_usecase import JobOpeningUsecase, JobOpeningUsecaseInterface
 from mawhub.app.job.usecase.job_pipeline_usecase import JobPipelineUsecase, JobPipelineUsecaseInterface
 from mawhub.app.job.usecase.parsed_document_usecase import ParsedDocumentUsecase, ParsedDocumentUsecaseInterface
-from mawhub.pkg.sql.cache_utils import get_ai_cache, set_ai_cache
 
 class JobUseCaseInterface(Protocol):
     job_opening: JobOpeningUsecaseInterface
     job_applicant: JobApplicantUsecaseInterface
     job_pipeline: JobPipelineUsecaseInterface
-    interview: InterviewUsecaseInterface
     parsed_document: ParsedDocumentUsecaseInterface
     applicant_resume: ApplicantResumeUsecaseInterface
-    # job_agent: JobOpeningParserWorkflow
-    # resume_agent: ResumeWorkflow
-    #
-    # communication_agent: CommunicationWorkflow
-    # document_parser_agent: DocumentParserWorkflow
 
 class JobUseCase:
     job_opening: JobOpeningUsecaseInterface
     job_applicant: JobApplicantUsecaseInterface
     job_pipeline: JobPipelineUsecaseInterface
-    interview: InterviewUsecaseInterface
     applicant_resume: ApplicantResumeUsecaseInterface
     parsed_document: ParsedDocumentUsecaseInterface
-    # resume_agent: ResumeWorkflow
-    # job_agent: JobOpeningParserWorkflow
-    # document_parser_agent: DocumentParserWorkflow
     def __init__(
         self,
         job_repo: JobRepoInterface,
@@ -48,8 +36,6 @@ class JobUseCase:
         self.job_pipeline= JobPipelineUsecase(job_repo)
         self.parsed_document = ParsedDocumentUsecase(job_repo,document_parser_agent)
         self.job_applicant = JobApplicantUsecase(job_repo)
-        self.interview = InterviewUsecase(job_repo)
-        # self.auth = AuthUsecase(job_repo)
         self.applicant_resume = ApplicantResumeUsecase(job_repo , resume_parser_agent)
 
 

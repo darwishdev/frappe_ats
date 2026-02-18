@@ -120,7 +120,7 @@
         {
          "type": "Link",
          "label": "Job Pipeline",
-         "link_to": "Job Opening",
+         "link_to": "Job Pipeline",
          "link_type": "DocType",
          "icon": "",
          "indent": 1,
@@ -156,15 +156,6 @@
          "type": "Link",
          "label": "Recruitment Analytics",
          "link_to": "Recruitment Analytics",
-         "link_type": "Report",
-         "icon": "",
-         "indent": 1,
-         "child": 1
-        },
-        {
-         "type": "Link",
-         "label": "Job Applicant Source",
-         "link_to": "Job Applicant Source",
          "link_type": "Report",
          "icon": "",
          "indent": 1,

@@ -1,0 +1,97 @@
+[
+ {
+  "color": null,
+  "country": "SA",
+  "docstatus": 0,
+  "doctype": "Holiday List",
+  "from_date": "2026-02-01",
+  "holiday_list_name": "Saudi Arabia",
+  "holidays": [
+   {
+    "description": "Founding Day Holiday",
+    "holiday_date": "2026-02-22",
+    "is_half_day": 0,
+    "weekly_off": 0
+   },
+   {
+    "description": "Eid al-Fitr Holiday",
+    "holiday_date": "2026-03-19",
+    "is_half_day": 0,
+    "weekly_off": 0
+   },
+   {
+    "description": "Eid al-Fitr Holiday",
+    "holiday_date": "2026-03-20",
+    "is_half_day": 0,
+    "weekly_off": 0
+   },
+   {
+    "description": "Eid al-Fitr Holiday",
+    "holiday_date": "2026-03-21",
+    "is_half_day": 0,
+    "weekly_off": 0
+   },
+   {
+    "description": "Eid al-Fitr Holiday",
+    "holiday_date": "2026-03-22",
+    "is_half_day": 0,
+    "weekly_off": 0
+   },
+   {
+    "description": "Eid al-Fitr Holiday (observed)",
+    "holiday_date": "2026-03-23",
+    "is_half_day": 0,
+    "weekly_off": 0
+   },
+   {
+    "description": "Eid al-Fitr Holiday (observed)",
+    "holiday_date": "2026-03-24",
+    "is_half_day": 0,
+    "weekly_off": 0
+   },
+   {
+    "description": "Arafat Day",
+    "holiday_date": "2026-05-26",
+    "is_half_day": 0,
+    "weekly_off": 0
+   },
+   {
+    "description": "Eid al-Adha Holiday",
+    "holiday_date": "2026-05-27",
+    "is_half_day": 0,
+    "weekly_off": 0
+   },
+   {
+    "description": "Eid al-Adha Holiday",
+    "holiday_date": "2026-05-28",
+    "is_half_day": 0,
+    "weekly_off": 0
+   },
+   {
+    "description": "Eid al-Adha Holiday",
+    "holiday_date": "2026-05-29",
+    "is_half_day": 0,
+    "weekly_off": 0
+   },
+   {
+    "description": "Eid al-Adha Holiday (observed)",
+    "holiday_date": "2026-05-31",
+    "is_half_day": 0,
+    "weekly_off": 0
+   },
+   {
+    "description": "National Day Holiday",
+    "holiday_date": "2026-09-23",
+    "is_half_day": 0,
+    "weekly_off": 0
+   }
+  ],
+  "is_half_day": 0,
+  "modified": "2026-02-17 19:53:30.384425",
+  "name": "Saudi Arabia",
+  "subdivision": "",
+  "to_date": "2027-01-31",
+  "total_holidays": 13,
+  "weekly_off": ""
+ }
+]

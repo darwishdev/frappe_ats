@@ -1,10 +1,8 @@
-import json
-from typing import Iterator, List, cast
+from typing import  List
 from frappe import _
 import frappe
 from mawhub.app.job.dto.applicant_resume_dto import  ApplicantResumeDTO
 from mawhub.bootstrap import app_container
-from werkzeug.wrappers import Response
 
 
 @frappe.whitelist(methods=["POST","GET"])
@@ -36,23 +34,12 @@ def applicant_resume_parse(path: str,job_opening_id: str, pipeline_step_id: str)
         }
 @frappe.whitelist(methods=["POST","GET"])
 def applicant_resume_parse_bg(path: str,job_opening_id: str, pipeline_step_id: str,user:str):
-    response = app_container.job_usecase.applicant_resume.applicant_resume_parse(
+    return app_container.job_usecase.applicant_resume.applicant_resume_parse(
                 path,
                 job_opening_id,
-                pipeline_step_id,
-                "123"
-
+                user,
+                pipeline_step_id
             )
-    print("sesison is" , user)
-    for value in response:
-        frappe.publish_realtime(
-            event=f"resume_parser_progress:{job_opening_id}",
-            message=value,
-            user=user
-
-        )
-
-    return {}
 @frappe.whitelist(methods=["POST", "GET"])
 def applicant_resume_create_update(payload: ApplicantResumeDTO):
     return app_container.job_usecase.applicant_resume.applicant_resume_create_update(payload=payload)

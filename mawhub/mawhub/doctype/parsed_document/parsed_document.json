@@ -7,19 +7,13 @@
  "engine": "InnoDB",
  "field_order": [
   "file_path",
-  "output",
   "file_hash",
   "sections",
-  "meta_data",
+  "metadata",
   "request_id"
  ],
  "fields": [
-  {
-   "fieldname": "output",
-   "fieldtype": "Long Text",
-   "label": "Output"
-  },
-  {
+   {
    "fieldname": "file_hash",
    "fieldtype": "Data",
    "label": "File Hash",
@@ -33,7 +27,7 @@
    "options": "Parsed Document Section"
   },
   {
-   "fieldname": "meta_data",
+   "fieldname": "metadata",
    "fieldtype": "Long Text",
    "label": "Meta Data"
   },

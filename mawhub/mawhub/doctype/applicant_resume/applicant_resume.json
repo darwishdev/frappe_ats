@@ -1,12 +1,11 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "field:resume_hash",
  "creation": "2026-01-19 15:43:15.345081",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "resume_hash",
+  "file_hash",
   "email",
   "phone",
   "location",
@@ -16,7 +15,6 @@
   "section_break_ngpl",
   "summary",
   "section_break_taxn",
-  "output",
   "experience",
   "education",
   "projects",
@@ -32,11 +30,6 @@
    "fieldname": "summary",
    "fieldtype": "Text Editor",
    "label": "Summary"
-  },
-  {
-   "fieldname": "output",
-   "fieldtype": "Long Text",
-   "label": "Output"
   },
   {
    "fieldname": "experience",
@@ -67,11 +60,10 @@
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "File Path",
-   "reqd": 1,
-   "unique": 1
+   "reqd": 1
   },
   {
-   "fieldname": "resume_hash",
+   "fieldname": "file_hash",
    "fieldtype": "Data",
    "label": "Resume Hash",
    "reqd": 1,
@@ -109,11 +101,11 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-02-16 20:10:35.849191",
+ "modified": "2026-02-17 14:54:09.743583",
  "modified_by": "Administrator",
  "module": "Mawhub",
  "name": "Applicant Resume",
- "naming_rule": "By fieldname",
+ "naming_rule": "By script",
  "owner": "Administrator",
  "permissions": [
   {
