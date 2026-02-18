@@ -13,6 +13,8 @@ develop-eggs/
 dist/
 downloads/
 eggs/
+mawhub/fixtures/google_settings.json
+mawhub/fixtures/social_login_key.json
 .eggs/
 lib64/
 parts/
