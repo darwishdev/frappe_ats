@@ -26,4 +26,7 @@ class JobPipelineDBModel(TypedDict):
     # -------------------------
     steps: List[PipelineStepDBModel]
 class JobPipeline(Document):
-	pass
+    @classmethod
+    def get_list(cls, filters=None, fields=None, limit_start=0, limit_page_length=20, order_by=None, as_dict=False, debug=False):
+        print("called here")
+        return []

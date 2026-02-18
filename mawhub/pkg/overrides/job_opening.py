@@ -1,5 +1,4 @@
 from __future__ import annotations
-import json
 from typing import TYPE_CHECKING, List, Optional, Dict, cast
 
 import frappe
@@ -20,6 +19,9 @@ class CustomJobOpening(JobOpening):
     # lifecycle
     # -------------------------------------------------
 
+    @classmethod
+    def get_list(cls, filters=None, fields=None, limit_start=0, limit_page_length=20, order_by=None, as_dict=False, debug=False):
+        return []
     @frappe.whitelist()
     def fetch_job_info(self):
         steps_rows = self.get("custom_pipeline_steps") or []
@@ -106,7 +108,6 @@ class CustomJobOpening(JobOpening):
                 order_by="idx asc",
             )
             parsed_docs.append(doc)
-        print(parsed_docs , self.get("custom_parse_request_id"))
         # lower_range = str(lower_obj.get("parsedValue", ""))
         # upper_range = str(upper_obj.get("parsedValue", ""))
 
@@ -137,83 +138,6 @@ class CustomJobOpening(JobOpening):
                 "steps": steps,
                 "steps_map": steps_map,
                 }
-        job_info = self.as_dict()
-        # steps index
-        # -------------------------
-        step_id_to_row = {s.name: s for s in self.get("custom_pipeline_steps") or []}
-
-        # -------------------------
-        # group applicants by step_code
-        # -------------------------
-        steps_map: Dict[str, List[JobPipelineStepApplicantDTO]] = {}
-
-        for a in self.custom_applicants or []:
-            step_row = step_id_to_row.get(a.step)
-            if not step_row:
-                continue
-
-            step_code = step_row.step_code
-
-            dto: JobPipelineStepApplicantDTO = {
-                    "name": a.name,
-                    "job_applicant": a.job_applicant,
-                    "applicant_resume": a.applicant_resume,
-                    "comment": a.comment or "",
-                    "candidate_count": 1,
-                    }
-
-            steps_map.setdefault(step_code, []).append(dto)
-
-        # -------------------------
-        # build steps list
-        # -------------------------
-        steps: List[JobPipelineStepDTO] = []
-
-        for s in self.custom_pipeline_steps or []:
-            step_code = s.step_code
-            steps.append({
-                "step_id": s.name,
-                "step_code": step_code,
-                "step_name": s.step_name,
-                "step_type": s.step_type,
-                "step_idx": s.idx,
-                "applicant_count": len(steps_map.get(step_code, [])),
-                })
-
-        # -------------------------
-        # salary fields
-        # -------------------------
-        lower_range = str((self.lower_range or {}).get("parsedValue", ""))
-        upper_range = str((self.upper_range or {}).get("parsedValue", ""))
-
-        # -------------------------
-        # final dto
-        # -------------------------
-        return {
-                "name": self.name,
-                "designation": self.designation,
-                "department": self.department,
-                "pipeline": self.custom_pipeline,
-                "parsed_documents": [],
-                "employment_type": self.employment_type or "",
-                "location": self.location or "",
-                "customer": self.custom_customer or "",
-                "docstatus": self.docstatus,
-                "publish": self.publish,
-                "publish_salary_range": self.publish_salary_range,
-                "publish_applications_received": self.publish_applications_received,
-                "currency": self.currency,
-                "salary_per": self.salary_per,
-                "lower_range": lower_range,
-                "upper_range": upper_range,
-                "posted_on": str(self.posted_on),
-                "closes_on": str(self.closes_on or ""),
-                "step_count": len(steps),
-                "applicants_count": len(self.custom_applicants or []),
-                "steps": steps,
-                "steps_map": steps_map,
-                }
-        return job_info
     def sync_pipeline_steps(self):
         pipeline_name = self.get("custom_pipeline")
         if not pipeline_name:
@@ -372,7 +296,8 @@ class CustomJobOpening(JobOpening):
 
         if comment:
             row.set("comment", comment)
-
+        self.save()
+        frappe.db.commit()
         return True
 
 
@@ -415,6 +340,9 @@ class CustomJobOpening(JobOpening):
         applicant_row = self.copy_applicant_to_another_job(applicant_id,new_job_name,new_step_code,comment)
         applicant_row.set("invalidated_at", now_datetime())
         applicant_row.set("invalidated_by", frappe.session.user)
+        self.save()
+        frappe.db.commit()
+        print(applicant_row)
         return applicant_row
 
     @frappe.whitelist()
@@ -487,7 +415,8 @@ class CustomJobOpening(JobOpening):
             "applicant_resume": resume_id,
             "comment": comment,
             })
-
+        self.save()
+        frappe.db.commit()
         return new_row
 
     # -------------------------------------------------

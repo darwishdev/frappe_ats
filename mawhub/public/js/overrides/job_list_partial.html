@@ -1,0 +1,19 @@
+<div class="job-pipeline-steps" id="pipeline-steps-{{ doc.name }}" style="display: flex; flex-wrap: wrap; gap: 8px;">
+    {% if steps and steps.length > 0 %}
+        {% for step in steps %}
+            <div class="pipeline-step"
+                 data-job="{{ doc.name }}"
+                 data-step="{{ step.step_code }}"
+                 title="{{ step.step_name }} - {{ step.applicants_count }} applicants"
+                 style="cursor: pointer; display: inline-flex; align-items: center; padding: 4px 10px; background-color: #f0f3f6; border-radius: 16px; border: 1px solid #d1d8dd; font-size: 12px; transition: all 0.2s;"
+                 onmouseover="this.style.backgroundColor='#e4e7e9'"
+                 onmouseout="this.style.backgroundColor='#f0f3f6'"
+                 onclick="window.location.hash = '#job-opening/{{ doc.name }}?step={{ step.step_code }}'">
+                <span class="step-count" style="font-weight: 600; margin-right: 6px; color: #2e8b57; background-color: white; border-radius: 50%; width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center;">{{ step.applicants_count or 0 }}</span>
+                <span class="step-label">{{ step.step_name }}</span>
+            </div>
+        {% endfor %}
+    {% else %}
+        <span class="text-muted">No pipeline steps available</span>
+    {% endif %}
+</div>
