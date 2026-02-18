@@ -70,23 +70,25 @@ class DocumentParserWorkflow:
                 section.title: section.text for section in doc_chunks.sections
             }
         }
-    def _to_section_event_data(self, section_name: str, section: dict) -> ParsedDocumentSectionDTO:
+    def _to_section_event_data(self, section_name: str, section: ParsedSectionModel) -> ParsedDocumentSectionDTO:
         """Adapts Pydantic ParsedSection to TypedDict ParsedSectionEvent"""
+        print("section_nameisss" , section_name , section)
         data: ParsedDocumentSectionDTO = {
             "title": section_name,
         }
 
-        if "description" in section:
-            data["description"] = section["description"]
+        if getattr(section, "description", None):
+            data["description"] = section.description or ""
 
-        if "footer" in section:
-            data["footer"] = section["footer"]
+        if getattr(section, "footer", None):
+            data["footer"] = section.footer or ""
 
-        if "is_number_list" in section:
-            data["is_number_list"] = section["is_number_list"]
+        if getattr(section, "is_number_list", None) is not None:
+            data["is_number_list"] = section.is_number_list
 
-        if "bullet_points" in section:
-            data["bullet_points"] = "\n".join(str(x) for x in section["bullet_points"])
+        if getattr(section, "bullet_points", None):
+            # join bullet points if they exist
+            data["bullet_points"] = "\n".join(str(x) for x in section.bullet_points or [])
         return data
 
     def chunk_document(self, text: str, model_name: str) -> DocumentStructureModel:

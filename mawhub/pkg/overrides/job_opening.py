@@ -401,7 +401,7 @@ class CustomJobOpening(JobOpening):
                 comment=comment
                 )
         new_job_doc.save()
-
+        frappe.db.commit()
         print("new_job is" , new_job_doc.get("custom_applicants"))
         return row
     @frappe.whitelist()

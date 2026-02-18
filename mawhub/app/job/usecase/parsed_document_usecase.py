@@ -91,13 +91,11 @@ class ParsedDocumentUsecase:
                     raise e
 
 
-            print("events is ")
             for event in self.document_parser_agent.run(document_text):
                 print(f"events is {event}")
                 yield {"event" : event["event"] ,"data" : event["data"]}
                 if event["event"] == "final":
                     final_event_data = event["data"]
-                    print("events is " , final_event_data)
                     doc = callback(final_event_data)
                     yield {
                         "event":"db_save" ,

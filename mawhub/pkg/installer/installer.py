@@ -33,6 +33,7 @@ ROLES_CONFIG = {
     "Recruiter": {
         "desk_access": True,
         "perms": {
+            "Comment": {"read": 1, "write": 1, "create": 1, "submit": 1, "cancel": 1, "amend": 1},
             "Job Opening": {"read": 1, "write": 1, "create": 1, "submit": 1, "cancel": 1, "amend": 1},
             "Job Applicant": {"read": 1, "write": 1, "create": 1, "submit": 1, "cancel": 1, "amend": 1},
             "Interview": {"read": 1, "write": 1, "create": 1, "submit": 1, "cancel": 1, "amend": 1},
@@ -48,6 +49,7 @@ ROLES_CONFIG = {
      "ATS Client Viewer": {
         "desk_access": True,
         "perms": {
+            "Comment": {"read": 1, "write": 1, "create": 1, "submit": 1, "cancel": 1, "amend": 1},
             "Page": {"read": 1},
             "Workspace": {"read": 1},
             "Job Opening": {"read": 1},
@@ -65,6 +67,7 @@ ROLES_CONFIG = {
     "ATS Client Reviewer": {
         "desk_access": True,
         "perms": {
+            "Comment": {"read": 1, "write": 1, "create": 1, "submit": 1, "cancel": 1, "amend": 1},
             "Page": {"read": 1},
             "Workspace": {"read": 1},
             "Job Opening": {"read": 1},
@@ -82,6 +85,7 @@ ROLES_CONFIG = {
     "ATS Client Collaborator": {
         "desk_access": True,
         "perms": {
+            "Comment": {"read": 1, "write": 1, "create": 1, "submit": 1, "cancel": 1, "amend": 1},
             "Page": {"read": 1},
             "Workspace": {"read": 1},
             "Job Opening": {"read": 1},
