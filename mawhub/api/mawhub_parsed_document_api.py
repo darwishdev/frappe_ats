@@ -50,7 +50,7 @@ def parsed_document_parse(path: str):
             enqueue_after_commit=False,
             at_front=True,
             file_path=path,
-            document_text=full_text,
+            document_text=document_text,
             request_id=request_id,
             user=frappe.session.user
         )
