@@ -203,12 +203,30 @@ const transformedParsedData = computed(() => {
       if (section.bullet_points) {
         // Handle newline-delimited string format
         if (typeof section.bullet_points === "string") {
-          bulletPoints = section.bullet_points
-            .split('\n')
-            .map(point => point.trim())
-            .filter(point => point.length > 0);
+          let text = section.bullet_points.trim();
+          
+          // Check if string contains newlines
+          if (text.includes('\n')) {
+            // Split by newlines and clean each point
+            bulletPoints = text
+              .split('\n')
+              .map(point => point.trim().replace(/^[●•·\-*]\s*/, ''))
+              .filter(point => point.length > 0);
+          } else if (/[●•·]/.test(text)) {
+            // No newlines but has bullet markers - split by bullet markers
+            bulletPoints = text
+              .split(/[●•·]/)
+              .map(point => point.trim())
+              .filter(point => point.length > 0);
+          } else {
+            // No newlines, no bullet markers - treat as single bullet point
+            bulletPoints = [text];
+          }
         } else if (Array.isArray(section.bullet_points)) {
-          bulletPoints = section.bullet_points;
+          bulletPoints = section.bullet_points.map(point => {
+            // Also clean array items if they have bullet markers
+            return typeof point === 'string' ? point.trim().replace(/^[●•·\-*]\s*/, '') : point;
+          });
         }
       }
 

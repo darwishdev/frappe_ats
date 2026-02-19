@@ -430,8 +430,9 @@ async function fetchApplicantProfile(applicantId) {
 function formatProfileDate(dateStr) {
   if (!dateStr) return 'Present';
   try {
-    const date = new Date(dateStr);
-    return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short' });
+    // const date = new Date(dateStr);
+    // return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short' });
+    return dateStr
   } catch {
     return dateStr;
   }
