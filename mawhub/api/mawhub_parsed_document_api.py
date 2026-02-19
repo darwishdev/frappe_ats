@@ -1,6 +1,6 @@
 
 from mawhub.mawhub.doctype.parsed_document.parsed_document import ParsedDocumentDBModel
-from mawhub.pkg.pdfconvertor.pdfconvertor import extract_text_from_pdf, get_document_content_and_hash, get_text_hash, parse_pdf_document
+from mawhub.pkg.pdfconvertor.pdfconvertor import  get_document_content_and_hash, get_text_hash
 import frappe
 from mawhub.bootstrap import app_container
 
@@ -16,7 +16,12 @@ def parsed_document_parse(path: str):
     """
     print("recieved a new request")
     request_id = frappe.generate_hash(length=12)
-    file_path , full_text , file_hash = parse_pdf_document(path)
+    document_text , document_text_hash = get_document_content_and_hash(path)
+    if not document_text_hash:
+        document_text = app_container.job_usecase.file_text_parser_agent.run(path)
+        if not document_text:
+            raise frappe.ValidationError(f"failed to extract text from file : {path}")
+        document_text_hash = get_text_hash(document_text)
 
 
     try:
@@ -30,9 +35,9 @@ def parsed_document_parse(path: str):
             now=False,
             enqueue_after_commit=False,
             at_front=True,
-            file_path=file_path,
-            file_hash=file_hash,
-            document_text=full_text,
+            file_path=path,
+            file_hash=document_text_hash,
+            document_text=document_text,
             request_id=request_id,
             user=frappe.session.user
         )
