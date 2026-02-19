@@ -1,6 +1,6 @@
 
 import json
-from mawhub.app.job.agent.document_parser.instructions import CUNKER_SYSTEM_INSTRUCTION, EXTRACTOR_SYSTEM_INSTRUCTION
+from mawhub.app.job.agent.document_parser.instructions import VALIDATOR_SYSTEM_INSTRUCTION , CUNKER_SYSTEM_INSTRUCTION, EXTRACTOR_SYSTEM_INSTRUCTION
 from frappe import Union
 from typing import List, Literal, TypedDict
 from google import genai
@@ -9,9 +9,10 @@ from typing import Dict, Iterator, Optional, Callable
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import cast
 
-from mawhub.app.job.agent.document_parser.types import DocumentStructureModel, ParsedSectionModel
+from mawhub.app.job.agent.document_parser.types import DocumentStructureModel, ParsedSectionModel, ValidationRequestModel, ValidationResponseModel
 from mawhub.app.job.dto.parsed_document_dto import ParsedDocumentDTO, ParsedDocumentSectionDTO
 from mawhub.mawhub.doctype.parsed_document_section.parsed_document_section import ParsedDocumentSectionDBModel
+from mawhub.pkg.pdfconvertor.pdfconvertor import read_pdf_bytes
 
 class DocumentStructureEvent(TypedDict):
     metadata: Dict[str,str]
@@ -34,12 +35,22 @@ class WorkflowFinalEvent(TypedDict):
 class WorkflowErrorEvent(TypedDict):
     event: Literal["error"]
     data: str
+class ValidationAcceptedEvent(TypedDict):
+    event: Literal["validation_accepted"]
+    data: None
+
+class ValidationCorrectedEvent(TypedDict):
+    event: Literal["validation_corrected"]
+    data: ParsedDocumentDTO
 
 DocumentParserEvent = Union[
     DocumentAnalyzedEvent,
     SectionParsedEvent,
     WorkflowFinalEvent,
-    WorkflowErrorEvent
+    WorkflowErrorEvent,
+    ValidationAcceptedEvent,
+    ValidationCorrectedEvent,
+
 ]
 # ----------------------------
 # Workflow
@@ -91,6 +102,92 @@ class DocumentParserWorkflow:
             data["bullet_points"] = "\n".join(str(x) for x in section.bullet_points or [])
         return data
 
+
+
+
+    def _to_parsed_document_dto(
+        self,
+        validation_result: ValidationResponseModel,
+        file_path: str,
+    ) -> ParsedDocumentDTO:
+        """
+        Adapts ValidationResponseModel to ParsedDocumentDTO
+        """
+        # Use provided metadata or fallback to empty dict
+        doc_metadata = getattr(validation_result,"metadata")
+
+        # Convert each section in validation_result to ParsedDocumentSectionDTO
+        sections: List[ParsedDocumentSectionDTO] = []
+        for section in getattr(validation_result, "sections", []):
+            section_dto: ParsedDocumentSectionDTO = {
+                "title": getattr(section, "title", ""),
+                "description": getattr(section, "description", ""),
+                "footer": getattr(section, "footer", ""),
+                "is_number_list": getattr(section, "is_number_list", False),
+                "bullet_points": "\n".join(str(x) for x in getattr(section, "bullet_points", []) or [])
+            }
+            sections.append(section_dto)
+
+        return ParsedDocumentDTO(
+            request_id=getattr(validation_result, "request_id", ""),
+            file_path=file_path,
+            file_hash="",
+            metadata=doc_metadata,
+            sections=sections
+        )
+    def validate_document(
+        self,
+        full_text: str,
+        metadata: dict,
+        sections: List[ParsedDocumentSectionDTO],
+        file_path: str,
+        model_name: Optional[str] = None
+    ) -> ValidationResponseModel:
+
+        # Convert structured request to JSON
+
+        request_payload = {
+            "full_text": full_text,
+            "file_path": file_path,
+            "metadata": metadata,
+            "sections": sections
+        }
+
+        # Build content parts
+        request_json = json.dumps(request_payload, indent=2)
+        parts = [
+            types.Part.from_text(
+                text="Validation Request JSON:\n" + request_json
+            )
+        ]
+
+        pdf_bytes = read_pdf_bytes(file_path)
+        # If file path provided → attach file
+        if pdf_bytes:
+            parts.append(
+                types.Part.from_bytes(
+                    data=pdf_bytes,
+                    mime_type="application/pdf",
+                )
+            )
+        response = self.client.models.generate_content(
+            model=model_name or self.default_model,
+            contents=types.Content(
+                role="user",
+                parts=parts
+            ),
+            config=types.GenerateContentConfig(
+                system_instruction=VALIDATOR_SYSTEM_INSTRUCTION,
+                temperature=0.0,
+                response_mime_type="application/json",
+                response_schema=ValidationResponseModel,
+                max_output_tokens=4096,
+                seed=42
+            )
+        )
+
+        return cast(ValidationResponseModel,response.parsed)
+
     def chunk_document(self, text: str, model_name: str) -> DocumentStructureModel:
         prompt = f"""
             Parsed Document Text:
@@ -129,6 +226,7 @@ class DocumentParserWorkflow:
     # ----------------------------
     def run(
         self,
+        file_path: str,
         document_text: str,
         model_overrides: Optional[Dict[str, str]] = None
     ) -> Iterator[DocumentParserEvent]:
@@ -174,12 +272,26 @@ class DocumentParserWorkflow:
                 "event": "final",
                 "data": {
                     "request_id" : "",
-                    "file_path" : "",
+                    "file_path" : file_path,
                     "file_hash" : "",
                     "metadata": json.dumps(analyzed_data["metadata"] , default=str),
                     "sections": cast(List[ParsedDocumentSectionDBModel] , results)
                 }
             }
+            validation_result = self.validate_document(
+                full_text=document_text,
+                metadata=analyzed_data["metadata"],
+                sections=results,
+                file_path=file_path,
+                model_name="gemini-3-pro-preview"
+            )
+            # Decide which event to yield
+            if getattr(validation_result, "status", "accepted"):
+                yield {"event": "validation_accepted" , "data":None}
+            else:
+                # Convert ValidationResponseModel → ParsedDocumentDTO
+                corrected_doc  = self._to_parsed_document_dto(validation_result,file_path)
+                yield {"event": "validation_corrected", "data": corrected_doc}
         except Exception as e:
             yield {"event": "error", "data": f"Chunking failed: {str(e)}"}
             return

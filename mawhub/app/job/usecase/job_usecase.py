@@ -2,6 +2,7 @@ from typing import Protocol
 
 
 from mawhub.app.job.agent.document_parser.document_parser_agent import DocumentParserWorkflow
+from mawhub.app.job.agent.file_text_parser.file_text_parser_agent import FileTextParserWorkflow
 from mawhub.app.job.agent.job_opening_parser.job_opening_parser_agent import JobOpeningParserWorkflow
 from mawhub.app.job.agent.resume_parser.resume_parser_agent import ResumeWorkflow
 from mawhub.app.job.repo.job_repo import JobRepoInterface
@@ -17,6 +18,7 @@ class JobUseCaseInterface(Protocol):
     job_applicant: JobApplicantUsecaseInterface
     job_pipeline: JobPipelineUsecaseInterface
     parsed_document: ParsedDocumentUsecaseInterface
+    file_text_parser_agent: FileTextParserWorkflow
     applicant_resume: ApplicantResumeUsecaseInterface
 
 class JobUseCase:
@@ -25,17 +27,20 @@ class JobUseCase:
     job_pipeline: JobPipelineUsecaseInterface
     applicant_resume: ApplicantResumeUsecaseInterface
     parsed_document: ParsedDocumentUsecaseInterface
+    file_text_parser_agent: FileTextParserWorkflow
     def __init__(
         self,
         job_repo: JobRepoInterface,
         resume_parser_agent: ResumeWorkflow,
         job_opening_parser_agent: JobOpeningParserWorkflow,
         document_parser_agent: DocumentParserWorkflow,
+        file_text_parser_agent: FileTextParserWorkflow,
     ):
         self.job_opening = JobOpeningUsecase(job_repo,job_opening_parser_agent)
         self.job_pipeline= JobPipelineUsecase(job_repo)
-        self.parsed_document = ParsedDocumentUsecase(job_repo,document_parser_agent)
+        self.parsed_document = ParsedDocumentUsecase(job_repo,document_parser_agent,file_text_parser_agent)
         self.job_applicant = JobApplicantUsecase(job_repo)
-        self.applicant_resume = ApplicantResumeUsecase(job_repo , resume_parser_agent)
+        self.applicant_resume = ApplicantResumeUsecase(job_repo , resume_parser_agent,file_text_parser_agent)
+        self.file_text_parser_agent = file_text_parser_agent
 
 

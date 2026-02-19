@@ -4,13 +4,14 @@ from typing import   Any, Iterator, List, Optional,  Protocol,  cast
 from click import Option
 import frappe
 from frappe.model.document import Document
+from mawhub.app.job.agent.file_text_parser.file_text_parser_agent import FileTextParserWorkflow
 from mawhub.app.job.agent.resume_parser.resume_parser_agent import ResumeWorkflow
 from mawhub.app.job.dto.applicant_resume_dto import ApplicantResumeDTO
 from mawhub.app.job.dto.job_applicant_dto import job_applicant_dto_from_resume
 from mawhub.app.job.repo.job_repo import JobRepoInterface
 from mawhub.mawhub.doctype.applicant_resume.applicant_resume import ApplicantResumeDBModel
 from mawhub.pkg.overrides.job_opening import CustomJobOpening
-from mawhub.pkg.pdfconvertor.pdfconvertor import  get_document_content_and_hash
+from mawhub.pkg.pdfconvertor.pdfconvertor import  get_document_content_and_hash, get_text_hash
 from mawhub.pkg.sql.sql_utils import ensure_designation, get_cached_output
 class DocumentTextParserError(Exception): ...
 class ApplicantResumeCreationError(Exception): ...
@@ -36,14 +37,17 @@ class ApplicantResumeUsecaseInterface(Protocol):
 class ApplicantResumeUsecase:
     repo: JobRepoInterface
     resume_agent: ResumeWorkflow
+    file_text_parser_agent: FileTextParserWorkflow
     doc_name : str
     def __init__(
         self,
         repo: JobRepoInterface,
-        resume_agent: ResumeWorkflow
+        resume_agent: ResumeWorkflow,
+        file_text_parser_agent: FileTextParserWorkflow,
     ):
         self.repo = repo
         self.resume_agent = resume_agent
+        self.file_text_parser_agent = file_text_parser_agent
         self.doc_name = "Applicant Resume"
     def applicant_resume_bulk_create(
             self,
@@ -98,8 +102,10 @@ class ApplicantResumeUsecase:
             job_doc = self.job_find(job)
             document_text, document_text_hash = get_document_content_and_hash(path)
             if not document_text_hash:
-                raise DocumentTextParserError(f"failed to extract text from file : {path}")
-
+                document_text = self.file_text_parser_agent.run(path)
+                if not document_text:
+                    raise DocumentTextParserError(f"failed to extract text from file : {path}")
+                document_text_hash = get_text_hash(document_text)
             def link_with_job_opening(
                 email: str,
                 resume_id: str,

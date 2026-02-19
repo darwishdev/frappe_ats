@@ -1,6 +1,6 @@
 
 from mawhub.mawhub.doctype.parsed_document.parsed_document import ParsedDocumentDBModel
-from mawhub.pkg.pdfconvertor.pdfconvertor import extract_text_from_pdf
+from mawhub.pkg.pdfconvertor.pdfconvertor import extract_text_from_pdf, get_document_content_and_hash, get_text_hash, parse_pdf_document
 import frappe
 from mawhub.bootstrap import app_container
 
@@ -16,7 +16,7 @@ def parsed_document_parse(path: str):
     """
     print("recieved a new request")
     request_id = frappe.generate_hash(length=12)
-    full_text = extract_text_from_pdf(path)
+    file_path , full_text , file_hash = parse_pdf_document(path)
 
 
     try:
@@ -30,7 +30,8 @@ def parsed_document_parse(path: str):
             now=False,
             enqueue_after_commit=False,
             at_front=True,
-            file_path=path,
+            file_path=file_path,
+            file_hash=file_hash,
             document_text=full_text,
             request_id=request_id,
             user=frappe.session.user
@@ -63,10 +64,15 @@ def parsed_document_parse(path: str):
             "message": f"Failed to enqueue job: {str(e)}"
         }
 @frappe.whitelist(methods=["POST", "GET"], allow_guest=True)
-def parsed_document_parse_bg(file_path:str ,document_text: str, request_id: str,user:str):
+def parsed_document_parse_bg(file_path:str,file_hash:str ,document_text: str, request_id: str,user:str):
     if document_text == "":
-        document_text = extract_text_from_pdf(file_path)
-    events = app_container.job_usecase.parsed_document.parse_document(file_path,document_text,request_id)
+        document_text , document_text_hash = get_document_content_and_hash(file_path)
+        if not document_text_hash:
+            document_text = app_container.job_usecase.file_text_parser_agent.run(file_path)
+            if not document_text:
+                raise frappe.ValidationError(f"failed to extract text from file : {file_path}")
+            document_text_hash = get_text_hash(document_text)
+    events = app_container.job_usecase.parsed_document.parse_document(file_path,file_hash,document_text,request_id)
     for event in events:
         frappe.publish_realtime(
             event=f"document_parser",
