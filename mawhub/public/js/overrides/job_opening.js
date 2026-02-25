@@ -8,6 +8,21 @@ frappe.ui.form.on("Job Opening", {
     refresh(frm) {
         frappe.realtime.on(`resume_parser_progress:${frm.doc.name}`, (data) => {
             console.log("progress:", data);
+            if(data.event == 'chuncked'){
+                if (!frm._resume_parsing_shown) {
+                    frappe.show_alert({
+                        message: __("Resume Parsing Work in progress.."),
+                        indicator: "blue"
+                    });
+                    frm._resume_parsing_shown = true;
+                }
+            }
+            if(data.event == 'error'){
+                frappe.show_alert({
+                    message: __("Error parsing resume: ") + data.data,
+                    indicator: "red"
+                });
+            }
         });
 
         // Initialize custom view mode as true (start with Vue view)

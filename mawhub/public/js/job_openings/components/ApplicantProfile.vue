@@ -1,5 +1,29 @@
 <template>
   <div class="applicant-profile">
+    <!-- Progress Bar -->
+    <div v-if="showProgress" class="progress-bar-container">
+      <div class="progress-bar-header">
+        <span class="progress-bar-label">Parsing Resume</span>
+        <span class="progress-bar-percentage">{{ progressPercentage }}%</span>
+      </div>
+      <div class="progress-bar-track">
+        <div 
+          class="progress-bar-fill" 
+          :style="{ width: progressPercentage + '%' }"
+        ></div>
+      </div>
+      <div class="progress-bar-steps">
+        <div 
+          v-for="step in 5" 
+          :key="step"
+          :class="['progress-step', { active: parsingProgress >= step }]"
+        >
+          <div class="progress-step-dot"></div>
+          <span class="progress-step-label">Step {{ step }}</span>
+        </div>
+      </div>
+    </div>
+
     <div
       v-if="loading && !applicantProfile"
       class="profile-loading"
@@ -181,8 +205,11 @@
         <h3 class="profile-section-title">
           Summary
         </h3>
-        <p class="profile-summary-text">
+        <p v-if="typeof applicantProfile.summary === 'string'" class="profile-summary-text">
           {{ applicantProfile.summary }}
+        </p>
+        <p v-if="typeof applicantProfile.summary === 'object'" class="profile-summary-text">
+          {{ applicantProfile.summary.summary }}
         </p>
       </div>
 
@@ -304,17 +331,17 @@
         </h3>
         <div class="profile-projects-grid">
           <div
-            v-for="(project, index) in applicantProfile.projects"
+            v-for="(project, index) in applicantProfile.projects.filter((p) => p.description || p.title)"
             :key="index"
             class="profile-project-card"
           >
             <div class="profile-project-header">
               <h4 class="profile-project-name">
-                {{ project.name }}
+                {{ project.name || project.title }}
               </h4>
               <a
-                v-if="project.url"
-                :href="project.url"
+                v-if="project.url || project.link"
+                :href="project.url || project.link"
                 target="_blank"
                 class="profile-project-link"
               >
@@ -364,7 +391,7 @@
 </template>
 
 <script setup>
-import { ref, watch, getCurrentInstance } from 'vue';
+import { ref, watch, computed, getCurrentInstance } from 'vue';
 
 const { proxy } = getCurrentInstance();
 const frappe = proxy.$frappe;
@@ -377,11 +404,59 @@ const props = defineProps({
   jobId: {
     type: String,
     required: true
+  },
+  frappe: {
+    type: Object,
+    default: null
+  },
+  channelName: {
+    type: String,
+    default: null
   }
 });
 
 const loading = ref(false);
 const applicantProfile = ref(null);
+const parsingProgress = ref(0);
+const showProgress = ref(false);
+
+// Computed property for progress percentage
+const progressPercentage = computed(() => {
+  return Math.round((parsingProgress.value / 5) * 100);
+});
+
+// Setup realtime listener if provided
+if (props.frappe && props.channelName) {
+  applicantProfile.value = {};
+  showProgress.value = true;
+  props.frappe.realtime.on(props.channelName, (response) => {
+    console.log('ApplicantProfile received realtime update:', response);
+    
+    if (response.event === 'update' && response.data && response.data.content) {
+      // Increment progress
+      parsingProgress.value++;
+      
+      // Update the applicant profile with the parsed data
+      // Merge or update the applicantProfile with new data
+        if(response.data.name == 'personal'){
+          applicantProfile.value = {
+            ...applicantProfile.value,
+            ...response.data.content
+          }
+          console.log(applicantProfile.value , 'from personal');
+          
+        }
+        else{
+          applicantProfile.value[response.data.name] = response.data.content
+        }
+        console.log(applicantProfile.value , 'from global');
+    }
+    if(response.event === 'final') {
+      parsingProgress.value = 5; // Mark as complete
+      // showProgress.value = false; // Hide progress bar after completion
+    }
+  });
+}
 
 // Watch for candidate changes and fetch profile
 watch(
@@ -389,8 +464,6 @@ watch(
   async (newCandidate) => {
     if (newCandidate?.job_applicant) {
       await fetchApplicantProfile(newCandidate.job_applicant);
-    } else {
-      applicantProfile.value = null;
     }
   },
   { immediate: true }
@@ -488,6 +561,8 @@ function formatDateTime(dateTimeStr) {
 }
 
 .profile-summary-text {
+  padding: 10px;
+  border-radius: 10px;
   font-size: 15px;
   line-height: 1.7;
   color: #374151;
@@ -849,5 +924,128 @@ function formatDateTime(dateTimeStr) {
 [data-theme="dark"] .profile-loading,
 [data-theme="dark"] .profile-empty {
   color: #9ca3af;
+}
+
+/* Progress Bar Styles */
+.progress-bar-container {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.progress-bar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.progress-bar-label {
+  font-size: 16px;
+  font-weight: 600;
+  color: white;
+  letter-spacing: 0.3px;
+}
+
+.progress-bar-percentage {
+  font-size: 24px;
+  font-weight: 700;
+  color: white;
+  font-variant-numeric: tabular-nums;
+}
+
+.progress-bar-track {
+  width: 100%;
+  height: 12px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #ffffff 0%, #f0f0f0 100%);
+  border-radius: 6px;
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 8px rgba(255, 255, 255, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.progress-bar-fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.progress-bar-steps {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 16px;
+  gap: 8px;
+}
+
+.progress-step {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.progress-step-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.progress-step.active .progress-step-dot {
+  background: white;
+  border-color: white;
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.8);
+  transform: scale(1.2);
+}
+
+.progress-step-label {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.progress-step.active .progress-step-label {
+  color: white;
+  font-weight: 600;
+}
+
+/* Dark Mode Progress Bar */
+[data-theme="dark"] .progress-bar-container {
+  background: linear-gradient(135deg, #4c5fd7 0%, #5a3d7a 100%);
 }
 </style>

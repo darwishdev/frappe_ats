@@ -12,7 +12,63 @@ import ApplicantResume from "./components/ApplicantResume.vue";
 const { proxy } = getCurrentInstance();
 const frappe = proxy.$frappe;
 const frm = proxy.$frm;
+console.log(frappe ,  'frappeee');
 console.log(frm);
+
+// Realtime parsing state
+const parsingDialog = ref(null);
+const parsingProgress = ref(0);
+const hasOpenedDialog = ref(false);
+const channelName = ref(`resume_parser_progress:${frm.doc.name}`);
+
+// Listen to realtime channel
+frappe.realtime.on(channelName.value, (response) => {
+  console.log('Realtime response:', response);
+  
+  // Check if event is "update"
+  if (response.event === 'chuncked') {
+    parsingProgress.value++;
+    console.log('Progress incremented:', parsingProgress.value);
+    
+    // Open dialog on first response
+    if (!hasOpenedDialog.value) {
+      hasOpenedDialog.value = true;
+      openParsingDialog();
+    }
+  }
+});
+
+// Method to open parsing dialog with ApplicantProfile
+const openParsingDialog = () => {
+  const container = document.createElement('div');
+
+  const vueComponent = h(ApplicantProfile, {
+    frappe: frappe,
+    channelName: channelName.value,
+    jobId: jobId.value,
+    candidate: null // Will be updated via realtime
+  });
+
+  render(vueComponent, container);
+
+  parsingDialog.value = new frappe.ui.Dialog({
+    title: 'Resume Parsing Progress',
+    size: 'extra-large',
+    fields: [
+      {
+        fieldtype: 'HTML',
+        fieldname: 'parsing_content'
+      }
+    ],
+    primary_action_label: 'Close',
+    primary_action: () => {
+      parsingDialog.value.hide();
+    }
+  });
+
+  parsingDialog.value.show();
+  parsingDialog.value.fields_dict.parsing_content.$wrapper.html(container);
+};
 
 // State
 const job = ref(null);
@@ -1184,3 +1240,9 @@ onMounted(() => {
     </div>
   </div>
 </template>
+
+<style>
+.section-body{
+  max-width: 100% !important;
+}
+</style>
