@@ -1,13 +1,12 @@
 from typing import Protocol
 
 
-from mawhub.app.job.agent.document_parser.document_parser_agent import DocumentParserWorkflow
-from mawhub.app.job.agent.file_text_parser.file_text_parser_agent import FileTextParserWorkflow
-from mawhub.app.job.agent.job_opening_parser.job_opening_parser_agent import JobOpeningParserWorkflow
-from mawhub.app.job.agent.resume_parser.resume_parser_agent import ResumeWorkflow
+from mawhub.agent.document_parser.document_parser_agent import DocumentParserWorkflow
+from mawhub.agent.file_text_parser.file_text_parser_agent import FileTextParserWorkflow
+from mawhub.agent.job_opening_parser.job_opening_parser_agent import JobOpeningParserWorkflow
+from mawhub.agent.resume_parser.resume_parser_agent import ResumeWorkflow
 from mawhub.app.job.repo.job_repo import JobRepoInterface
 from mawhub.app.job.usecase.applicant_resume_usecase import ApplicantResumeUsecase, ApplicantResumeUsecaseInterface
-# from mawhub.app.job.usecase.auth_usecase import AuthUsecase, AuthUsecaseInterface
 from mawhub.app.job.usecase.job_applicant_usecase import JobApplicantUsecase, JobApplicantUsecaseInterface
 from mawhub.app.job.usecase.job_opening_usecase import JobOpeningUsecase, JobOpeningUsecaseInterface
 from mawhub.app.job.usecase.job_pipeline_usecase import JobPipelineUsecase, JobPipelineUsecaseInterface

@@ -1,9 +1,8 @@
-import hashlib
 from typing import   Iterator, List, Protocol
 import frappe
 from frappe.model.document import Document
-from mawhub.app.job.agent.document_parser.document_parser_agent import  DocumentParserWorkflow
-from mawhub.app.job.agent.file_text_parser.file_text_parser_agent import FileTextParserWorkflow
+from mawhub.agent.document_parser.document_parser_agent import  DocumentParserWorkflow
+from mawhub.agent.file_text_parser.file_text_parser_agent import FileTextParserWorkflow
 from mawhub.app.job.repo.job_repo import JobRepoInterface
 from mawhub.mawhub.doctype.parsed_document.parsed_document import ParsedDocumentDBModel
 from mawhub.pkg.sql.sql_utils import get_cached_output

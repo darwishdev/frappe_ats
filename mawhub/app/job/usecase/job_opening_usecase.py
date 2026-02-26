@@ -4,7 +4,7 @@ from typing import  Dict, List, Protocol, cast
 
 import frappe
 from frappe.model.document import Document
-from mawhub.app.job.agent.job_opening_parser.job_opening_parser_agent import  JobOpeningEvent, JobOpeningParserWorkflow
+from mawhub.agent.job_opening_parser.job_opening_parser_agent import  JobOpeningEvent, JobOpeningParserWorkflow
 # from mawhub.app.job.dto.job_opening_dto import JobOpeningDTO, job_opening_create_request_from_agent, job_opening_list_sql_to_dto, job_opening_sql_to_dto
 from mawhub.app.job.dto.job_opening_dto import job_opening_create_request_from_agent
 from mawhub.app.job.repo.job_opening_repo import JobOpeningDBModel
