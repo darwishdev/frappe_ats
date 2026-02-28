@@ -1,12 +1,12 @@
 
 from typing import Dict, Iterator,  Literal, Type, TypedDict, cast,  Optional, Union
-from mawhub.app.job.agent.resume_parser.instructions import CUNKER_SYSTEM_INSTRUCTION, EXTRACTOR_SYSTEM_INSTRUCTION
+from mawhub.agent.resume_parser.instructions import CUNKER_SYSTEM_INSTRUCTION, EXTRACTOR_SYSTEM_INSTRUCTION
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from google import genai
 from google.genai import types
 from mawhub.pkg.objectutils.objectutils import to_typed_dict
-from mawhub.app.job.agent.resume_parser.types import AgentSectionDict, ChunkedResumeModel, EducationListModel, ExperienceListModel, PersonalInfoModel, ProjectListModel, SectionNames, SkillListModel, SummaryModel
-from mawhub.app.job.dto.applicant_resume_dto import (
+from mawhub.agent.resume_parser.types import AgentSectionDict, ChunkedResumeModel, EducationListModel, ExperienceListModel, PersonalInfoModel, ProjectListModel, SectionNames, SkillListModel, SummaryModel
+from mawhub.app.applicant.dto.applicant_resume_dto import (
         ApplicantResumeDTO,
         ApplicantEducation as DTOApplicantEducation,
         ApplicantExperience as DTOApplicantExperience,

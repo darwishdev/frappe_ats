@@ -2,7 +2,7 @@ from typing import Protocol
 
 from frappe.model.document import Document
 from mawhub.app.applicant.repo.applicant_repo import ApplicantRepoInterface
-from mawhub.app.job.repo.job_applicant_repo import JobApplicantDBModel
+from mawhub.app.applicant.repo.job_applicant_repo import JobApplicantDBModel
 
 
 class JobApplicantUsecaseInterface(Protocol):

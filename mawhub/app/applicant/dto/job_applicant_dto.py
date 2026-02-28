@@ -1,5 +1,5 @@
-from mawhub.app.job.dto.applicant_resume_dto import ApplicantResumeDTO
-from mawhub.app.job.repo.job_applicant_repo import JobApplicantDBModel
+from mawhub.app.applicant.dto.applicant_resume_dto import ApplicantResumeDTO
+from mawhub.app.applicant.repo.job_applicant_repo import JobApplicantDBModel
 
 def job_applicant_dto_from_resume(agent_final: ApplicantResumeDTO,path:str) -> JobApplicantDBModel:
     """Minimal conversion with only essential fields mapped."""

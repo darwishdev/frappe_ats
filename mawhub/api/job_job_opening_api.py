@@ -1,6 +1,5 @@
 import frappe
 from mawhub.app.job.repo.job_opening_repo import JobOpeningDBModel
-from mawhub.bootstrap import app_container
 from frappe import   Optional, _
 import frappe
 from mawhub.bootstrap import app_container

@@ -5,8 +5,6 @@ from mawhub.mawhub.doctype.applicant_experience.applicant_experience import Appl
 from mawhub.mawhub.doctype.applicant_project.applicant_project import ApplicantProjectDBModel
 from mawhub.mawhub.doctype.applicant_resume.applicant_resume import ApplicantResumeDBModel
 
-# from mawhub.app.job.agent.resume_parser_agent import AgentFinalEvent
-#
 class PersonalInfo(TypedDict, total=False):
     email: Required[str]
     name: str

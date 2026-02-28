@@ -2,10 +2,10 @@ from typing import   Any, List, Optional,  Protocol,  cast
 import frappe
 from frappe.model.document import Document
 from mawhub.app.applicant.repo.applicant_repo import ApplicantRepoInterface
-from mawhub.app.job.agent.file_text_parser.file_text_parser_agent import FileTextParserWorkflow
-from mawhub.app.job.agent.resume_parser.resume_parser_agent import ResumeWorkflow
-from mawhub.app.job.dto.applicant_resume_dto import ApplicantResumeDTO
-from mawhub.app.job.dto.job_applicant_dto import job_applicant_dto_from_resume
+from mawhub.agent.file_text_parser.file_text_parser_agent import FileTextParserWorkflow
+from mawhub.agent.resume_parser.resume_parser_agent import ResumeWorkflow
+from mawhub.app.applicant.dto.applicant_resume_dto import ApplicantResumeDTO
+from mawhub.app.applicant.dto.job_applicant_dto import job_applicant_dto_from_resume
 from mawhub.mawhub.doctype.applicant_resume.applicant_resume import ApplicantResumeDBModel
 from mawhub.pkg.overrides.job_opening import CustomJobOpening
 from mawhub.pkg.pdfconvertor.pdfconvertor import  get_document_content_and_hash, get_text_hash

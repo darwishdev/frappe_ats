@@ -5,6 +5,8 @@ from mawhub.agent.job_opening_parser.job_opening_parser_agent import JobOpeningP
 from mawhub.agent.resume_parser.resume_parser_agent import ResumeWorkflow
 from mawhub.app.applicant.repo.applicant_repo import ApplicantRepo
 from mawhub.app.applicant.usecase.applicant_usecase import ApplicantUsecase, ApplicantUsecaseInterface
+from mawhub.app.interview.repo.interview_repo import InterviewRepo
+from mawhub.app.interview.usecase.interview_usecase import InterviewUsecase, InterviewUsecaseInterface
 from mawhub.app.job.repo.job_repo import JobRepo
 from mawhub.app.job.usecase.job_usecase import JobUseCase, JobUseCaseInterface
 
@@ -16,11 +18,13 @@ class AppContainer:
     """
     job_usecase: JobUseCaseInterface
     applicant_usecase: ApplicantUsecaseInterface
+    interview_usecase: InterviewUsecaseInterface
 
     def __init__(self,gemini_api_key:str):
         model_name = 'gemini-2.5-flash-lite'
         job_repo = JobRepo()
         applicant_repo = ApplicantRepo()
+        interview_repo = InterviewRepo()
         gemini_api_client = Client(api_key=gemini_api_key)
         resume_parser_agent = ResumeWorkflow(client=gemini_api_client,model_name=model_name)
         job_opening_parser_agent = JobOpeningParserWorkflow(client=gemini_api_client,model_name=model_name)
@@ -29,7 +33,6 @@ class AppContainer:
         job_usecase = JobUseCase(
             job_repo=job_repo,
             file_text_parser_agent=file_text_parser_agent,
-            resume_parser_agent=resume_parser_agent,
             job_opening_parser_agent=job_opening_parser_agent,
             document_parser_agent=document_parser_agent,
         )
@@ -38,6 +41,10 @@ class AppContainer:
             file_text_parser_agent=file_text_parser_agent,
             resume_parser_agent=resume_parser_agent,
         )
+        interview_usecase = InterviewUsecase(
+            repo=interview_repo,
+        )
         self.job_usecase = job_usecase
         self.applicant_usecase = applicant_usecase
+        self.interview_usecase = interview_usecase
 

@@ -1,6 +1,6 @@
 from typing import Protocol
-from mawhub.app.job.repo.applicant_resume_repo import ApplicantResumeRepo, ApplicantResumeRepoInterface
-from mawhub.app.job.repo.job_applicant_repo import JobApplicantRepo, JobApplicantRepoInterface
+from mawhub.app.applicant.repo.applicant_resume_repo import ApplicantResumeRepo, ApplicantResumeRepoInterface
+from mawhub.app.applicant.repo.job_applicant_repo import JobApplicantRepo, JobApplicantRepoInterface
 class ApplicantRepoInterface(Protocol):
     job_applicant: JobApplicantRepoInterface
     applicant_resume : ApplicantResumeRepoInterface

@@ -1,4 +1,4 @@
-from typing import List, Literal, NotRequired, Protocol, TypedDict
+from typing import  Literal, NotRequired, Protocol, TypedDict
 import frappe
 
 from mawhub.pkg.baseclasses.app_repo import AppRepo, AppRepoInterface

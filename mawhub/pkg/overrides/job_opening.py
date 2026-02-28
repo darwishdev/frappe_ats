@@ -1,5 +1,6 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, List, Optional, Dict, cast
+import json
+from typing import TYPE_CHECKING, List, Optional, Dict, cast,Tuple
 
 import frappe
 from frappe import _
@@ -7,6 +8,7 @@ from frappe.utils import now_datetime
 from hrms.hr.doctype.job_opening.job_opening import JobOpening
 
 from mawhub.app.job.dto.job_opening_dto import JobPipelineStepApplicantDTO, JobPipelineStepDTO
+from mawhub.mawhub.doctype.parsed_document.parsed_document import ParsedDocument
 
 if TYPE_CHECKING:
     from frappe.model.document import Document
@@ -167,6 +169,23 @@ class CustomJobOpening(JobOpening):
 
         # self.handle_applicant_invalidation()
 
+
+    def job_find_document(self) -> ParsedDocument | None:
+        parsed_request_id = str(self.get("custom_parse_request_id" , ""))
+        parsed_document_name = frappe.db.exists({
+            "doctype" : "Parsed Document",
+            "request_id" : parsed_request_id
+            })
+        if not isinstance(parsed_document_name,str):
+            return None
+        parsed_document = frappe.get_doc("Parsed Document" , parsed_document_name)
+        if not parsed_document:
+            return None
+        meta = parsed_document.get("metadata")
+        if isinstance(meta,str):
+            parsed_document.set("metadata" , json.loads(meta))
+        return cast(ParsedDocument , parsed_document)
+
     # -------------------------------------------------
     # project
     # -------------------------------------------------
@@ -230,7 +249,7 @@ class CustomJobOpening(JobOpening):
             return []
         return rows
 
-    def _get_active_applicant_row(self, applicant_id: str) -> Optional[Document]:
+    def get_active_applicant_row(self, applicant_id: str) -> Optional[Document]:
         rows: List[Document] = self.get_applicant_rows()
 
         return next(
@@ -241,6 +260,33 @@ class CustomJobOpening(JobOpening):
                     ),
                 None
                 )
+
+    def job_find_by_applicant(self,applicant_id:str):
+        response = {"job_opening" : self.as_dict()}
+        parsed_document = self.job_find_document()
+        if parsed_document:
+            response["parsed_document"] = parsed_document.as_dict()
+        job_applicant_doc , job_applicant_resume_doc = self.get_active_applicant_row_with_resume(applicant_id)
+        if not job_applicant_doc:
+            return response
+        response["job_applicant"] = job_applicant_doc.as_dict()
+        if not job_applicant_resume_doc:
+            return response
+        response["applicant_resume"] = job_applicant_resume_doc.as_dict()
+        return response
+
+    def get_active_applicant_row_with_resume(self, applicant_id: str) -> Tuple[Optional[Document],Optional[Document]]:
+        job_applicant_doc = self.get_active_applicant_row(applicant_id)
+        if not job_applicant_doc:
+            return None,None
+        applicant_resume = job_applicant_doc.get("applicant_resume" , "")
+        if not isinstance(applicant_resume ,str):
+            return job_applicant_doc , None
+
+        applicant_resume_doc = frappe.get_doc("Applicant Resume" , applicant_resume)
+        if not applicant_resume_doc:
+            return job_applicant_doc , None
+        return job_applicant_doc , applicant_resume_doc
 
     # -------------------------------------------------
     # single applicant operations
@@ -259,7 +305,7 @@ class CustomJobOpening(JobOpening):
         if not isinstance(self.get("custom_applicants"), list):
             self.set("custom_applicants", [])
 
-        existing: Optional[Document] = self._get_active_applicant_row(applicant_id)
+        existing: Optional[Document] = self.get_active_applicant_row(applicant_id)
         print("Existing is " , existing)
 
         if existing:
@@ -287,7 +333,7 @@ class CustomJobOpening(JobOpening):
             applicant_id: str,
             comment: Optional[str] = None
             ) -> bool:
-        row: Optional[Document] = self._get_active_applicant_row(applicant_id)
+        row: Optional[Document] = self.get_active_applicant_row(applicant_id)
         if not row:
             return False
 
@@ -310,7 +356,7 @@ class CustomJobOpening(JobOpening):
             new_step_code: str,
             comment: Optional[str] = None
             ):
-        row: Optional[Document] = self._get_active_applicant_row(applicant_id)
+        row: Optional[Document] = self.get_active_applicant_row(applicant_id)
         if not row:
             raise frappe.ValidationError(_("Applicant not exists on this job"))
 
@@ -400,7 +446,7 @@ class CustomJobOpening(JobOpening):
             ) -> Document:
         new_step: str = self.resolve_step_code(new_step_code)
 
-        row: Optional[Document] = self._get_active_applicant_row(applicant_id)
+        row: Optional[Document] = self.get_active_applicant_row(applicant_id)
         if not row:
             raise frappe.ValidationError(_("Applicant not exists on this job"))
 
