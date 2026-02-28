@@ -7,14 +7,14 @@
         <span class="progress-bar-percentage">{{ progressPercentage }}%</span>
       </div>
       <div class="progress-bar-track">
-        <div 
-          class="progress-bar-fill" 
+        <div
+          class="progress-bar-fill"
           :style="{ width: progressPercentage + '%' }"
         ></div>
       </div>
       <div class="progress-bar-steps">
-        <div 
-          v-for="step in 5" 
+        <div
+          v-for="step in 5"
           :key="step"
           :class="['progress-step', { active: parsingProgress >= step }]"
         >
@@ -431,11 +431,11 @@ if (props.frappe && props.channelName) {
   showProgress.value = true;
   props.frappe.realtime.on(props.channelName, (response) => {
     console.log('ApplicantProfile received realtime update:', response);
-    
+
     if (response.event === 'update' && response.data && response.data.content) {
       // Increment progress
       parsingProgress.value++;
-      
+
       // Update the applicant profile with the parsed data
       // Merge or update the applicantProfile with new data
         if(response.data.name == 'personal'){
@@ -444,7 +444,7 @@ if (props.frappe && props.channelName) {
             ...response.data.content
           }
           console.log(applicantProfile.value , 'from personal');
-          
+
         }
         else{
           applicantProfile.value[response.data.name] = response.data.content
@@ -471,11 +471,11 @@ watch(
 
 async function fetchApplicantProfile(applicantId) {
   if (!applicantId) return;
-  
+
   loading.value = true;
-  
+
   frappe.call({
-    method: "mawhub.api.mawhub_job_applicant_api.job_applicant_find",
+    method: "mawhub.api.applicant_job_applicant_api.job_applicant_find",
     type: "GET",
     args: {
       job: props.jobId,
@@ -515,9 +515,9 @@ function formatDateTime(dateTimeStr) {
   if (!dateTimeStr) return '';
   try {
     const date = new Date(dateTimeStr);
-    return date.toLocaleString('en-US', { 
-      year: 'numeric', 
-      month: 'short', 
+    return date.toLocaleString('en-US', {
+      year: 'numeric',
+      month: 'short',
       day: 'numeric',
       hour: '2-digit',
       minute: '2-digit'
