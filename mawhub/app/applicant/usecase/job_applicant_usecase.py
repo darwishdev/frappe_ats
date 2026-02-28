@@ -1,9 +1,8 @@
-from typing import  List, Protocol
+from typing import Protocol
 
-import frappe
 from frappe.model.document import Document
-from mawhub.app.job.repo.job_applicant_repo import JobApplicantDBModel
-from mawhub.app.job.repo.job_repo import JobRepoInterface
+from mawhub.app.applicant.repo.applicant_repo import ApplicantRepoInterface
+from mawhub.app.applicant.repo.job_applicant_repo import JobApplicantDBModel
 
 
 class JobApplicantUsecaseInterface(Protocol):
@@ -12,10 +11,10 @@ class JobApplicantUsecaseInterface(Protocol):
 
 
 class JobApplicantUsecase:
-    repo: JobRepoInterface
+    repo: ApplicantRepoInterface
     def __init__(
         self,
-        repo: JobRepoInterface,
+        repo: ApplicantRepoInterface,
     ):
         self.repo = repo
 

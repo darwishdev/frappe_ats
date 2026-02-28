@@ -1,0 +1,12 @@
+[
+{
+  "fieldname": "custom_job_opening",
+  "label": "Job Opening",
+  "fieldtype": "Link",
+  "insert_after": "designation",
+  "options": "Job Opening",
+  "in_list_view": 1,
+  "in_standard_filter": 1,
+  "reqd": 0
+ }
+]

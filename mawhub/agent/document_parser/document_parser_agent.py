@@ -1,6 +1,6 @@
 
 import json
-from mawhub.app.job.agent.document_parser.instructions import VALIDATOR_SYSTEM_INSTRUCTION , CUNKER_SYSTEM_INSTRUCTION, EXTRACTOR_SYSTEM_INSTRUCTION
+from mawhub.agent.document_parser.instructions import VALIDATOR_SYSTEM_INSTRUCTION , CUNKER_SYSTEM_INSTRUCTION, EXTRACTOR_SYSTEM_INSTRUCTION
 from frappe import Union
 from typing import List, Literal, TypedDict
 from google import genai
@@ -9,7 +9,7 @@ from typing import Dict, Iterator, Optional, Callable
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import cast
 
-from mawhub.app.job.agent.document_parser.types import DocumentStructureModel, ParsedSectionModel, ValidationRequestModel, ValidationResponseModel
+from mawhub.agent.document_parser.types import DocumentStructureModel, ParsedSectionModel, ValidationRequestModel, ValidationResponseModel
 from mawhub.app.job.dto.parsed_document_dto import ParsedDocumentDTO, ParsedDocumentSectionDTO
 from mawhub.mawhub.doctype.parsed_document_section.parsed_document_section import ParsedDocumentSectionDBModel
 from mawhub.pkg.pdfconvertor.pdfconvertor import read_pdf_bytes

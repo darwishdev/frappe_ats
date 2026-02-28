@@ -1,7 +1,7 @@
 from typing import  List
 from frappe import _
 import frappe
-from mawhub.app.job.dto.applicant_resume_dto import  ApplicantResumeDTO
+from mawhub.app.applicant.dto.applicant_resume_dto import  ApplicantResumeDTO
 from mawhub.bootstrap import app_container
 
 

@@ -2,7 +2,7 @@ from typing import  List, Literal,  Union
 from pydantic import BaseModel, Field
 
 # Import DTO types directly
-from mawhub.app.job.dto.applicant_resume_dto import (
+from mawhub.app.applicant.dto.applicant_resume_dto import (
     PersonalInfo as DTOPersonalInfo,
     ApplicantExperience as DTOApplicantExperience,
     ApplicantProject as DTOApplicantProject,

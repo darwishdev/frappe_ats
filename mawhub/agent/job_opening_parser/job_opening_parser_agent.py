@@ -3,7 +3,7 @@ from typing import Optional, TypedDict, cast
 from google.genai import types, Client
 from typing import  Optional, Callable
 
-from mawhub.app.job.agent.job_opening_parser.types import JobOpeningSchema
+from mawhub.agent.job_opening_parser.types import JobOpeningSchema
 
 # ----------------------------
 # TypedDict for final event output

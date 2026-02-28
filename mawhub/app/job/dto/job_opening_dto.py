@@ -6,7 +6,7 @@ from typing import TypedDict
 
 from frappe import Optional
 
-from mawhub.app.job.agent.job_opening_parser.job_opening_parser_agent import JobOpeningEvent
+from mawhub.agent.job_opening_parser.job_opening_parser_agent import JobOpeningEvent
 from mawhub.app.job.repo.job_opening_repo import JobOpeningDBModel
 
 
