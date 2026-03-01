@@ -270,12 +270,16 @@
                   {{ formatProfileDate(exp.from_date || exp.start_date) }} - {{ formatProfileDate(exp.to_date || exp.end_date) }}
                 </span>
               </div>
-              <p
-                v-if="exp.responsibilities || exp.description"
-                class="profile-exp-description"
-              >
-                {{ exp.responsibilities || exp.description }}
-              </p>
+              <div v-if="exp.responsibilities || exp.description">
+                <ul v-if="splitBulletPoints(exp.responsibilities || exp.description)" class="profile-exp-description-list">
+                  <li v-for="(point, idx) in splitBulletPoints(exp.responsibilities || exp.description)" :key="idx">
+                    {{ point }}
+                  </li>
+                </ul>
+                <p v-else class="profile-exp-description">
+                  {{ exp.responsibilities || exp.description }}
+                </p>
+              </div>
             </div>
           </div>
         </div>
@@ -310,12 +314,16 @@
                   {{ formatProfileDate(edu.from_date || edu.start_date) }} - {{ formatProfileDate(edu.to_date || edu.end_date) }}
                 </span>
               </div>
-              <p
-                v-if="edu.description"
-                class="profile-exp-description"
-              >
-                {{ edu.description }}
-              </p>
+              <div v-if="edu.description">
+                <ul v-if="splitBulletPoints(edu.description)" class="profile-exp-description-list">
+                  <li v-for="(point, idx) in splitBulletPoints(edu.description)" :key="idx">
+                    {{ point }}
+                  </li>
+                </ul>
+                <p v-else class="profile-exp-description">
+                  {{ edu.description }}
+                </p>
+              </div>
             </div>
           </div>
         </div>
@@ -526,6 +534,21 @@ function formatDateTime(dateTimeStr) {
     return dateTimeStr;
   }
 }
+
+function splitBulletPoints(text) {
+  if (!text) return null;
+  
+  // Check if text contains bullet points (●)
+  if (text.includes('●')) {
+    // Split by bullet point and filter out empty strings
+    return text
+      .split('●')
+      .map(item => item.trim())
+      .filter(item => item.length > 0);
+  }
+  
+  return null;
+}
 </script>
 
 <style scoped>
@@ -725,6 +748,23 @@ function formatDateTime(dateTimeStr) {
   margin: 0;
 }
 
+.profile-exp-description-list {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #4b5563;
+  margin: 0;
+  padding-left: 20px;
+  list-style-type: disc;
+}
+
+.profile-exp-description-list li {
+  margin-bottom: 8px;
+}
+
+.profile-exp-description-list li:last-child {
+  margin-bottom: 0;
+}
+
 .profile-projects-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -883,6 +923,10 @@ function formatDateTime(dateTimeStr) {
 }
 
 [data-theme="dark"] .profile-exp-description {
+  color: #d1d5db;
+}
+
+[data-theme="dark"] .profile-exp-description-list {
   color: #d1d5db;
 }
 

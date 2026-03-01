@@ -10,7 +10,8 @@ after_migrate = "mawhub.pkg.installer.installer.after_migrate"
 
 
 override_doctype_class = {
-    "Job Opening": "mawhub.pkg.overrides.job_opening.CustomJobOpening"
+    "Job Opening": "mawhub.pkg.overrides.job_opening.CustomJobOpening",
+    "Interview": "mawhub.pkg.overrides.interview.CustomInterview"
 }
 cli_commands = {
     "sqlgen": "mawhub.commands.sqlgen.sqlgen",
@@ -59,6 +60,7 @@ doctype_list_js = {
 }
 doctype_js = {
     "Job Opening": "public/js/overrides/job_opening.js",
+    "Interview": "public/js/overrides/interview.js",
 }
 app_include_js = [
     "/assets/mawhub/js/overrides/sidebar.js"
