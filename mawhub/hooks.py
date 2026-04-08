@@ -25,6 +25,29 @@ fixtures = [
     {
         "doctype": "Question Bank Category",
     },
+  {
+        "doctype": "Job Opening",
+    },
+
+  {
+        "doctype": "Parsed Document",
+    },
+
+    {
+        "doctype": "Job Applicant",
+    },
+    {
+        "doctype": "Applicant Resume",
+    },
+    {
+        "doctype": "Skill",
+    },
+    {
+        "doctype": "Interview Round",
+    },
+    {
+        "doctype": "Interview",
+    },
     {
         "doctype": "Question Bank Question",
     },

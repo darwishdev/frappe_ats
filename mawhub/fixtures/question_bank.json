@@ -11,5 +11,54 @@
     "question_bank_question": "Q001"
    }
   ]
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Question Bank",
+  "focus_areas": "System Design\nAI Agents\nRecruitment Systems\nSoftware Engineering\nTechnical Strategy\nTeam Management",
+  "modified": "2026-04-08 18:00:00",
+  "name": "Technical Lead / Architect",
+  "questions": [
+   {
+    "pass_threshold": 0.7,
+    "question_bank_question": "TLQ001"
+   },
+   {
+    "pass_threshold": 0.7,
+    "question_bank_question": "TLQ002"
+   },
+   {
+    "pass_threshold": 0.6,
+    "question_bank_question": "TLQ003"
+   },
+   {
+    "pass_threshold": 0.65,
+    "question_bank_question": "TLQ004"
+   },
+   {
+    "pass_threshold": 0.6,
+    "question_bank_question": "TLQ005"
+   },
+   {
+    "pass_threshold": 0.65,
+    "question_bank_question": "TLQ006"
+   },
+   {
+    "pass_threshold": 0.55,
+    "question_bank_question": "TLQ007"
+   },
+   {
+    "pass_threshold": 0.7,
+    "question_bank_question": "TLQ008"
+   },
+   {
+    "pass_threshold": 0.6,
+    "question_bank_question": "TLQ009"
+   },
+   {
+    "pass_threshold": 0.55,
+    "question_bank_question": "TLQ010"
+   }
+  ]
  }
 ]

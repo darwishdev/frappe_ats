@@ -1,0 +1,106 @@
+[
+ {
+  "description": "Python",
+  "docstatus": 0,
+  "doctype": "Skill",
+  "modified": "2026-04-08 22:36:00.924968",
+  "name": "PY",
+  "skill_name": "PY"
+ },
+ {
+  "description": "FastAPI / REST API Design",
+  "docstatus": 0,
+  "doctype": "Skill",
+  "modified": "2026-04-08 22:36:00",
+  "name": "FASTAPI",
+  "skill_name": "FASTAPI"
+ },
+ {
+  "description": "PostgreSQL & pgvector",
+  "docstatus": 0,
+  "doctype": "Skill",
+  "modified": "2026-04-08 22:36:00",
+  "name": "PG",
+  "skill_name": "PG"
+ },
+ {
+  "description": "AI / LLM Integration",
+  "docstatus": 0,
+  "doctype": "Skill",
+  "modified": "2026-04-08 22:36:00",
+  "name": "LLM",
+  "skill_name": "LLM"
+ },
+ {
+  "description": "System Design & Architecture",
+  "docstatus": 0,
+  "doctype": "Skill",
+  "modified": "2026-04-08 22:36:00",
+  "name": "SYSDESIGN",
+  "skill_name": "SYSDESIGN"
+ },
+ {
+  "description": "ERPNext / Frappe",
+  "docstatus": 0,
+  "doctype": "Skill",
+  "modified": "2026-04-08 22:36:00",
+  "name": "ERPNEXT",
+  "skill_name": "ERPNEXT"
+ },
+ {
+  "description": "Team Leadership & Technical Management",
+  "docstatus": 0,
+  "doctype": "Skill",
+  "modified": "2026-04-08 22:36:00",
+  "name": "LEAD",
+  "skill_name": "LEAD"
+ },
+ {
+  "description": "Designing scalable distributed systems",
+  "docstatus": 0,
+  "doctype": "Skill",
+  "modified": "2026-04-08 22:36:00",
+  "name": "System Design",
+  "skill_name": "System Design"
+ },
+ {
+  "description": "Building and orchestrating AI agent pipelines",
+  "docstatus": 0,
+  "doctype": "Skill",
+  "modified": "2026-04-08 22:36:00",
+  "name": "AI Agents",
+  "skill_name": "AI Agents"
+ },
+ {
+  "description": "Designing and integrating recruitment and ATS systems",
+  "docstatus": 0,
+  "doctype": "Skill",
+  "modified": "2026-04-08 22:36:00",
+  "name": "Recruitment Systems",
+  "skill_name": "Recruitment Systems"
+ },
+ {
+  "description": "Backend architecture, API design, and code quality",
+  "docstatus": 0,
+  "doctype": "Skill",
+  "modified": "2026-04-08 22:36:00",
+  "name": "Software Engineering",
+  "skill_name": "Software Engineering"
+ },
+ {
+  "description": "Technical vision, architecture decisions, and roadmap ownership",
+  "docstatus": 0,
+  "doctype": "Skill",
+  "modified": "2026-04-08 22:36:00",
+  "name": "Technical Strategy",
+  "skill_name": "Technical Strategy"
+ },
+ {
+  "description": "Leading engineering teams, mentorship, and delivery management",
+  "docstatus": 0,
+  "doctype": "Skill",
+  "modified": "2026-04-08 22:36:00",
+  "name": "Team Management",
+  "skill_name": "Team Management"
+ }
+]

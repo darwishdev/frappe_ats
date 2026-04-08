@@ -1,0 +1,67 @@
+[
+ {
+  "closed_on": null,
+  "closes_on": null,
+  "company": "Mawhub",
+  "currency": "SAR",
+  "custom_applicants": [
+   {
+    "applicant_resume": "a-darwish-dev--gmailcom-0001",
+    "comment": "AI Parser",
+    "invalidated_at": "2026-04-08 22:39:00",
+    "invalidated_by": "Administrator",
+    "job_applicant": "a.darwish.dev@gmail.com",
+    "step_code": "SC"
+   },
+   {
+    "applicant_resume": "a-darwish-dev--gmailcom-0001",
+    "comment": "",
+    "invalidated_at": null,
+    "invalidated_by": null,
+    "job_applicant": "a.darwish.dev@gmail.com",
+    "step_code": "TE"
+   }
+  ],
+  "custom_customer": "Mawhub",
+  "custom_parse_request_id": "114",
+  "custom_pipeline": "Main",
+  "custom_pipeline_steps": [
+   {
+    "step_code": "SC",
+    "step_name": "Screening",
+    "step_type": "screening"
+   },
+   {
+    "step_code": "TE",
+    "step_name": "Technical",
+    "step_type": "interview"
+   }
+  ],
+  "custom_success_criteria": null,
+  "department": "Engineering",
+  "description": "We are looking for a Technical Lead / Architect to own the end-to-end design and delivery of our AI-powered recruitment platform. The role requires strong backend architecture skills, hands-on experience with LLM integration, and the ability to lead a cross-functional engineering team.",
+  "designation": "Technical Lead / Architect",
+  "docstatus": 0,
+  "doctype": "Job Opening",
+  "employment_type": "Full-time",
+  "job_application_route": null,
+  "job_opening_template": null,
+  "job_requisition": null,
+  "job_title": "Technical Lead / Architect",
+  "location": "Egypt",
+  "lower_range": 1.0,
+  "modified": "2026-04-08 22:39:00",
+  "name": "HR-OPN-2026-0001",
+  "planned_vacancies": 1,
+  "posted_on": "2026-04-08 22:39:00",
+  "publish": 1,
+  "publish_applications_received": 1,
+  "publish_salary_range": 1,
+  "route": "jobs/mawhub/technical-lead-architect",
+  "salary_per": "Month",
+  "staffing_plan": null,
+  "status": "Open",
+  "upper_range": 1.0,
+  "vacancies": 1
+ }
+]

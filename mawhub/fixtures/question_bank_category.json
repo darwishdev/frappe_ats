@@ -1,10 +1,30 @@
 [
  {
+  "description": null,
+  "docstatus": 0,
+  "doctype": "Question Bank Category",
+  "is_group": 1,
+  "modified": "2026-04-08 17:05:38.728909",
+  "name": "Python Core",
+  "old_parent": "",
+  "parent_question_bank_category": null
+ },
+ {
+  "description": null,
+  "docstatus": 0,
+  "doctype": "Question Bank Category",
+  "is_group": 0,
+  "modified": "2026-04-08 17:05:57.600086",
+  "name": "Data Structures",
+  "old_parent": "Python Core",
+  "parent_question_bank_category": "Python Core"
+ },
+ {
   "description": "Core programming and software design fundamentals",
   "docstatus": 0,
   "doctype": "Question Bank Category",
   "is_group": 1,
-  "modified": "2026-04-08 18:00:00.000000",
+  "modified": "2026-04-08 18:00:00",
   "name": "Software Engineering",
   "old_parent": "",
   "parent_question_bank_category": null
@@ -14,7 +34,7 @@
   "docstatus": 0,
   "doctype": "Question Bank Category",
   "is_group": 1,
-  "modified": "2026-04-08 18:00:00.000000",
+  "modified": "2026-04-08 18:00:00",
   "name": "System Design",
   "old_parent": "",
   "parent_question_bank_category": null
@@ -24,7 +44,7 @@
   "docstatus": 0,
   "doctype": "Question Bank Category",
   "is_group": 1,
-  "modified": "2026-04-08 18:00:00.000000",
+  "modified": "2026-04-08 18:00:00",
   "name": "AI & LLM",
   "old_parent": "",
   "parent_question_bank_category": null
@@ -34,7 +54,7 @@
   "docstatus": 0,
   "doctype": "Question Bank Category",
   "is_group": 1,
-  "modified": "2026-04-08 18:00:00.000000",
+  "modified": "2026-04-08 18:00:00",
   "name": "Technical Leadership",
   "old_parent": "",
   "parent_question_bank_category": null
@@ -44,37 +64,17 @@
   "docstatus": 0,
   "doctype": "Question Bank Category",
   "is_group": 0,
-  "modified": "2026-04-08 18:00:00.000000",
+  "modified": "2026-04-08 18:00:00",
   "name": "Recruitment Systems",
   "old_parent": "System Design",
   "parent_question_bank_category": "System Design"
- },
- {
-  "description": "Python concurrency and performance",
-  "docstatus": 0,
-  "doctype": "Question Bank Category",
-  "is_group": 0,
-  "modified": "2026-04-08 18:00:00.000000",
-  "name": "Python Advanced",
-  "old_parent": "Software Engineering",
-  "parent_question_bank_category": "Software Engineering"
- },
- {
-  "description": "LLM architecture and prompting",
-  "docstatus": 0,
-  "doctype": "Question Bank Category",
-  "is_group": 0,
-  "modified": "2026-04-08 18:00:00.000000",
-  "name": "LLM Fundamentals",
-  "old_parent": "AI & LLM",
-  "parent_question_bank_category": "AI & LLM"
  },
  {
   "description": "Agent architecture and tool use",
   "docstatus": 0,
   "doctype": "Question Bank Category",
   "is_group": 0,
-  "modified": "2026-04-08 18:00:00.000000",
+  "modified": "2026-04-08 18:00:00",
   "name": "AI Agents",
   "old_parent": "AI & LLM",
   "parent_question_bank_category": "AI & LLM"
@@ -84,7 +84,7 @@
   "docstatus": 0,
   "doctype": "Question Bank Category",
   "is_group": 0,
-  "modified": "2026-04-08 18:00:00.000000",
+  "modified": "2026-04-08 18:00:00",
   "name": "Team Management",
   "old_parent": "Technical Leadership",
   "parent_question_bank_category": "Technical Leadership"
@@ -94,7 +94,7 @@
   "docstatus": 0,
   "doctype": "Question Bank Category",
   "is_group": 0,
-  "modified": "2026-04-08 18:00:00.000000",
+  "modified": "2026-04-08 18:00:00",
   "name": "Technical Strategy",
   "old_parent": "Technical Leadership",
   "parent_question_bank_category": "Technical Leadership"

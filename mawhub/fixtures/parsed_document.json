@@ -1,0 +1,49 @@
+[
+ {
+  "docstatus": 0,
+  "doctype": "Parsed Document",
+  "file_hash": "a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2",
+  "file_path": "/private/files/technical_lead_architect_jd.pdf",
+  "metadata": "{\"document_type\": \"job_description\", \"job_opening\": \"HR-OPN-2026-0001\", \"job_title\": \"Technical Lead / Architect\", \"company\": \"Mawhub\", \"location\": \"Egypt\", \"employment_type\": \"Full-time\"}",
+  "modified": "2026-04-08 23:12:36.786646",
+  "name": "a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2",
+  "request_id": "114",
+  "sections": [
+   {
+    "bullet_points": null,
+    "description": "We are looking for a Technical Lead / Architect to own the end-to-end design and delivery of our AI-powered recruitment platform. The role requires strong backend architecture skills, hands-on experience with LLM integration, and the ability to lead a cross-functional engineering team.",
+    "footer": null,
+    "is_number_list": 0,
+    "title": "Role Overview"
+   },
+   {
+    "bullet_points": "Own backend architecture and system design decisions for the recruitment platform\nLead and mentor a cross-functional engineering team\nDesign and integrate AI agent pipelines for real-time interview assistance\nDefine and enforce API contracts, data models, and service boundaries\nCollaborate with product and recruiter stakeholders to translate requirements into technical solutions\nEnsure system reliability, scalability, and security across all services",
+    "description": null,
+    "footer": null,
+    "is_number_list": 0,
+    "title": "Responsibilities"
+   },
+   {
+    "bullet_points": "8+ years of backend software engineering experience\nProven experience as a Technical Lead or Architect on SaaS platforms\nStrong system design skills — distributed systems, APIs, event-driven architecture\nHands-on experience with LLM integration and AI agent orchestration\nProficiency in Python and/or Golang\nPostgreSQL and database performance optimization\nExperience with ERPNext / Frappe is a strong plus\nFamiliarity with real-time systems (WebSockets, streaming, VAD)",
+    "description": null,
+    "footer": null,
+    "is_number_list": 0,
+    "title": "Requirements"
+   },
+   {
+    "bullet_points": "Experience building ATS or recruitment technology platforms\nKnowledge of pgvector, semantic search, or embeddings\nExposure to multi-agent systems or AI pipeline design\nPrevious product ownership or technical leadership in a startup environment",
+    "description": null,
+    "footer": null,
+    "is_number_list": 0,
+    "title": "Nice to Have"
+   },
+   {
+    "bullet_points": "System Design\nAI Agents\nRecruitment Systems\nSoftware Engineering\nTechnical Strategy\nTeam Management",
+    "description": "Candidates will be evaluated across the following skill areas during the technical interview.",
+    "footer": null,
+    "is_number_list": 0,
+    "title": "Evaluation Areas"
+   }
+  ]
+ }
+]

@@ -1,0 +1,220 @@
+[
+ {
+  "docstatus": 0,
+  "doctype": "Applicant Resume",
+  "education": [
+   {
+    "degree": "Bachelor of Science, Computer Science",
+    "from_date": "1998",
+    "institution": "Tanta University",
+    "location": null,
+    "to_date": "1998"
+   },
+   {
+    "degree": "AWS Certified Solutions Architect – Professional",
+    "from_date": "July 2023",
+    "institution": "AWS",
+    "location": null,
+    "to_date": "July 2023"
+   },
+   {
+    "degree": "AWS Certified DevOps Professional",
+    "from_date": "December 2023",
+    "institution": "AWS",
+    "location": null,
+    "to_date": "December 2023"
+   },
+   {
+    "degree": "Certified Kubernetes Administrator (CKA)",
+    "from_date": "December 2023",
+    "institution": "Cloud Native Computing Foundation",
+    "location": null,
+    "to_date": "December 2023"
+   },
+   {
+    "degree": "Red Hat Certified OpenShift Administrator",
+    "from_date": "May 2024",
+    "institution": "Red Hat",
+    "location": null,
+    "to_date": "May 2024"
+   },
+   {
+    "degree": "AWS Certified Developer – Associate",
+    "from_date": "August 2017",
+    "institution": "AWS",
+    "location": null,
+    "to_date": "August 2017"
+   },
+   {
+    "degree": "AWS Certified Solutions Architect – Associate",
+    "from_date": "May 2017",
+    "institution": "AWS",
+    "location": null,
+    "to_date": "May 2017"
+   },
+   {
+    "degree": "DevOps Leader (DOL) Certification",
+    "from_date": "August 2020",
+    "institution": "DevOps Institute",
+    "location": null,
+    "to_date": "August 2020"
+   },
+   {
+    "degree": "PMP Training Course",
+    "from_date": "February 2015",
+    "institution": "Simplilearn",
+    "location": null,
+    "to_date": "February 2015"
+   },
+   {
+    "degree": "Cloud Native Application Architecture - Udacity Nanodegree Program",
+    "from_date": "",
+    "institution": "Udacity",
+    "location": null,
+    "to_date": ""
+   },
+   {
+    "degree": "Advanced DevOps Professional - Udacity Nanodegree Program",
+    "from_date": "",
+    "institution": "Udacity",
+    "location": null,
+    "to_date": ""
+   },
+   {
+    "degree": "Leadership Advanced Training - DigitalOcean Workshop",
+    "from_date": "",
+    "institution": "DigitalOcean",
+    "location": null,
+    "to_date": ""
+   }
+  ],
+  "email": "net_admin365@hotmail.com",
+  "experience": [
+   {
+    "company": "Megamind",
+    "from_date": "November 2025",
+    "responsibilities": "Healthcare Platform Leadership: Architected and implemented Mobile Supper app infrastructure leveraging\ncloud-native enterprise best practices, ensuring scalability, security, and compliance for healthcare SaaS\ndelivery\no Product Ownership: Served as Product Owner for SmartCare HIS (Hospital Information System), driving\ntechnical strategy, roadmap planning, and cross-functional collaboration to deliver next-generation\nhealthcare IT solutions\no Developer Experience: Designed and documented comprehensive VDI (Virtual Desktop Infrastructure)\nsystem guidelines for remote development teams, establishing best practices for secure, efficient, and\ncollaborative cloud-based development environments",
+    "role": "DevOps Technical Head",
+    "to_date": "Jan 2026"
+   },
+   {
+    "company": "Ejada Systems",
+    "from_date": "May 2024",
+    "responsibilities": "Transformation Leadership: Leading enterprise-wide DevOps transformation for one of the Middle East’s\nlargest banks, supporting 500+ development teams.\no Cloud Architecture: Architecting end-to-end HLD/LLD and cloud operating models, targeting a 50%\nreduction in service provisioning time.\no Strategic Governance: Implementing secure toolchains (Terraform, Jenkins, Azure DevOps) while\nestablishing architecture governance and PCI-DSS compliance",
+    "role": "Staff DevOps Solution Architect",
+    "to_date": "Oct 2025"
+   },
+   {
+    "company": "Siemens Digital Industries Software",
+    "from_date": "November 2023",
+    "responsibilities": "Platform Engineering: Designed a Kubernetes-as-a-Service (KaaS) platform using VCluster for multi-tenant\nisolation, serving 200+ teams.\no Internal Developer Platform: Built an IDP using Backstage, enabling self-service infrastructure and reducing\ndeployment time by 60%.\no Optimization: Achieved a 40% reduction in delivery cycles via Istio service mesh and standardized GitOps\nworkflows",
+    "role": "Kubernetes Platform Architect",
+    "to_date": "April 2025"
+   },
+   {
+    "company": "DigitalOcean",
+    "from_date": "October 2021",
+    "responsibilities": "Engineering Leadership: Led 3 squads (24 engineers total) using Agile methodologies to manage platforms\nfor 80,000+ active users.\no Reliability & Cost: Maintained 99.9% availability and reduced production incidents by 80% through\nautomated remediation.\no Infrastructure Efficiency: Reduced infrastructure costs by 35% through advanced auto-scaling and elastic\nenvironment design",
+    "role": "Senior DevOps Architect | Team Lead",
+    "to_date": "September 2023"
+   },
+   {
+    "company": "ParentAps",
+    "from_date": "July 2020",
+    "responsibilities": "Pipeline Engineering: Spearheaded CI/CD pipelines that reduced manual testing by 75% and increased\ndeployment frequency by 50%.\no Uptime Excellence: Engineered a zero-downtime model on EKS, achieving 99.99% platform uptime",
+    "role": "Senior DevOps Engineer",
+    "to_date": "October 2021"
+   },
+   {
+    "company": "POSEIDON",
+    "from_date": "March 2019",
+    "responsibilities": "Designed and implemented complete Video-on-Demand infrastructure on AWS serving 10,000+ concurrent\nusers, including VPC architecture, CloudFront with WAF, and Auto Scaling Groups\no Established scalable and secure cloud infrastructure supporting high-traffic media streaming with optimized\ncontent delivery and caching strategies, reducing latency by 40%",
+    "role": "Cloud Solution Architect",
+    "to_date": "June 2020"
+   },
+   {
+    "company": "King Saud Medical City",
+    "from_date": "February 2008",
+    "responsibilities": "Led cloud migration project for mission-critical healthcare applications (EHR system and medical city portal)\nfrom legacy on-premises servers to AWS cloud infrastructure, migrating 150+ servers with zero data loss\no Managed and maintained hybrid on-premises and AWS cloud environments, ensuring HIPAA compliance and\nhealthcare data security for 5,000+ daily users",
+    "role": "Senior Network & Cloud Engineer",
+    "to_date": "April 2018"
+   }
+  ],
+  "file_hash": "f5967fc463a94c06594f40011d3717cd17243a148df41a883d2b80df1e19718b",
+  "file_path": "/private/files/Hamada_Resume (1).pdf",
+  "links": null,
+  "location": "New Cairo, Egypt",
+  "modified": "2026-04-07 00:28:14.212291",
+  "name": "net_admin365--hotmailcom-0001",
+  "phone": "+201019113779",
+  "projects": [],
+  "skills": "AWS (EKS, Lambda, CloudFormation)\nGCP (GKE)\nAzure (AKS)\nOCI\nKubernetes (EKS, GKE, AKS)\nOpenShift\nRancher\nVCluster\nHelm\nArgoCD\nJenkins\nGitHub Actions\nGitLab CI/CD\nFlux\nAWS CodePipeline\nTerraform (Multi-cloud)\nAnsible\nCrossplane\nAWS CloudFormation\nBackstage (IDP)\nSelf-Service Infra\nDevEx\nPaaS\nService Mesh (Istio)\nPrisma Cloud\nAqua Security\nHashiCorp Vault\nKyverno\nRBAC\nHIPAA\nPrometheus\nGrafana\nELK/EFK Stack\nLoki\nNew Relic\nAWS CloudWatch",
+  "summary": "Principal DevOps & Cloud Solution Architect with over 22 years of experience spearheading multi-cloud\ntransformations across AWS, Azure, GCP, and OCI. A strategic visionary dedicated to fostering a culture of technical\nexcellence and continuous improvement, currently empowering and mentoring over 200 development\nteams through comprehensive architectural governance and modern cloud operating models"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Applicant Resume",
+  "education": [
+   {
+    "degree": "Information Systems",
+    "from_date": "",
+    "institution": "Future Academy",
+    "location": "Cairo, Egypt",
+    "to_date": ""
+   }
+  ],
+  "email": "a.darwish.dev@gmail.com",
+  "experience": [
+   {
+    "company": "Mawhub",
+    "from_date": "2025",
+    "responsibilities": "Led the engineering development of a recruitment technology platform focused on candidate sourcing and hiring workflows, including the development of an ATS and tools used by recruiters to manage candidate pipelines.\nBuilt and led backend architecture for ATS and candidate sourcing platform.\nDesigned scalable PostgreSQL models and high-performance APIs for recruiter dashboards.\nMentored engineers and coordinated system-wide architecture decisions.",
+    "role": "Technical Lead",
+    "to_date": "Present"
+   },
+   {
+    "company": "ABC Hotels",
+    "from_date": "",
+    "responsibilities": "Led the architecture and development of Yalabina, a reservation platform similar to Booking.com and Airbnb.\nDesigned and built Yalabina reservation platform backend (Golang) and APIs.\nLed development of backoffice and customer-facing applications.\nIntegrated external services and managed deployment pipelines.",
+    "role": "Senior Software Engineer / Technical Lead",
+    "to_date": ""
+   },
+   {
+    "company": "Business Pro",
+    "from_date": "2018",
+    "responsibilities": "Built Alshab Alriyadi, a platform connecting entrepreneurs and investors (5,000+ MAUs).\nDeveloped scalable Node.js/PostgreSQL microservices, improving response times.",
+    "role": "Full Stack Developer",
+    "to_date": "2022"
+   }
+  ],
+  "file_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+  "file_path": "/private/files/Ahmed_Darwish_Resume_LTS.pdf",
+  "links": "github.com/darwishdev",
+  "location": "Sheikh Zayed, Giza, Egypt",
+  "modified": "2026-04-08 23:11:57.286946",
+  "name": "a-darwish-dev--gmailcom-0001",
+  "phone": "+20 102 205 2546",
+  "projects": [
+   {
+    "description": "Candidate sourcing platform designed to help recruiters discover, manage, and evaluate talent from multiple sources.\nDesigned backend services for candidate aggregation, profile management, and recruiter workflows.\nImplemented advanced search and filtering capabilities for candidate discovery.\nBuilt scalable APIs used by recruiter dashboards and internal tools.\nOptimized database structures for handling large candidate datasets.",
+    "project_link": null,
+    "tech_stack": null,
+    "title": "TAL Sourcing Platform"
+   },
+   {
+    "description": "Recruitment management system built on ERPNext / Frappe to manage the full hiring lifecycle.\nDesigned and developed core ATS modules including job postings, candidate pipelines, interview workflows, and hiring stages.\nExtended ERPNext with custom recruitment modules and integrations.\nBuilt APIs and services used by internal recruitment tools and dashboards.\nImplemented workflow automation to streamline recruiter operations.",
+    "project_link": null,
+    "tech_stack": null,
+    "title": "TAL ATS"
+   },
+   {
+    "description": "Enterprise hospitality management platform built on ERPNext to support hotel and property operations.\nImplemented ERP-based modules for reservations, operations, and business workflows.\nCustomized ERPNext to support hospitality-specific processes.\nIntegrated backend services and APIs with external systems.\nDesigned scalable database structures to support operational reporting.",
+    "project_link": null,
+    "tech_stack": null,
+    "title": "ABC Hospitality Management System"
+   }
+  ],
+  "skills": "Python\nFastAPI\nREST APIs\nGolang\ngRPC\nNext.js\nTypeScript\nVueJS\nPostgreSQL\npgvector\nSemantic Search\nEmbeddings\nOpenAI APIs\nLLM Integration\nERPNext\nFrappe\nDocker\nKubernetes\nGoogle Cloud\nCI/CD\nLinux",
+  "summary": "Senior Software Engineer with 8+ years building scalable SaaS platforms and leading engineering teams. Experienced in recruitment tech (ATS, talent sourcing) and enterprise SaaS systems. Strong backend architecture, API design, and PostgreSQL expertise."
+ }
+]

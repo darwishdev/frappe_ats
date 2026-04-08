@@ -1,0 +1,29 @@
+[
+ {
+  "amended_from": null,
+  "average_rating": 0.0,
+  "custom_job_opening": "HR-OPN-2026-0001",
+  "custom_question_bank": "Technical Lead / Architect",
+  "designation": null,
+  "docstatus": 0,
+  "doctype": "Interview",
+  "expected_average_rating": 0.7,
+  "from_time": "10:00:00",
+  "interview_details": [
+   {
+    "interviewer": "brone@mawhub.io"
+   }
+  ],
+  "interview_round": "Technical Interview",
+  "interview_summary": null,
+  "job_applicant": "a.darwish.dev@gmail.com",
+  "job_opening": null,
+  "modified": "2026-04-08 22:39:42.893278",
+  "name": "HR-INT-2026-0002",
+  "reminded": 0,
+  "resume_link": "a-darwish-dev--gmailcom-0001",
+  "scheduled_on": "2026-04-08",
+  "status": "Pending",
+  "to_time": "11:00:00"
+ }
+]
