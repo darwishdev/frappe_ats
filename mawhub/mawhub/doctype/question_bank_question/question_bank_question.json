@@ -1,0 +1,97 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "prompt",
+ "creation": "2026-04-08 16:46:46.378424",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "category",
+  "difficulty",
+  "estimated_time_minutes",
+  "question",
+  "ideal_answer_keywords",
+  "pass_treshold",
+  "followup_triggers",
+  "evaluation_criteria"
+ ],
+ "fields": [
+  {
+   "fieldname": "category",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Category",
+   "options": "Question Bank Category",
+   "reqd": 1
+  },
+  {
+   "fieldname": "difficulty",
+   "fieldtype": "Select",
+   "label": "Difficulty",
+   "options": "Easy\nMedium\nHard",
+   "reqd": 1
+  },
+  {
+   "fieldname": "estimated_time_minutes",
+   "fieldtype": "Int",
+   "label": "Estimated Time Minutes"
+  },
+  {
+   "fieldname": "question",
+   "fieldtype": "Text",
+   "label": "Question",
+   "reqd": 1
+  },
+  {
+   "fieldname": "ideal_answer_keywords",
+   "fieldtype": "Text",
+   "label": "Ideal Answer Keywords"
+  },
+  {
+   "fieldname": "pass_treshold",
+   "fieldtype": "Float",
+   "label": "Pass Treshold",
+   "non_negative": 1
+  },
+  {
+   "fieldname": "followup_triggers",
+   "fieldtype": "Table",
+   "label": "Followup Triggers",
+   "options": "Question Bank Followup Trigger"
+  },
+  {
+   "fieldname": "evaluation_criteria",
+   "fieldtype": "Table",
+   "label": "Evaluation Criteria",
+   "options": "Evaluation Criteria"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-04-08 17:09:04.877572",
+ "modified_by": "Administrator",
+ "module": "Mawhub",
+ "name": "Question Bank Question",
+ "naming_rule": "Set by user",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

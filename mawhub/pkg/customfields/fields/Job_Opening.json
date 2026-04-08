@@ -34,6 +34,13 @@
   "reqd": 0
  },
  {
+  "fieldname": "custom_success_criteria",
+  "label": "Success Criteria",
+  "fieldtype": "Text",
+  "insert_after": "custom_pipeline_steps",
+  "reqd": 0
+ },
+ {
   "fieldname": "custom_customer",
   "label": "Customer",
   "fieldtype": "Link",

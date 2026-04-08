@@ -1,0 +1,34 @@
+[
+ {
+  "category": "Python Core",
+  "difficulty": "Easy",
+  "docstatus": 0,
+  "doctype": "Question Bank Question",
+  "estimated_time_minutes": 3,
+  "evaluation_criteria": [
+   {
+    "bonus_points": "memory layout explanation\nwhen to use each with concrete examples\n",
+    "must_mention": "mutable/immutable\ndistinction"
+   }
+  ],
+  "followup_triggers": [
+   {
+    "condition": "if_mentions_hashable",
+    "follow_up": "Can you explain why only immutable objects can be dictionary keys?"
+   },
+   {
+    "condition": "if_mentions_performance",
+    "follow_up": "What makes tuple creation faster than list creation?"
+   },
+   {
+    "condition": "if_vague",
+    "follow_up": "Can you give me a real-world example where you'd choose a tuple over a list?"
+   }
+  ],
+  "ideal_answer_keywords": "mutable\nimmutable\nperformance\nhashable\ndictionary key",
+  "modified": "2026-04-08 17:09:25.949834",
+  "name": "Q001",
+  "pass_treshold": 0.6,
+  "question": "What is the difference between a list and a tuple in Python? When would you use one over the other?"
+ }
+]

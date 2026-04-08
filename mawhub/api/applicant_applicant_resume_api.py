@@ -34,7 +34,7 @@ def applicant_resume_parse(path: str,job_opening_id: str, pipeline_step_id: str)
         }
 @frappe.whitelist(methods=["POST","GET"])
 def applicant_resume_parse_bg(path: str,job_opening_id: str, pipeline_step_id: str,user:str):
-    return app_container.job_usecase.applicant_resume.applicant_resume_parse(
+    return app_container.applicant_usecase.applicant_resume.applicant_resume_parse(
                 path,
                 job_opening_id,
                 user,
@@ -42,10 +42,10 @@ def applicant_resume_parse_bg(path: str,job_opening_id: str, pipeline_step_id: s
             )
 @frappe.whitelist(methods=["POST", "GET"])
 def applicant_resume_create_update(payload: ApplicantResumeDTO):
-    return app_container.job_usecase.applicant_resume.applicant_resume_create_update(payload=payload)
+    return app_container.applicant_usecase.applicant_resume.applicant_resume_create_update(payload=payload)
 
 @frappe.whitelist(methods=["POST", "GET"])
 
 @frappe.whitelist(methods=["POST", "GET"])
 def applicant_resume_bulk_create(payload: List[ApplicantResumeDTO]):
-    return app_container.job_usecase.applicant_resume.applicant_resume_bulk_create(payload=payload)
+    return app_container.applicant_usecase.applicant_resume.applicant_resume_bulk_create(payload=payload)

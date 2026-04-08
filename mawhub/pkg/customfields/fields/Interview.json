@@ -8,5 +8,15 @@
   "in_list_view": 1,
   "in_standard_filter": 1,
   "reqd": 0
+ },
+ {
+  "fieldname": "custom_question_bank",
+  "label": "Question Bank",
+  "fieldtype": "Link",
+  "insert_after": "custom_job_opening",
+  "options": "Question Bank",
+  "in_list_view": 1,
+  "in_standard_filter": 1,
+  "reqd": 0
  }
 ]

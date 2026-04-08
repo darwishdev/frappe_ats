@@ -60,7 +60,7 @@ const stepOptions = computed(() => {
 
 const filteredCandidates = computed(() => {
   if (!job.value?.steps_map || !activeStep.value) return [];
-  
+
   const candidates = job.value.steps_map[activeStep.value] || [];
   if (!candidates.length) return [];
 
@@ -94,18 +94,18 @@ const getJobOpening = async () => {
 
   try {
     const result = await frm.call("fetch_job_info", {
-      job: jobId.value,   
-      name: jobId.value 
+      job: jobId.value,
+      name: jobId.value
     });
-    
+
     console.log("Server response:", result);
-    
+
     if (result.message) {
       job.value = result.message;
-      
+
       // Populate steps directly from the steps array
       setPipelineSteps(result.message.steps);
-      
+
       frappe.show_alert({
         message: "Job details loaded successfully",
         indicator: "green"
@@ -125,7 +125,7 @@ const getJobOpening = async () => {
 
 const setPipelineSteps = (stepsData) => {
   steps.value = stepsData;
-  
+
   // Set active step: prioritize route parameter, fallback to first step
   if (!activeStep.value && steps.value.length > 0) {
     if (initialStepCode.value) {
@@ -136,7 +136,7 @@ const setPipelineSteps = (stepsData) => {
       activeStep.value = steps.value[0].step_code;
     }
   }
-  
+
   // Set first candidate as active if available (candidates are in steps_map)
   const candidates = job.value?.steps_map?.[activeStep.value] || [];
   if (candidates.length > 0) {
@@ -204,7 +204,7 @@ const transformedParsedData = computed(() => {
         // Handle newline-delimited string format
         if (typeof section.bullet_points === "string") {
           let text = section.bullet_points.trim();
-          
+
           // Check if string contains newlines
           if (text.includes('\n')) {
             // Split by newlines and clean each point
@@ -719,7 +719,7 @@ const transferCandidateToJob = (action = 'copy') => {
           if (r.message && r.message.custom_pipeline_steps) {
             const steps = r.message.custom_pipeline_steps;
             const selectedStep = steps.find(s => s.step_name === values.new_step);
-            
+
             if (selectedStep) {
               // Call the appropriate method based on action
               frm.call(actionMethod, {
@@ -867,8 +867,8 @@ const assignInterview = () => {
           };
 
           frappe.call({
-            method: 'mawhub.api.mawhub_interview_api.interview_create_update',
-            args: payload,
+            method: 'mawhub.interview_create_update',
+            args: {payload},
             callback: function(res) {
               if (res.message) {
                 frappe.show_alert({
@@ -949,7 +949,7 @@ const candidateActions = [
     icon: "fa-trash",
     action: () => {
       if (!activeCandidate.value) return;
-      
+
       frappe.confirm(
         `Are you sure you want to remove ${activeCandidate.value.job_applicant} from this job?`,
         () => {

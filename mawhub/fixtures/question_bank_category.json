@@ -1,0 +1,102 @@
+[
+ {
+  "description": "Core programming and software design fundamentals",
+  "docstatus": 0,
+  "doctype": "Question Bank Category",
+  "is_group": 1,
+  "modified": "2026-04-08 18:00:00.000000",
+  "name": "Software Engineering",
+  "old_parent": "",
+  "parent_question_bank_category": null
+ },
+ {
+  "description": "System architecture and scalability",
+  "docstatus": 0,
+  "doctype": "Question Bank Category",
+  "is_group": 1,
+  "modified": "2026-04-08 18:00:00.000000",
+  "name": "System Design",
+  "old_parent": "",
+  "parent_question_bank_category": null
+ },
+ {
+  "description": "AI/LLM specific knowledge",
+  "docstatus": 0,
+  "doctype": "Question Bank Category",
+  "is_group": 1,
+  "modified": "2026-04-08 18:00:00.000000",
+  "name": "AI & LLM",
+  "old_parent": "",
+  "parent_question_bank_category": null
+ },
+ {
+  "description": "Team leadership and technical management",
+  "docstatus": 0,
+  "doctype": "Question Bank Category",
+  "is_group": 1,
+  "modified": "2026-04-08 18:00:00.000000",
+  "name": "Technical Leadership",
+  "old_parent": "",
+  "parent_question_bank_category": null
+ },
+ {
+  "description": "Interviewing and recruitment systems",
+  "docstatus": 0,
+  "doctype": "Question Bank Category",
+  "is_group": 0,
+  "modified": "2026-04-08 18:00:00.000000",
+  "name": "Recruitment Systems",
+  "old_parent": "System Design",
+  "parent_question_bank_category": "System Design"
+ },
+ {
+  "description": "Python concurrency and performance",
+  "docstatus": 0,
+  "doctype": "Question Bank Category",
+  "is_group": 0,
+  "modified": "2026-04-08 18:00:00.000000",
+  "name": "Python Advanced",
+  "old_parent": "Software Engineering",
+  "parent_question_bank_category": "Software Engineering"
+ },
+ {
+  "description": "LLM architecture and prompting",
+  "docstatus": 0,
+  "doctype": "Question Bank Category",
+  "is_group": 0,
+  "modified": "2026-04-08 18:00:00.000000",
+  "name": "LLM Fundamentals",
+  "old_parent": "AI & LLM",
+  "parent_question_bank_category": "AI & LLM"
+ },
+ {
+  "description": "Agent architecture and tool use",
+  "docstatus": 0,
+  "doctype": "Question Bank Category",
+  "is_group": 0,
+  "modified": "2026-04-08 18:00:00.000000",
+  "name": "AI Agents",
+  "old_parent": "AI & LLM",
+  "parent_question_bank_category": "AI & LLM"
+ },
+ {
+  "description": "Team building and mentorship",
+  "docstatus": 0,
+  "doctype": "Question Bank Category",
+  "is_group": 0,
+  "modified": "2026-04-08 18:00:00.000000",
+  "name": "Team Management",
+  "old_parent": "Technical Leadership",
+  "parent_question_bank_category": "Technical Leadership"
+ },
+ {
+  "description": "Technical strategy and decision making",
+  "docstatus": 0,
+  "doctype": "Question Bank Category",
+  "is_group": 0,
+  "modified": "2026-04-08 18:00:00.000000",
+  "name": "Technical Strategy",
+  "old_parent": "Technical Leadership",
+  "parent_question_bank_category": "Technical Leadership"
+ }
+]

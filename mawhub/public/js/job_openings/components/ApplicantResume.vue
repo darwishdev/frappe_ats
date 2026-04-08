@@ -89,11 +89,11 @@ watch(
 
 async function fetchApplicantResume(applicantId) {
   if (!applicantId) return;
-  
+
   loading.value = true;
-  
+
   frappe.call({
-    method: "mawhub.api.mawhub_job_applicant_api.job_applicant_find",
+    method: "mawhub.job_applicant_find",
     type: "GET",
     args: {
       job: props.jobId,

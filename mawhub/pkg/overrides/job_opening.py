@@ -162,7 +162,7 @@ class CustomJobOpening(JobOpening):
                 # copy only the fields that actually exist in Pipeline Step child doctype
             })
     def before_save(self) -> None:
-        self.ensure_project()
+        # self.ensure_project()
         if self.is_new():
             self.sync_pipeline_steps()
             return

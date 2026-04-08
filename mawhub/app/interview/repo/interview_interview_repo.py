@@ -129,6 +129,8 @@ class InterviewInterviewRepo(AppRepo[InterviewDBModel]):
             return {"applicant" : applicant.as_dict()}
 
         def get_job_info(job:str,applicant_id:str):
+            if not job:
+                return {}
             job_opening = frappe.get_doc("Job Opening" , job)
             if not job_opening:
                 return {}
@@ -151,7 +153,6 @@ class InterviewInterviewRepo(AppRepo[InterviewDBModel]):
             job = future_job.result()
             round = future_round.result()
         return {
-            "interview" : interview,
             **applicant,
             **job,
             **round,

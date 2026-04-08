@@ -1,0 +1,49 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-04-08 16:57:01.297419",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "question_bank_question",
+  "column_break_jnir",
+  "pass_threshold"
+ ],
+ "fields": [
+  {
+   "allow_in_quick_entry": 1,
+   "fieldname": "question_bank_question",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Question Bank Question",
+   "options": "Question Bank Question",
+   "reqd": 1
+  },
+  {
+   "fieldname": "pass_threshold",
+   "fieldtype": "Float",
+   "label": "Pass Threshold",
+   "non_negative": 1
+  },
+  {
+   "fieldname": "column_break_jnir",
+   "fieldtype": "Column Break"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2026-04-08 16:58:24.483546",
+ "modified_by": "Administrator",
+ "module": "Mawhub",
+ "name": "Question Bank Question Link",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

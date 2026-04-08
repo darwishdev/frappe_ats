@@ -1,6 +1,7 @@
 __version__ = "0.0.1"
 from mawhub.api.interview_interview_api import (
-    interview_find
+    interview_find,
+    interview_create_update
 )
 from mawhub.api.job_job_pipeline_api import job_pipeline_create_update
 from mawhub.api.job_parsed_document_api import(
@@ -41,4 +42,5 @@ __all__ = [
     "applicant_resume_parse",
     "applicant_resume_parse_bg",
     "interview_find",
+    "interview_create_update",
 ]

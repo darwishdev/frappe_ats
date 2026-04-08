@@ -23,61 +23,71 @@ fixtures = [
         ]
     },
     {
+        "doctype": "Question Bank Category",
+    },
+    {
+        "doctype": "Question Bank Question",
+    },
+    {
+        "doctype": "Question Bank",
+    },
+
+    {
         "doctype": "Holiday List",
 
-    },
+        },
     {
         "doctype": "Task",
         "filters": [
             ["is_template", "=", True]
-        ]
-    },
+            ]
+        },
     {
         "doctype": "Google Settings",
-    },
+        },
     {
         "doctype": "OAuth Client",
-    },
+        },
 
     {
         "doctype": "Social Login Key",
-    },
+        },
     {
         "doctype": "Project Template",
         "filters": [
             ["name", "=", "Job Opening"]
-        ]
-    }
-]
+            ]
+        }
+    ]
 # Apps
 # ------------------
 override_whitelisted_methods = {
-    "frappe.desk.reportview.get": "mawhub.pkg.overrides.reportview.get"
-}
+        "frappe.desk.reportview.get": "mawhub.pkg.overrides.reportview.get"
+        }
 doctype_list_js = {
-    "Job Opening": "public/js/overrides/job_opening_list.js",
-}
+        "Job Opening": "public/js/overrides/job_opening_list.js",
+        }
 doctype_js = {
-    "Job Opening": "public/js/overrides/job_opening.js",
-}
+        "Job Opening": "public/js/overrides/job_opening.js",
+        }
 app_include_js = [
-    "/assets/mawhub/js/overrides/sidebar.js"
-]
+        "/assets/mawhub/js/overrides/sidebar.js"
+        ]
 # doctype_list_css = {
-#     "Job Opening": "public/css/job_opening_list.css"
-# }
+        #     "Job Opening": "public/css/job_opening_list.css"
+        # }
 # required_apps = []
 
 # Each item in the list will be shown as an app in the apps page
 add_to_apps_screen = [
-	{
-		"name": "mawhub",
-		"logo": "/assets/mawhub/images/logo.webp",
-		"title": "Mawhub",
-		"route": "/mawhub",
-		"has_permission": "mawhub.api.permission.has_app_permission"
-	}
-]
+        {
+            "name": "mawhub",
+            "logo": "/assets/mawhub/images/logo.webp",
+            "title": "Mawhub",
+            "route": "/mawhub",
+            "has_permission": "mawhub.api.permission.has_app_permission"
+            }
+        ]
 
 # Includes in <head>
 # ------------------
@@ -91,13 +101,13 @@ app_include_css = "/assets/mawhub/css/job_opening_list.css"
 # web_include_css = "/assets/mawhub/css/mawhub.css"
 # web_include_js = "/assets/mawhub/js/job_openings/job_openings.bundle.js"
 # portal_menu_items = [
-#     {
-#         "title": "Job Openings",
-#         "route": "/job-openings",
-#         "reference_doctype": "Job Opening",
-#         "role": "Customer"
-#     }
-# ]
+        #     {
+            #         "title": "Job Openings",
+            #         "route": "/job-openings",
+            #         "reference_doctype": "Job Opening",
+            #         "role": "Customer"
+            #     }
+        # ]
 
 # include custom scss in every website theme (without file extension ".scss")
 # website_theme_scss = "mawhub/public/scss/website"
@@ -128,8 +138,8 @@ app_include_css = "/assets/mawhub/css/job_opening_list.css"
 
 # website user home page (by Role)
 # role_home_page = {
-# 	"Role": "home_page"
-# }
+        # 	"Role": "home_page"
+        # }
 
 # Generators
 # ----------
@@ -145,9 +155,9 @@ app_include_css = "/assets/mawhub/css/job_opening_list.css"
 
 # add methods and filters to jinja environment
 # jinja = {
-# 	"methods": "mawhub.utils.jinja_methods",
-# 	"filters": "mawhub.utils.jinja_filters"
-# }
+        # 	"methods": "mawhub.utils.jinja_methods",
+        # 	"filters": "mawhub.utils.jinja_filters"
+        # }
 
 # Installation
 # ------------
@@ -188,45 +198,45 @@ app_include_css = "/assets/mawhub/css/job_opening_list.css"
 # Permissions evaluated in scripted ways
 
 # permission_query_conditions = {
-# 	"Event": "frappe.desk.doctype.event.event.get_permission_query_conditions",
-# }
+        # 	"Event": "frappe.desk.doctype.event.event.get_permission_query_conditions",
+        # }
 #
 # has_permission = {
-# 	"Event": "frappe.desk.doctype.event.event.has_permission",
-# }
+        # 	"Event": "frappe.desk.doctype.event.event.has_permission",
+        # }
 
 # Document Events
 # ---------------
 # Hook on document methods and events
 
 # doc_events = {
-# 	"*": {
-# 		"on_update": "method",
-# 		"on_cancel": "method",
-# 		"on_trash": "method"
-# 	}
-# }
+        # 	"*": {
+            # 		"on_update": "method",
+            # 		"on_cancel": "method",
+            # 		"on_trash": "method"
+            # 	}
+        # }
 
 # Scheduled Tasks
 # ---------------
 
 # scheduler_events = {
-# 	"all": [
-# 		"mawhub.tasks.all"
-# 	],
-# 	"daily": [
-# 		"mawhub.tasks.daily"
-# 	],
-# 	"hourly": [
-# 		"mawhub.tasks.hourly"
-# 	],
-# 	"weekly": [
-# 		"mawhub.tasks.weekly"
-# 	],
-# 	"monthly": [
-# 		"mawhub.tasks.monthly"
-# 	],
-# }
+        # 	"all": [
+            # 		"mawhub.tasks.all"
+            # 	],
+        # 	"daily": [
+            # 		"mawhub.tasks.daily"
+            # 	],
+        # 	"hourly": [
+            # 		"mawhub.tasks.hourly"
+            # 	],
+        # 	"weekly": [
+            # 		"mawhub.tasks.weekly"
+            # 	],
+        # 	"monthly": [
+            # 		"mawhub.tasks.monthly"
+            # 	],
+        # }
 
 # Testing
 # -------
@@ -238,22 +248,22 @@ app_include_css = "/assets/mawhub/css/job_opening_list.css"
 #
 # Specify custom mixins to extend the standard doctype controller.
 # extend_doctype_class = {
-# 	"Task": "mawhub.custom.task.CustomTaskMixin"
-# }
+        # 	"Task": "mawhub.custom.task.CustomTaskMixin"
+        # }
 
 # Overriding Methods
 # ------------------------------
 #
 # override_whitelisted_methods = {
-# 	"frappe.desk.doctype.event.event.get_events": "mawhub.event.get_events"
-# }
+        # 	"frappe.desk.doctype.event.event.get_events": "mawhub.event.get_events"
+        # }
 #
 # each overriding function accepts a `data` argument;
 # generated from the base implementation of the doctype dashboard,
 # along with any modifications made in other Frappe apps
 # override_doctype_dashboards = {
-# 	"Task": "mawhub.task.get_dashboard_data"
-# }
+        # 	"Task": "mawhub.task.get_dashboard_data"
+        # }
 
 # exempt linked doctypes from being automatically cancelled
 #
@@ -278,39 +288,39 @@ app_include_css = "/assets/mawhub/css/job_opening_list.css"
 # --------------------
 
 # user_data_fields = [
-# 	{
-# 		"doctype": "{doctype_1}",
-# 		"filter_by": "{filter_by}",
-# 		"redact_fields": ["{field_1}", "{field_2}"],
-# 		"partial": 1,
-# 	},
-# 	{
-# 		"doctype": "{doctype_2}",
-# 		"filter_by": "{filter_by}",
-# 		"partial": 1,
-# 	},
-# 	{
-# 		"doctype": "{doctype_3}",
-# 		"strict": False,
-# 	},
-# 	{
-# 		"doctype": "{doctype_4}"
-# 	}
-# ]
+        # 	{
+            # 		"doctype": "{doctype_1}",
+            # 		"filter_by": "{filter_by}",
+            # 		"redact_fields": ["{field_1}", "{field_2}"],
+            # 		"partial": 1,
+            # 	},
+        # 	{
+            # 		"doctype": "{doctype_2}",
+            # 		"filter_by": "{filter_by}",
+            # 		"partial": 1,
+            # 	},
+        # 	{
+            # 		"doctype": "{doctype_3}",
+            # 		"strict": False,
+            # 	},
+        # 	{
+            # 		"doctype": "{doctype_4}"
+            # 	}
+        # ]
 
 # Authentication and authorization
 # --------------------------------
 
 # auth_hooks = [
-# 	"mawhub.auth.validate"
-# ]
+        # 	"mawhub.auth.validate"
+        # ]
 
 # Automatically update python controller files with type annotations for this app.
 # export_python_type_annotations = True
 
 # default_log_clearing_doctypes = {
-# 	"Logging DocType Name": 30  # days to retain logs
-# }
+        # 	"Logging DocType Name": 30  # days to retain logs
+        # }
 
 # Translation
 # ------------

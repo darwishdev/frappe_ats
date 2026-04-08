@@ -1,0 +1,15 @@
+[
+ {
+  "docstatus": 0,
+  "doctype": "Question Bank",
+  "focus_areas": null,
+  "modified": "2026-04-08 17:09:47.045887",
+  "name": "Senior Backend Enginer",
+  "questions": [
+   {
+    "pass_threshold": 0.0,
+    "question_bank_question": "Q001"
+   }
+  ]
+ }
+]

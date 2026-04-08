@@ -398,11 +398,11 @@ watch(
 
 async function fetchApplicantProfile(applicantId) {
   if (!applicantId) return;
-  
+
   loading.value = true;
-  
+
   frappe.call({
-    method: "mawhub.api.mawhub_job_applicant_api.job_applicant_find",
+    method: "mawhub.job_applicant_find",
     type: "GET",
     args: {
       job: props.jobId,
@@ -442,9 +442,9 @@ function formatDateTime(dateTimeStr) {
   if (!dateTimeStr) return '';
   try {
     const date = new Date(dateTimeStr);
-    return date.toLocaleString('en-US', { 
-      year: 'numeric', 
-      month: 'short', 
+    return date.toLocaleString('en-US', {
+      year: 'numeric',
+      month: 'short',
       day: 'numeric',
       hour: '2-digit',
       minute: '2-digit'
