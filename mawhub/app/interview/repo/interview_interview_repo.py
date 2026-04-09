@@ -107,7 +107,7 @@ class InterviewInterviewRepo(AppRepo[InterviewDBModel]):
         return response
 
     def interview_find(self, name: str) -> dict:
-        interview = frappe.get_doc("Interview", name)
+        interview = frappe.get_doc("Interview", name , check_permission=False)
         if not interview:
             return {}
         applicant_name = str(interview.get("job_applicant" , ""))

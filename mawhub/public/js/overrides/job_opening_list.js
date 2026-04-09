@@ -40,7 +40,7 @@ frappe.listview_settings['Job Opening'] = {
     },
     formatters: {
         description(_value, _field, doc) {
-            const steps = [...doc.steps]
+            const steps = doc.steps ? [...doc.steps] : [];
             const jobName = doc.name
             html = `<div class="flex gap-4">`
             for (const step of steps) {
