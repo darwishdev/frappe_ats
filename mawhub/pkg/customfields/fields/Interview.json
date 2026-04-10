@@ -13,7 +13,17 @@
   "fieldname": "custom_question_bank",
   "label": "Question Bank",
   "fieldtype": "Link",
-  "insert_after": "custom_job_opening",
+  "insert_after": "resume_link",
+  "options": "Question Bank",
+  "in_list_view": 1,
+  "in_standard_filter": 1,
+  "reqd": 0
+ },
+ {
+  "fieldname": "custom_personalized_question_bank",
+  "label": "Personalized Question Bank",
+  "fieldtype": "Link",
+  "insert_after": "custom_question_bank",
   "options": "Question Bank",
   "in_list_view": 1,
   "in_standard_filter": 1,

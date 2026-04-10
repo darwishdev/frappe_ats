@@ -2,6 +2,7 @@ from google.genai.client import Client
 from mawhub.agent.document_parser.document_parser_agent import DocumentParserWorkflow
 from mawhub.agent.file_text_parser.file_text_parser_agent import FileTextParserWorkflow
 from mawhub.agent.job_opening_parser.job_opening_parser_agent import JobOpeningParserWorkflow
+from mawhub.agent.question_bank_personalizer.question_bank_personlaizer_agent import QuestionBankPersonalizerAgent
 from mawhub.agent.resume_parser.resume_parser_agent import ResumeWorkflow
 from mawhub.app.applicant.repo.applicant_repo import ApplicantRepo
 from mawhub.app.applicant.usecase.applicant_usecase import ApplicantUsecase, ApplicantUsecaseInterface
@@ -30,6 +31,7 @@ class AppContainer:
         job_opening_parser_agent = JobOpeningParserWorkflow(client=gemini_api_client,model_name=model_name)
         document_parser_agent = DocumentParserWorkflow(client=gemini_api_client,model_name=model_name)
         file_text_parser_agent = FileTextParserWorkflow(client=gemini_api_client,model_name=model_name)
+        question_bank_personalizer_agent = QuestionBankPersonalizerAgent(client=gemini_api_client,model_name="gemini-3.1-pro-preview")
         job_usecase = JobUseCase(
             job_repo=job_repo,
             file_text_parser_agent=file_text_parser_agent,
@@ -43,6 +45,7 @@ class AppContainer:
         )
         interview_usecase = InterviewUsecase(
             repo=interview_repo,
+            question_bank_personalizer_agent=question_bank_personalizer_agent,
         )
         self.job_usecase = job_usecase
         self.applicant_usecase = applicant_usecase

@@ -3,6 +3,9 @@ from mawhub.api.interview_interview_api import (
     interview_find,
     interview_create_update
 )
+from mawhub.api.interview_question_bank_api import (
+    personalize_question_bank,
+)
 from mawhub.api.job_job_pipeline_api import job_pipeline_create_update
 from mawhub.api.job_parsed_document_api import(
     parsed_document_create_update,
@@ -37,6 +40,7 @@ __all__ = [
     "parsed_document_parse",
     "parsed_document_parse_bg",
     "job_opening_step_list",
+    "personalize_question_bank",
     "applicant_resume_bulk_create",
     "applicant_resume_create_update",
     "applicant_resume_parse",
