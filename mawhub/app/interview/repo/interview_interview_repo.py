@@ -1,9 +1,32 @@
 from concurrent.futures import ThreadPoolExecutor
 import frappe
 from mawhub.pkg.baseclasses.app_repo import AppRepo
-from typing import  Literal, NotRequired, Protocol, TypedDict, cast
+from typing import  Literal, NotRequired, Optional, Protocol, TypedDict, cast
 from mawhub.pkg.baseclasses.app_repo import AppRepo, AppRepoInterface
 from mawhub.pkg.overrides.job_opening import CustomJobOpening
+
+
+class InterviewListFilter(TypedDict, total=False):
+    status: Optional[str]
+    job_applicant: Optional[str]
+    job_opening: Optional[str]
+    interview_round: Optional[str]
+    scheduled_on_from: Optional[str]
+    scheduled_on_to: Optional[str]
+
+
+class InterviewListItem(TypedDict):
+    name: str
+    status: str
+    scheduled_on: str
+    from_time: str
+    to_time: str
+    interview_round: str
+    job_applicant: str
+    candidate_name: str
+    candidate_email: str
+    job_opening: str
+    job_title: str
 
 
 class InterviewDBModel(TypedDict):
@@ -51,7 +74,8 @@ class InterviewDBModel(TypedDict):
     reminded: NotRequired[int]
     amended_from: NotRequired[str]
 class InterviewInterviewRepoInterface(AppRepoInterface[InterviewDBModel],Protocol):
-    def interview_find(self, name: str) -> dict:...
+    def interview_find(self, name: str) -> dict: ...
+    def interview_list(self, filters: InterviewListFilter) -> list[InterviewListItem]: ...
 
 
 
@@ -79,6 +103,8 @@ class InterviewInterviewRepo(AppRepo[InterviewDBModel]):
                 # info
                 "interview_summary",
                 "resume_link",
+                "custom_question_bank",
+                "custom_personalized_question_bank",
 
                 # derived
                 "job_opening",
@@ -93,6 +119,40 @@ class InterviewInterviewRepo(AppRepo[InterviewDBModel]):
                 # "interview_details": "Interview Detail"
             },
         )
+    def interview_list(self, filters: InterviewListFilter) -> list[InterviewListItem]:
+        rows = frappe.db.sql("""
+            SELECT
+                i.name,
+                i.status,
+                i.scheduled_on,
+                i.from_time,
+                i.to_time,
+                i.interview_round,
+                i.job_applicant,
+                ja.applicant_name  AS candidate_name,
+                ja.email_id        AS candidate_email,
+                i.job_opening,
+                jo.job_title
+            FROM `tabInterview` i
+            LEFT JOIN `tabJob Applicant` ja ON ja.name = i.job_applicant
+            LEFT JOIN `tabJob Opening`   jo ON jo.name = i.job_opening
+            WHERE
+                i.status          = COALESCE(%(status)s,            i.status)
+                AND i.job_applicant   = COALESCE(%(job_applicant)s,   i.job_applicant)
+                AND i.interview_round = COALESCE(%(interview_round)s, i.interview_round)
+                AND i.scheduled_on   >= COALESCE(%(scheduled_on_from)s, i.scheduled_on)
+                AND i.scheduled_on   <= COALESCE(%(scheduled_on_to)s,   i.scheduled_on)
+            ORDER BY i.scheduled_on DESC
+        """, {
+            "status":            filters.get("status"),
+            "job_applicant":     filters.get("job_applicant"),
+            "interview_round":   filters.get("interview_round"),
+            "scheduled_on_from": filters.get("scheduled_on_from"),
+            "scheduled_on_to":   filters.get("scheduled_on_to"),
+        }, as_dict=True)
+        print(filters.get("job_opening"))
+        return rows  # type: ignore[return-value]
+
     def interview_round_find(self,name : str):
         round = frappe.get_doc("Interview Round" , name)
         if not round:
