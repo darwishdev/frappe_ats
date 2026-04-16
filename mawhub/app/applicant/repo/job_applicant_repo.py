@@ -48,6 +48,12 @@ class JobApplicantDBModel(TypedDict):
     notes: NotRequired[str]
 
     # -------------------------
+    # Workable cross-reference
+    # -------------------------
+    custom_workable_candidate_id: NotRequired[str]
+    custom_workable_shortcode: NotRequired[str]
+
+    # -------------------------
     # salary expectation
     # -------------------------
     currency: NotRequired[str]
@@ -86,7 +92,10 @@ class JobApplicantRepo(AppRepo[JobApplicantDBModel]):
 
                 "currency",
                 "lower_range",
-                "upper_range"
+                "upper_range",
+
+                "custom_workable_candidate_id",
+                "custom_workable_shortcode",
             ],
             child_tables={
             },

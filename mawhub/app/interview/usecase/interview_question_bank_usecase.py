@@ -30,6 +30,11 @@ class InterviewQuestionBankUsecase:
         raw = self.repo.interview.interview_find(interview_id)
         data = self.adapter.interview.parse_interview_result(raw)
 
+        if not data.get("question_bank"):
+            raise Exception(
+                f"The job opening linked to interview {interview_id} has no question bank. "
+                "Please generate a question bank on the Job Opening first."
+            )
         if not data["question_bank"]["questions"]:
             raise Exception(f"Interview {interview_id} has no question bank or questions linked.")
 

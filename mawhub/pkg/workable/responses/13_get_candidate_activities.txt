@@ -1,0 +1,173 @@
+[
+  {
+    "id": "18567723",
+    "action": "applied",
+    "stage_name": "Applied",
+    "action_stage": {
+      "id": 3116535,
+      "name": "Applied"
+    },
+    "target_stage": null,
+    "created_at": "2021-09-29T07:09:20.947Z",
+    "updated_at": "2021-09-29T07:09:20.947Z",
+    "body": null
+  },
+  {
+    "id": "18cb0944",
+    "action": "disqualified",
+    "stage_name": "Applied",
+    "action_stage": {
+      "id": 3116535,
+      "name": "Applied"
+    },
+    "target_stage": null,
+    "created_at": "2021-10-18T10:42:01.037Z",
+    "updated_at": "2021-10-18T10:42:01.037Z",
+    "member": {
+      "id": "f2318",
+      "name": "Zuhair Khayyat",
+      "type": "Member"
+    },
+    "body": null
+  },
+  {
+    "id": "208949b2",
+    "action": "reverted",
+    "stage_name": "Applied",
+    "action_stage": {
+      "id": 3116535,
+      "name": "Applied"
+    },
+    "target_stage": null,
+    "created_at": "2022-06-26T14:05:43.273Z",
+    "updated_at": "2022-06-26T14:05:43.273Z",
+    "member": {
+      "id": "f2303",
+      "name": "Najlaa Al Subaie",
+      "type": "Member"
+    },
+    "body": null
+  },
+  {
+    "id": "20894b2d",
+    "action": "interview",
+    "stage_name": "Applied",
+    "action_stage": {
+      "id": 3116535,
+      "name": "Applied"
+    },
+    "target_stage": {
+      "id": 3165764,
+      "name": "Task Assignment"
+    },
+    "created_at": "2022-06-26T14:07:31.642Z",
+    "updated_at": "2022-06-26T14:07:31.642Z",
+    "member": {
+      "id": "f2303",
+      "name": "Najlaa Al Subaie",
+      "type": "Member"
+    },
+    "body": null
+  },
+  {
+    "id": "20894b3b",
+    "action": "interview",
+    "stage_name": "Task Assignment",
+    "action_stage": {
+      "id": 3165764,
+      "name": "Task Assignment"
+    },
+    "target_stage": {
+      "id": 3116537,
+      "name": "Interview"
+    },
+    "created_at": "2022-06-26T14:07:37.514Z",
+    "updated_at": "2022-06-26T14:07:37.514Z",
+    "member": {
+      "id": "f2303",
+      "name": "Najlaa Al Subaie",
+      "type": "Member"
+    },
+    "body": null
+  },
+  {
+    "id": "208952e6",
+    "action": "message",
+    "stage_name": "Interview",
+    "action_stage": {
+      "id": 3116537,
+      "name": "Interview"
+    },
+    "target_stage": null,
+    "created_at": "2022-06-26T14:18:11.522Z",
+    "updated_at": "2022-06-26T14:18:11.522Z",
+    "member": {
+      "id": "f2303",
+      "name": "Najlaa Al Subaie",
+      "type": "Member"
+    },
+    "body": "<p>Dear Zainab,\n</p>\n<p>Greetings....\n</p>\n<p>We are delighted to inform you that we would like to arrange an interview with you as the details below:\n</p>\n<p>·       Day: Monday \n</p>\n<p>·       Time: 4:00 PM\n</p>\n<p>·       Date: 27 June 2022\n</p>\n<p>·      Location: <a href=\"https://www.google.com/url?q=https://foursquare.com/v/lucidya/5d83af8226fc6a00081c2841&amp;sa=D&amp;source=calendar&amp;ust=1633689834980797&amp;usg=AOvVaw16XpNAfBJT8p5C0NXoA9EK\" rel=\"nofollow noreferrer noopener\" class=\"external\">https://foursquare.com/v/lucidya/5d83af8226fc6a00081c2841</a>\n</p>\n<p>We look forward to chatting with you\n</p>\n<p>Kindly confirm that you have received this email\n</p>\n<p>Thanks &amp; Regards,\n</p>\n<p>HR Team\n</p>",
+    "visibility_roles": [
+      "simple",
+      "hiring_manager",
+      "admin",
+      "recruiting_admin"
+    ]
+  },
+  {
+    "id": "2089a359",
+    "action": "message",
+    "stage_name": "Interview",
+    "action_stage": {
+      "id": 3116537,
+      "name": "Interview"
+    },
+    "target_stage": null,
+    "created_at": "2022-06-26T16:01:27.000Z",
+    "updated_at": "2022-06-26T16:13:15.073Z",
+    "body": "<div>Hello Najlaa,<div>It was nice talking to you.</div>\n<div>I thought that we said the interview will be at 1 pm. Maybe I heard that by mistake.</div>\n<div>Can we make it earlier before 2pm? As I have appointment after that.</div>\n<div>Thank you! </div>\n<div>Regards,</div>\n</div><br>",
+    "visibility_roles": [
+      "simple",
+      "hiring_manager",
+      "admin",
+      "recruiting_admin"
+    ]
+  },
+  {
+    "id": "20a7847e",
+    "action": "message",
+    "stage_name": "Interview",
+    "action_stage": {
+      "id": 3116537,
+      "name": "Interview"
+    },
+    "target_stage": null,
+    "created_at": "2022-06-29T13:10:48.000Z",
+    "updated_at": "2022-06-29T13:13:33.191Z",
+    "body": "<div>Good evening Najlaa,<div>I hope this email finds you well.</div>\n<div>Just a kind reminder to update me with the new time for the interview.</div>\n<div>Thank you for your time and consideration.</div>\n<div>Have a nice day!</div>\n<div>Regards,</div>\n</div><br>",
+    "visibility_roles": [
+      "simple",
+      "hiring_manager",
+      "admin",
+      "recruiting_admin"
+    ]
+  },
+  {
+    "id": "20cc57dc",
+    "action": "disqualified",
+    "stage_name": "Interview",
+    "action_stage": {
+      "id": 3116537,
+      "name": "Interview"
+    },
+    "target_stage": null,
+    "created_at": "2022-07-04T11:22:13.295Z",
+    "updated_at": "2022-07-04T11:22:13.295Z",
+    "member": {
+      "id": "f2303",
+      "name": "Najlaa Al Subaie",
+      "type": "Member"
+    },
+    "body": null
+  }
+]

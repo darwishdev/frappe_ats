@@ -55,6 +55,8 @@ class JobOpeningDBModel(TypedDict):
     custom_pipeline: NotRequired[str]
     custom_parse_request_id: NotRequired[str]
     custom_customer: NotRequired[str]
+    custom_question_bank: NotRequired[str]
+    custom_workable_shortcode: NotRequired[str]
 
     # -------------------------
     # ✅ Child tables
@@ -112,7 +114,9 @@ class JobOpeningRepo(AppRepo[JobOpeningDBModel]):
                 # custom scalars
                 "custom_pipeline",
                 "custom_parse_request_id",
-                "custom_customer"
+                "custom_customer",
+                "custom_question_bank",
+                "custom_workable_shortcode",
             ],
             child_tables={
                 "custom_pipeline_steps" : "custom_pipeline_steps",

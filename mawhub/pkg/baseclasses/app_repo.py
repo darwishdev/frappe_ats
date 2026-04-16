@@ -22,11 +22,13 @@ class AppRepo(Generic[PayloadT]):
         name_key: str,
         scalar_fields: List[str] | dict[str, str],
         child_tables: FieldSpec | None = None,
+        ignore_links: bool = False,
     ):
         self.doc_name = doc_name
         self.name_key = name_key
         self.scalar_fields = scalar_fields
         self.child_tables = child_tables or {}
+        self.ignore_links = ignore_links
 
     def create_or_update(self, payload: PayloadT) -> Document:
         return create_or_update_doc(
@@ -36,6 +38,7 @@ class AppRepo(Generic[PayloadT]):
             payload=cast(dict, payload),
             scalar_fields=self.scalar_fields,
             child_tables=self.child_tables,
+            ignore_links=self.ignore_links,
         )
 
     def bulk_create(self, payloads: List[PayloadT]) -> List[Document]:

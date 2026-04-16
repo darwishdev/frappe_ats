@@ -1,0 +1,10 @@
+[
+    {
+        "fieldname": "google_drive_token",
+        "label": "Google Drive Token",
+        "fieldtype": "Code",
+        "options": "JSON",
+        "hidden": 1,
+        "insert_after": "email"
+    }
+]

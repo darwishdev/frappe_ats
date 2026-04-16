@@ -1,0 +1,578 @@
+[
+  {
+    "id": "1d765c",
+    "title": "Account Manager",
+    "full_title": "Account Manager - Riyadh",
+    "shortcode": "D371F4B71C",
+    "code": null,
+    "state": "archived",
+    "sample": false,
+    "confidential": false,
+    "department": "Sales",
+    "department_hierarchy": [
+      {
+        "id": 214582,
+        "name": "Sales"
+      }
+    ],
+    "url": "https://lucidya.workable.com/jobs/1929610",
+    "application_url": "https://lucidya.workable.com/jobs/1929610/candidates/new",
+    "shortlink": "https://apply.workable.com/j/D371F4B71C",
+    "workplace_type": "on_site",
+    "location": {
+      "location_str": "Riyadh, Riyadh Province, Saudi Arabia",
+      "country": "Saudi Arabia",
+      "country_code": "SA",
+      "region": "Riyadh Province",
+      "region_code": "Riyadh Province",
+      "city": "Riyadh",
+      "zip_code": null,
+      "telecommuting": false,
+      "workplace_type": "on_site"
+    },
+    "locations": [
+      {
+        "shortcode": "JFFB58380D4",
+        "country_code": "SA",
+        "country_name": "Saudi Arabia",
+        "state_code": "Riyadh Province",
+        "subregion": "Riyadh Province",
+        "zip_code": null,
+        "city": "Riyadh",
+        "coords": "24.7135517, 46.67529569999999",
+        "hidden": false
+      }
+    ],
+    "salary": {
+      "salary_currency": "sar"
+    },
+    "created_at": "2021-09-07T09:33:14Z",
+    "updated_at": "2026-01-14T12:03:56Z",
+    "keywords": null
+  },
+  {
+    "id": "1dad24",
+    "title": "Frontend Developer - Remotely - OLD",
+    "full_title": "Frontend Developer - Remotely - OLD - Egypt",
+    "shortcode": "CDE6BDB91B",
+    "code": null,
+    "state": "archived",
+    "sample": false,
+    "confidential": false,
+    "department": "Engineering",
+    "department_hierarchy": [
+      {
+        "id": 214581,
+        "name": "Engineering"
+      }
+    ],
+    "url": "https://lucidya.workable.com/jobs/1943634",
+    "application_url": "https://lucidya.workable.com/jobs/1943634/candidates/new",
+    "shortlink": "https://apply.workable.com/j/CDE6BDB91B",
+    "workplace_type": "remote",
+    "location": {
+      "location_str": "Egypt",
+      "country": "Egypt",
+      "country_code": "EG",
+      "region": null,
+      "region_code": null,
+      "city": null,
+      "zip_code": null,
+      "telecommuting": true,
+      "workplace_type": "remote"
+    },
+    "locations": [
+      {
+        "shortcode": "J3A0705BFA6",
+        "country_code": "EG",
+        "country_name": "Egypt",
+        "state_code": "",
+        "subregion": null,
+        "zip_code": null,
+        "city": "",
+        "coords": "38.9927953,-94.6487551",
+        "hidden": false
+      },
+      {
+        "shortcode": "JD63F504524",
+        "country_code": "EG",
+        "country_name": "Egypt",
+        "state_code": "Cairo Governorate",
+        "subregion": "Cairo Governorate",
+        "zip_code": null,
+        "city": "Cairo",
+        "coords": "30.0444196, 31.23571160000006",
+        "hidden": true
+      }
+    ],
+    "salary": {
+      "salary_currency": "sar"
+    },
+    "created_at": "2021-09-14T08:39:13Z",
+    "updated_at": "2026-01-27T09:52:37Z",
+    "keywords": [
+      "CSS",
+      "HTML5",
+      "ReactJS"
+    ]
+  },
+  {
+    "id": "1dd554",
+    "title": "Sales Development Representative (SDR)",
+    "full_title": "Sales Development Representative (SDR) - Riyadh",
+    "shortcode": "BF324C5A83",
+    "code": null,
+    "state": "archived",
+    "sample": false,
+    "confidential": false,
+    "department": "Sales",
+    "department_hierarchy": [
+      {
+        "id": 214582,
+        "name": "Sales"
+      }
+    ],
+    "url": "https://lucidya.workable.com/jobs/1953922",
+    "application_url": "https://lucidya.workable.com/jobs/1953922/candidates/new",
+    "shortlink": "https://apply.workable.com/j/BF324C5A83",
+    "workplace_type": "on_site",
+    "location": {
+      "location_str": "Riyadh, Riyadh Province, Saudi Arabia",
+      "country": "Saudi Arabia",
+      "country_code": "SA",
+      "region": "Riyadh Province",
+      "region_code": "Riyadh Province",
+      "city": "Riyadh",
+      "zip_code": null,
+      "telecommuting": false,
+      "workplace_type": "on_site"
+    },
+    "locations": [
+      {
+        "shortcode": "J47B2ECCA8B",
+        "country_code": "SA",
+        "country_name": "Saudi Arabia",
+        "state_code": "Riyadh Province",
+        "subregion": "Riyadh Province",
+        "zip_code": null,
+        "city": "Riyadh",
+        "coords": "24.7135517, 46.67529569999999",
+        "hidden": false
+      }
+    ],
+    "salary": {
+      "salary_currency": "sar"
+    },
+    "created_at": "2021-09-20T14:25:08Z",
+    "updated_at": "2026-04-09T12:57:03Z",
+    "keywords": null
+  },
+  {
+    "id": "1dd55f",
+    "title": "Channel Sales Manager (Partnerships)",
+    "full_title": "Channel Sales Manager (Partnerships) - Riyadh",
+    "shortcode": "EB388C56A2",
+    "code": null,
+    "state": "archived",
+    "sample": false,
+    "confidential": false,
+    "department": "Sales",
+    "department_hierarchy": [
+      {
+        "id": 214582,
+        "name": "Sales"
+      }
+    ],
+    "url": "https://lucidya.workable.com/jobs/1953933",
+    "application_url": "https://lucidya.workable.com/jobs/1953933/candidates/new",
+    "shortlink": "https://apply.workable.com/j/EB388C56A2",
+    "workplace_type": "on_site",
+    "location": {
+      "location_str": "Riyadh, Riyadh Province, Saudi Arabia",
+      "country": "Saudi Arabia",
+      "country_code": "SA",
+      "region": "Riyadh Province",
+      "region_code": "Riyadh Province",
+      "city": "Riyadh",
+      "zip_code": null,
+      "telecommuting": false,
+      "workplace_type": "on_site"
+    },
+    "locations": [
+      {
+        "shortcode": "J92B87A8723",
+        "country_code": "SA",
+        "country_name": "Saudi Arabia",
+        "state_code": "Riyadh Province",
+        "subregion": "Riyadh Province",
+        "zip_code": null,
+        "city": "Riyadh",
+        "coords": "24.7135517, 46.67529569999999",
+        "hidden": false
+      }
+    ],
+    "salary": {
+      "salary_currency": "sar"
+    },
+    "created_at": "2021-09-20T14:27:30Z",
+    "updated_at": "2026-01-14T12:03:56Z",
+    "keywords": null
+  },
+  {
+    "id": "1dd57f",
+    "title": "Marketing Specialist",
+    "full_title": "Marketing Specialist - Riyadh",
+    "shortcode": "110E1BA5E5",
+    "code": null,
+    "state": "archived",
+    "sample": false,
+    "confidential": false,
+    "department": "Marketing",
+    "department_hierarchy": [
+      {
+        "id": 225687,
+        "name": "Marketing"
+      }
+    ],
+    "url": "https://lucidya.workable.com/jobs/1953965",
+    "application_url": "https://lucidya.workable.com/jobs/1953965/candidates/new",
+    "shortlink": "https://apply.workable.com/j/110E1BA5E5",
+    "workplace_type": "on_site",
+    "location": {
+      "location_str": "Riyadh, Riyadh Province, Saudi Arabia",
+      "country": "Saudi Arabia",
+      "country_code": "SA",
+      "region": "Riyadh Province",
+      "region_code": "Riyadh Province",
+      "city": "Riyadh",
+      "zip_code": null,
+      "telecommuting": false,
+      "workplace_type": "on_site"
+    },
+    "locations": [
+      {
+        "shortcode": "JD472D04938",
+        "country_code": "SA",
+        "country_name": "Saudi Arabia",
+        "state_code": "Riyadh Province",
+        "subregion": "Riyadh Province",
+        "zip_code": null,
+        "city": "Riyadh",
+        "coords": "24.7135517, 46.67529569999999",
+        "hidden": false
+      }
+    ],
+    "salary": {
+      "salary_currency": "sar"
+    },
+    "created_at": "2021-09-20T14:36:59Z",
+    "updated_at": "2026-01-14T12:03:56Z",
+    "keywords": null
+  },
+  {
+    "id": "1dd593",
+    "title": "Customer Success Manager",
+    "full_title": "Customer Success Manager - Riyadh",
+    "shortcode": "C745103111",
+    "code": null,
+    "state": "archived",
+    "sample": false,
+    "confidential": false,
+    "department": "Customer Experience",
+    "department_hierarchy": [
+      {
+        "id": 225688,
+        "name": "Customer Experience"
+      }
+    ],
+    "url": "https://lucidya.workable.com/jobs/1953985",
+    "application_url": "https://lucidya.workable.com/jobs/1953985/candidates/new",
+    "shortlink": "https://apply.workable.com/j/C745103111",
+    "workplace_type": "on_site",
+    "location": {
+      "location_str": "Riyadh, Riyadh Province, Saudi Arabia",
+      "country": "Saudi Arabia",
+      "country_code": "SA",
+      "region": "Riyadh Province",
+      "region_code": "Riyadh Province",
+      "city": "Riyadh",
+      "zip_code": null,
+      "telecommuting": false,
+      "workplace_type": "on_site"
+    },
+    "locations": [
+      {
+        "shortcode": "J11E62067DF",
+        "country_code": "SA",
+        "country_name": "Saudi Arabia",
+        "state_code": "Riyadh Province",
+        "subregion": "Riyadh Province",
+        "zip_code": null,
+        "city": "Riyadh",
+        "coords": "24.7135517, 46.67529569999999",
+        "hidden": false
+      }
+    ],
+    "salary": {
+      "salary_currency": "sar"
+    },
+    "created_at": "2021-09-20T14:44:34Z",
+    "updated_at": "2026-01-14T12:03:56Z",
+    "keywords": null
+  },
+  {
+    "id": "1dd722",
+    "title": "Social Media Analyst",
+    "full_title": "Social Media Analyst - Riyadh",
+    "shortcode": "5AEBDCB824",
+    "code": null,
+    "state": "archived",
+    "sample": false,
+    "confidential": false,
+    "department": "Sales",
+    "department_hierarchy": [
+      {
+        "id": 214582,
+        "name": "Sales"
+      }
+    ],
+    "url": "https://lucidya.workable.com/jobs/1954384",
+    "application_url": "https://lucidya.workable.com/jobs/1954384/candidates/new",
+    "shortlink": "https://apply.workable.com/j/5AEBDCB824",
+    "workplace_type": "on_site",
+    "location": {
+      "location_str": "Riyadh, Riyadh Province, Saudi Arabia",
+      "country": "Saudi Arabia",
+      "country_code": "SA",
+      "region": "Riyadh Province",
+      "region_code": "Riyadh Province",
+      "city": "Riyadh",
+      "zip_code": null,
+      "telecommuting": false,
+      "workplace_type": "on_site"
+    },
+    "locations": [
+      {
+        "shortcode": "J538DB1E016",
+        "country_code": "SA",
+        "country_name": "Saudi Arabia",
+        "state_code": "Riyadh Province",
+        "subregion": "Riyadh Province",
+        "zip_code": null,
+        "city": "Riyadh",
+        "coords": "24.7135517, 46.67529569999999",
+        "hidden": false
+      }
+    ],
+    "salary": {
+      "salary_currency": "sar"
+    },
+    "created_at": "2021-09-20T17:39:21Z",
+    "updated_at": "2026-01-14T12:03:56Z",
+    "keywords": null
+  },
+  {
+    "id": "1dd725",
+    "title": "Software Engineer",
+    "full_title": "Software Engineer - Riyadh",
+    "shortcode": "B84302F438",
+    "code": null,
+    "state": "archived",
+    "sample": false,
+    "confidential": true,
+    "department": "Engineering",
+    "department_hierarchy": [
+      {
+        "id": 214581,
+        "name": "Engineering"
+      }
+    ],
+    "url": "https://lucidya.workable.com/jobs/1954387",
+    "application_url": "https://lucidya.workable.com/jobs/1954387/candidates/new",
+    "shortlink": "https://apply.workable.com/j/B84302F438",
+    "workplace_type": "on_site",
+    "location": {
+      "location_str": "Riyadh, Riyadh Province, Saudi Arabia",
+      "country": "Saudi Arabia",
+      "country_code": "SA",
+      "region": "Riyadh Province",
+      "region_code": "Riyadh Province",
+      "city": "Riyadh",
+      "zip_code": null,
+      "telecommuting": false,
+      "workplace_type": "on_site"
+    },
+    "locations": [
+      {
+        "shortcode": "J691A4EBF0D",
+        "country_code": "SA",
+        "country_name": "Saudi Arabia",
+        "state_code": "Riyadh Province",
+        "subregion": "Riyadh Province",
+        "zip_code": null,
+        "city": "Riyadh",
+        "coords": "24.7135517, 46.67529569999999",
+        "hidden": false
+      }
+    ],
+    "salary": {
+      "salary_currency": "sar"
+    },
+    "created_at": "2021-09-20T17:41:57Z",
+    "updated_at": "2026-01-27T09:52:37Z",
+    "keywords": null
+  },
+  {
+    "id": "1dd72a",
+    "title": "Senior Backend Software Engineer - Remote",
+    "full_title": "Senior Backend Software Engineer - Remote - ENG-251225-049/ENG-251225-042/ENG-251225-037/ENG-251225-043/AAI-251225-002/ENG-110126-002/ENG-251225-045/ENG-261025-002",
+    "shortcode": "EA389D5257",
+    "code": "ENG-251225-049/ENG-251225-042/ENG-251225-037/ENG-251225-043/AAI-251225-002/ENG-110126-002/ENG-251225-045/ENG-261025-002",
+    "state": "published",
+    "sample": false,
+    "confidential": false,
+    "department": "Engineering",
+    "department_hierarchy": [
+      {
+        "id": 214581,
+        "name": "Engineering"
+      }
+    ],
+    "url": "https://lucidya.workable.com/jobs/1954392",
+    "application_url": "https://lucidya.workable.com/jobs/1954392/candidates/new",
+    "shortlink": "https://apply.workable.com/j/EA389D5257",
+    "workplace_type": "remote",
+    "location": {
+      "location_str": "Egypt",
+      "country": "Egypt",
+      "country_code": "EG",
+      "region": null,
+      "region_code": null,
+      "city": null,
+      "zip_code": null,
+      "telecommuting": true,
+      "workplace_type": "remote"
+    },
+    "locations": [
+      {
+        "shortcode": "J569693958F",
+        "country_code": "EG",
+        "country_name": "Egypt",
+        "state_code": "",
+        "subregion": null,
+        "zip_code": null,
+        "city": "",
+        "coords": "38.9927953,-94.6487551",
+        "hidden": false
+      },
+      {
+        "shortcode": "JDA4D5DBDE4",
+        "country_code": "PL",
+        "country_name": "Poland",
+        "state_code": "",
+        "subregion": null,
+        "zip_code": null,
+        "city": "",
+        "coords": "51.919438, 19.145136",
+        "hidden": false
+      },
+      {
+        "shortcode": "J7D6730BCFA",
+        "country_code": "JO",
+        "country_name": "Jordan",
+        "state_code": "",
+        "subregion": null,
+        "zip_code": null,
+        "city": "",
+        "coords": "30.585164, 36.238414",
+        "hidden": false
+      },
+      {
+        "shortcode": "J1D8315C883",
+        "country_code": "MA",
+        "country_name": "Morocco",
+        "state_code": "",
+        "subregion": null,
+        "zip_code": null,
+        "city": "",
+        "coords": "31.791702, -7.092619999999999",
+        "hidden": false
+      },
+      {
+        "shortcode": "JD6A0EAEDE4",
+        "country_code": "PH",
+        "country_name": "Philippines",
+        "state_code": "",
+        "subregion": null,
+        "zip_code": null,
+        "city": "",
+        "coords": "12.879721, 121.774017",
+        "hidden": false
+      }
+    ],
+    "salary": {
+      "salary_currency": "sar"
+    },
+    "created_at": "2021-09-20T17:45:29Z",
+    "updated_at": "2026-03-19T12:52:02Z",
+    "keywords": [
+      "Python",
+      "Ruby on Rails",
+      "apache",
+      "jetty"
+    ]
+  },
+  {
+    "id": "1de422",
+    "title": "Finance Manager",
+    "full_title": "Finance Manager - Riyadh",
+    "shortcode": "522CCEBA3A",
+    "code": null,
+    "state": "archived",
+    "sample": false,
+    "confidential": false,
+    "department": "Finance",
+    "department_hierarchy": [
+      {
+        "id": 214626,
+        "name": "Finance"
+      }
+    ],
+    "url": "https://lucidya.workable.com/jobs/1957712",
+    "application_url": "https://lucidya.workable.com/jobs/1957712/candidates/new",
+    "shortlink": "https://apply.workable.com/j/522CCEBA3A",
+    "workplace_type": "on_site",
+    "location": {
+      "location_str": "Riyadh, Riyadh Province, Saudi Arabia",
+      "country": "Saudi Arabia",
+      "country_code": "SA",
+      "region": "Riyadh Province",
+      "region_code": "Riyadh Province",
+      "city": "Riyadh",
+      "zip_code": null,
+      "telecommuting": false,
+      "workplace_type": "on_site"
+    },
+    "locations": [
+      {
+        "shortcode": "J950863D72A",
+        "country_code": "SA",
+        "country_name": "Saudi Arabia",
+        "state_code": "Riyadh Province",
+        "subregion": "Riyadh Province",
+        "zip_code": null,
+        "city": "Riyadh",
+        "coords": "24.7135517, 46.67529569999999",
+        "hidden": false
+      }
+    ],
+    "salary": {
+      "salary_currency": "sar"
+    },
+    "created_at": "2021-09-22T06:39:18Z",
+    "updated_at": "2026-02-15T11:07:48Z",
+    "keywords": [
+      "information Technology"
+    ]
+  }
+]

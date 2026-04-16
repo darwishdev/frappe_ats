@@ -1,0 +1,335 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "prompt",
+ "creation": "2026-04-13 14:31:56.343092",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "workable_id",
+  "title",
+  "column_break_wk5a",
+  "state",
+  "confidential",
+  "section_break_wk5b",
+  "full_title",
+  "code",
+  "column_break_wk5c",
+  "department",
+  "workplace_type",
+  "section_break_wk5d",
+  "employment_type",
+  "industry",
+  "column_break_wk5e",
+  "job_function",
+  "experience",
+  "education",
+  "section_break_wk5f",
+  "country",
+  "country_code",
+  "city",
+  "column_break_wk5g",
+  "region",
+  "salary_currency",
+  "section_break_wk5h",
+  "url",
+  "application_url",
+  "column_break_wk5i",
+  "shortlink",
+  "keywords",
+  "section_break_wk5j",
+  "description",
+  "section_break_wk5k",
+  "full_description",
+  "section_break_wk5l",
+  "requirements",
+  "section_break_wk5m",
+  "benefits",
+  "section_break_wk5n",
+  "stages",
+  "section_break_wk5o",
+  "candidates",
+  "section_break_wk5p",
+  "workable_created_at",
+  "column_break_wk5q",
+  "workable_updated_at"
+ ],
+ "fields": [
+  {
+   "fieldname": "workable_id",
+   "fieldtype": "Data",
+   "label": "Workable ID",
+   "read_only": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "title",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Title",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_wk5a",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "state",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "State",
+   "options": "\ndraft\npublished\narchived\nclosed",
+   "reqd": 1
+  },
+  {
+   "fieldname": "confidential",
+   "fieldtype": "Check",
+   "label": "Confidential"
+  },
+  {
+   "fieldname": "section_break_wk5b",
+   "fieldtype": "Section Break",
+   "label": "Job Details"
+  },
+  {
+   "fieldname": "full_title",
+   "fieldtype": "Small Text",
+   "label": "Full Title"
+  },
+  {
+   "fieldname": "code",
+   "fieldtype": "Small Text",
+   "label": "Internal Code"
+  },
+  {
+   "fieldname": "column_break_wk5c",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "department",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Department"
+  },
+  {
+   "fieldname": "workplace_type",
+   "fieldtype": "Select",
+   "in_standard_filter": 1,
+   "label": "Workplace Type",
+   "options": "\non_site\nremote\nhybrid"
+  },
+  {
+   "fieldname": "section_break_wk5d",
+   "fieldtype": "Section Break",
+   "label": "Classification"
+  },
+  {
+   "fieldname": "employment_type",
+   "fieldtype": "Data",
+   "label": "Employment Type"
+  },
+  {
+   "fieldname": "industry",
+   "fieldtype": "Data",
+   "label": "Industry"
+  },
+  {
+   "fieldname": "column_break_wk5e",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "job_function",
+   "fieldtype": "Data",
+   "label": "Function"
+  },
+  {
+   "fieldname": "experience",
+   "fieldtype": "Data",
+   "label": "Experience Level"
+  },
+  {
+   "fieldname": "education",
+   "fieldtype": "Data",
+   "label": "Education"
+  },
+  {
+   "fieldname": "section_break_wk5f",
+   "fieldtype": "Section Break",
+   "label": "Location"
+  },
+  {
+   "fieldname": "country",
+   "fieldtype": "Data",
+   "label": "Country"
+  },
+  {
+   "fieldname": "country_code",
+   "fieldtype": "Data",
+   "label": "Country Code"
+  },
+  {
+   "fieldname": "city",
+   "fieldtype": "Data",
+   "label": "City"
+  },
+  {
+   "fieldname": "column_break_wk5g",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "region",
+   "fieldtype": "Data",
+   "label": "Region"
+  },
+  {
+   "fieldname": "salary_currency",
+   "fieldtype": "Data",
+   "label": "Salary Currency"
+  },
+  {
+   "fieldname": "section_break_wk5h",
+   "fieldtype": "Section Break",
+   "label": "URLs"
+  },
+  {
+   "fieldname": "url",
+   "fieldtype": "Data",
+   "label": "Workable URL",
+   "options": "URL"
+  },
+  {
+   "fieldname": "application_url",
+   "fieldtype": "Data",
+   "label": "Application URL",
+   "options": "URL"
+  },
+  {
+   "fieldname": "column_break_wk5i",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "shortlink",
+   "fieldtype": "Data",
+   "label": "Short Link",
+   "options": "URL"
+  },
+  {
+   "fieldname": "keywords",
+   "fieldtype": "Small Text",
+   "label": "Keywords"
+  },
+  {
+   "fieldname": "section_break_wk5j",
+   "fieldtype": "Section Break",
+   "label": "Description"
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Text Editor",
+   "label": "Description"
+  },
+  {
+   "fieldname": "section_break_wk5k",
+   "fieldtype": "Section Break",
+   "label": "Full Description"
+  },
+  {
+   "fieldname": "full_description",
+   "fieldtype": "Text Editor",
+   "label": "Full Description"
+  },
+  {
+   "fieldname": "section_break_wk5l",
+   "fieldtype": "Section Break",
+   "label": "Requirements"
+  },
+  {
+   "fieldname": "requirements",
+   "fieldtype": "Text Editor",
+   "label": "Requirements"
+  },
+  {
+   "fieldname": "section_break_wk5m",
+   "fieldtype": "Section Break",
+   "label": "Benefits"
+  },
+  {
+   "fieldname": "benefits",
+   "fieldtype": "Text Editor",
+   "label": "Benefits"
+  },
+  {
+   "fieldname": "section_break_wk5n",
+   "fieldtype": "Section Break",
+   "label": "Pipeline Stages"
+  },
+  {
+   "fieldname": "stages",
+   "fieldtype": "Table",
+   "label": "Stages",
+   "options": "Workable Job Stage"
+  },
+  {
+   "fieldname": "section_break_wk5o",
+   "fieldtype": "Section Break",
+   "label": "Candidates"
+  },
+  {
+   "fieldname": "candidates",
+   "fieldtype": "Table",
+   "label": "Candidates",
+   "options": "Workable Job Candidate"
+  },
+  {
+   "fieldname": "section_break_wk5p",
+   "fieldtype": "Section Break",
+   "label": "Sync Metadata"
+  },
+  {
+   "fieldname": "workable_created_at",
+   "fieldtype": "Datetime",
+   "label": "Workable Created At",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_wk5q",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "workable_updated_at",
+   "fieldtype": "Datetime",
+   "label": "Workable Updated At",
+   "read_only": 1
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-04-13 15:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Mawhub",
+ "name": "Workable Job",
+ "naming_rule": "Set by user",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

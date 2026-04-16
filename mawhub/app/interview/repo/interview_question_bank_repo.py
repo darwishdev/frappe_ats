@@ -73,6 +73,8 @@ class InterviewQuestionBankRepo(AppRepo[QuestionBankDBModel]):
             bank_doc.append("questions", {"question_bank_question": qname})
 
         bank_doc.insert(ignore_permissions=True)
+
+        frappe.db.set_value("Interview", interview_id, "custom_personalized_question_bank", bank_doc.name)
         frappe.db.commit()
 
         return str(bank_doc.name)

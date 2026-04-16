@@ -92,6 +92,7 @@ doctype_list_js = {
         }
 doctype_js = {
         "Job Opening": "public/js/overrides/job_opening.js",
+        "Interview": "public/js/overrides/interview.js",
         }
 app_include_js = [
         "/assets/mawhub/js/overrides/sidebar.js"

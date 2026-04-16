@@ -15,6 +15,7 @@ def create_or_update_doc(
     scalar_fields: FieldSpec,
     child_tables: FieldSpec | None,
     ignore_permissions: bool = False,
+    ignore_links: bool = False,
 ) -> Document:
     """
     Generic create/update helper for Frappe documents.
@@ -32,7 +33,15 @@ def create_or_update_doc(
         doc = frappe.get_doc(doctype, name)
     else:
         doc = frappe.new_doc(doctype)
-        doc.set(name_key,name)
+        doc.set(name_key, name)
+        # Prevent DocType autoname() from overriding an explicitly provided
+        # name (e.g. Job Opening uses make_autoname("HR-OPN-.YYYY.-.#####")
+        # which would fire inside set_new_name and clobber our value).
+        doc.flags.name_set = True
+        # Skip business-rule validators (e.g. "cannot create applicant against
+        # closed job opening"). This utility is used for programmatic sync/import,
+        # not user-facing operations, so DocType.validate() should not block it.
+        doc.flags.ignore_validate = True
     scalar_map = _normalize_fields(scalar_fields)
     # Scalar fields
     for payload_key, fieldname in scalar_map.items():
@@ -47,6 +56,9 @@ def create_or_update_doc(
                 doc.set(fieldname, [])
                 for row in payload[payload_key] or []:
                     doc.append(fieldname, row)
+
+    if ignore_links:
+        doc.flags.ignore_links = True
 
     doc.save(ignore_permissions=ignore_permissions)
     frappe.db.commit()

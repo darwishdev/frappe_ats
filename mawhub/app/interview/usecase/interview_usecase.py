@@ -13,7 +13,6 @@ class InterviewUsecaseInterface(Protocol):
 class InterviewUsecase:
     interview: InterviewInterviewUsecaseInterface
     question_bank: InterviewQuestionBankUsecaseInterface
-    adapter: InterviewAdapterInterface
     def __init__(
         self,
         repo: InterviewRepoInterface,

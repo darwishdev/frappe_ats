@@ -1,0 +1,86 @@
+[
+  {
+    "slug": "sourced",
+    "name": "Sourced",
+    "kind": "sourced",
+    "position": 1
+  },
+  {
+    "slug": "applied",
+    "name": "Applied",
+    "kind": "applied",
+    "position": 2
+  },
+  {
+    "slug": "shortlisted",
+    "name": "Shortlisted",
+    "kind": "phone-screen",
+    "position": 3
+  },
+  {
+    "slug": "technical-assessment",
+    "name": "Technical Assessment",
+    "kind": "assessment",
+    "position": 4
+  },
+  {
+    "slug": "to-be-screened",
+    "name": "To be Screened",
+    "kind": "phone-screen",
+    "position": 5
+  },
+  {
+    "slug": "passed-screening",
+    "name": "Passed Screening",
+    "kind": "phone-screen",
+    "position": 6
+  },
+  {
+    "slug": "interview",
+    "name": "Interview",
+    "kind": "interview",
+    "position": 7
+  },
+  {
+    "slug": "passed-interview",
+    "name": "Passed Interview",
+    "kind": "interview",
+    "position": 8
+  },
+  {
+    "slug": "task-assignment",
+    "name": "Task Assignment",
+    "kind": "interview",
+    "position": 9
+  },
+  {
+    "slug": "final-stage-of-interviews",
+    "name": "Final Stage of Interviews",
+    "kind": "interview",
+    "position": 10
+  },
+  {
+    "slug": "bar-raiser",
+    "name": "Bar Raiser",
+    "kind": "interview",
+    "position": 11
+  },
+  {
+    "slug": "offer",
+    "name": "Offer",
+    "kind": "offer",
+    "position": 12
+  },
+  {
+    "slug": "hired",
+    "name": "Hired",
+    "kind": "hired",
+    "position": 13
+  },
+  {
+    "slug": "on-boarding",
+    "name": "On Boarding",
+    "kind": "hired",
+    "position": 14
+  }
+]

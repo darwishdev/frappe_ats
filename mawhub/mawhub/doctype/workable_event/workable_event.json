@@ -1,0 +1,172 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "prompt",
+ "creation": "2026-04-13 17:04:08.486782",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "title",
+  "event_type",
+  "column_break_wke1",
+  "cancelled",
+  "section_break_wke2",
+  "starts_at",
+  "ends_at",
+  "column_break_wke3",
+  "conference_type",
+  "conference_url",
+  "section_break_wke4",
+  "job",
+  "job_title",
+  "column_break_wke5",
+  "candidate",
+  "candidate_name",
+  "section_break_wke6",
+  "description",
+  "section_break_wke7",
+  "members"
+ ],
+ "fields": [
+  {
+   "fieldname": "title",
+   "fieldtype": "Small Text",
+   "in_list_view": 1,
+   "label": "Title",
+   "reqd": 1
+  },
+  {
+   "fieldname": "event_type",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Event Type"
+  },
+  {
+   "fieldname": "column_break_wke1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "cancelled",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Cancelled"
+  },
+  {
+   "fieldname": "section_break_wke2",
+   "fieldtype": "Section Break",
+   "label": "Schedule"
+  },
+  {
+   "fieldname": "starts_at",
+   "fieldtype": "Datetime",
+   "in_list_view": 1,
+   "label": "Starts At"
+  },
+  {
+   "fieldname": "ends_at",
+   "fieldtype": "Datetime",
+   "label": "Ends At"
+  },
+  {
+   "fieldname": "column_break_wke3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "conference_type",
+   "fieldtype": "Data",
+   "label": "Conference Type"
+  },
+  {
+   "fieldname": "conference_url",
+   "fieldtype": "Small Text",
+   "label": "Conference URL"
+  },
+  {
+   "fieldname": "section_break_wke4",
+   "fieldtype": "Section Break",
+   "label": "Job & Candidate"
+  },
+  {
+   "fieldname": "job",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Job",
+   "options": "Workable Job"
+  },
+  {
+   "fieldname": "job_title",
+   "fieldtype": "Data",
+   "fetch_from": "job.title",
+   "label": "Job Title",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_wke5",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "candidate",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Candidate",
+   "options": "Workable Candidate"
+  },
+  {
+   "fieldname": "candidate_name",
+   "fieldtype": "Data",
+   "label": "Candidate Name"
+  },
+  {
+   "fieldname": "section_break_wke6",
+   "fieldtype": "Section Break",
+   "label": "Description"
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Long Text",
+   "label": "Description"
+  },
+  {
+   "fieldname": "section_break_wke7",
+   "fieldtype": "Section Break",
+   "label": "Interviewers"
+  },
+  {
+   "fieldname": "members",
+   "fieldtype": "Small Text",
+   "label": "Members (JSON)"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-04-13 17:30:00.000000",
+ "modified_by": "Administrator",
+ "module": "Mawhub",
+ "name": "Workable Event",
+ "naming_rule": "Set by user",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "starts_at",
+ "sort_order": "DESC",
+ "states": []
+}

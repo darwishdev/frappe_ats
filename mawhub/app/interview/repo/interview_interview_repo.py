@@ -73,6 +73,16 @@ class InterviewDBModel(TypedDict):
     # -------------------------
     reminded: NotRequired[int]
     amended_from: NotRequired[str]
+
+    # -------------------------
+    # Custom fields
+    # -------------------------
+    custom_job_opening: NotRequired[str]
+
+    # -------------------------
+    # Workable cross-reference
+    # -------------------------
+    custom_workable_event_id: NotRequired[str]
 class InterviewInterviewRepoInterface(AppRepoInterface[InterviewDBModel],Protocol):
     def interview_find(self, name: str) -> dict: ...
     def interview_list(self, filters: InterviewListFilter) -> list[InterviewListItem]: ...
@@ -103,7 +113,6 @@ class InterviewInterviewRepo(AppRepo[InterviewDBModel]):
                 # info
                 "interview_summary",
                 "resume_link",
-                "custom_question_bank",
                 "custom_personalized_question_bank",
 
                 # derived
@@ -113,6 +122,12 @@ class InterviewInterviewRepo(AppRepo[InterviewDBModel]):
                 # flags
                 "reminded",
                 "amended_from",
+
+                # custom
+                "custom_job_opening",
+
+                # workable
+                "custom_workable_event_id",
             ],
             child_tables={
                 # optional if you later want interviewers
@@ -174,7 +189,7 @@ class InterviewInterviewRepo(AppRepo[InterviewDBModel]):
         applicant_name = str(interview.get("job_applicant", ""))
         job_name = str(interview.get("custom_job_opening", ""))
         interview_round_name = str(interview.get("interview_round", ""))
-        question_bank_name = str(interview.get("custom_question_bank", ""))
+        question_bank_name = str(interview.get("custom_personalized_question_bank") or "")
         site = frappe.local.site
 
         def run_in_frappe_context(fn, *args, **kwargs):

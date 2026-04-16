@@ -1,0 +1,192 @@
+[
+  {
+    "id": "8ce1476",
+    "name": "Sarah Alfadly",
+    "firstname": "Sarah",
+    "lastname": "Alfadly",
+    "headline": "Backend Developer",
+    "account": {
+      "subdomain": "lucidya",
+      "name": "Lucidya"
+    },
+    "job": {
+      "shortcode": "EA389D5257",
+      "title": "Senior Backend Software Engineer - Remote"
+    },
+    "stage": "Applied",
+    "stage_kind": "applied",
+    "disqualified": true,
+    "disqualification_reason": null,
+    "hired_at": null,
+    "moved_to_offer_at": null,
+    "sourced": false,
+    "profile_url": "https://lucidya.workable.com/backend/jobs/1954392/candidates/147722148",
+    "address": null,
+    "phone": "+966506499662",
+    "email": "alfadlysarah@gmail.com",
+    "domain": "lucidya.com",
+    "outlet": null,
+    "common_source": "Careers page",
+    "common_source_category": "Company marketing",
+    "created_at": "2021-09-25T10:21:17Z",
+    "updated_at": "2022-11-02T04:59:07Z",
+    "resume_metadata": {
+      "filename": "Resume-Sarah Alfadly_IT.pdf",
+      "filetype": "pdf",
+      "created_at": "2021-09-25T10:21:17Z",
+      "updated_at": "2022-11-02T04:59:07Z"
+    }
+  },
+  {
+    "id": "8cf9632",
+    "name": "MHD Maher Azkoul",
+    "firstname": "MHD Maher",
+    "lastname": "Azkoul",
+    "headline": "Software Developer | CS Graduate",
+    "account": {
+      "subdomain": "lucidya",
+      "name": "Lucidya"
+    },
+    "job": {
+      "shortcode": "EA389D5257",
+      "title": "Senior Backend Software Engineer - Remote"
+    },
+    "stage": "Applied",
+    "stage_kind": "applied",
+    "disqualified": true,
+    "disqualification_reason": null,
+    "hired_at": null,
+    "moved_to_offer_at": null,
+    "sourced": false,
+    "profile_url": "https://lucidya.workable.com/backend/jobs/1954392/candidates/147820896",
+    "address": "Al Awali, Ibrahem Al Jaffali, 24382",
+    "phone": "+966 507281302",
+    "email": "maher.azkoul@gmail.com",
+    "domain": "linkedin.com",
+    "outlet": "free_posting",
+    "common_source": "linkedin.com free",
+    "common_source_category": "Job boards",
+    "created_at": "2021-09-26T19:01:40Z",
+    "updated_at": "2022-11-02T04:59:19Z",
+    "resume_metadata": {
+      "filename": "Resume.pdf",
+      "filetype": "pdf",
+      "created_at": "2021-09-26T19:01:40Z",
+      "updated_at": "2022-11-02T04:59:19Z"
+    }
+  },
+  {
+    "id": "8cf97bd",
+    "name": "Ahmed Maher",
+    "firstname": "Ahmed",
+    "lastname": "Maher",
+    "headline": "Oracle Middleware Developer",
+    "account": {
+      "subdomain": "lucidya",
+      "name": "Lucidya"
+    },
+    "job": {
+      "shortcode": "EA389D5257",
+      "title": "Senior Backend Software Engineer - Remote"
+    },
+    "stage": "Applied",
+    "stage_kind": "applied",
+    "disqualified": true,
+    "disqualification_reason": null,
+    "hired_at": null,
+    "moved_to_offer_at": null,
+    "sourced": false,
+    "profile_url": "https://lucidya.workable.com/backend/jobs/1954392/candidates/147821291",
+    "address": "Amman, 12345",
+    "phone": "+20 1004477197",
+    "email": "manomaher2012@yahoo.com",
+    "domain": "linkedin.com",
+    "outlet": "free_posting",
+    "common_source": "linkedin.com free",
+    "common_source_category": "Job boards",
+    "created_at": "2021-09-26T19:08:20Z",
+    "updated_at": "2022-11-02T04:59:20Z",
+    "resume_metadata": {
+      "filename": "Resume.pdf",
+      "filetype": "pdf",
+      "created_at": "2021-09-26T19:08:20Z",
+      "updated_at": "2022-11-02T04:59:20Z"
+    }
+  },
+  {
+    "id": "8cf98da",
+    "name": "Abdulaziz Altamimi",
+    "firstname": "Abdulaziz",
+    "lastname": "Altamimi",
+    "headline": "Control System Engineer at Johnson Controls",
+    "account": {
+      "subdomain": "lucidya",
+      "name": "Lucidya"
+    },
+    "job": {
+      "shortcode": "EA389D5257",
+      "title": "Senior Backend Software Engineer - Remote"
+    },
+    "stage": "Applied",
+    "stage_kind": "applied",
+    "disqualified": true,
+    "disqualification_reason": null,
+    "hired_at": null,
+    "moved_to_offer_at": null,
+    "sourced": false,
+    "profile_url": "https://lucidya.workable.com/backend/jobs/1954392/candidates/147821576",
+    "address": "335 Omar Bin Abdulaziz Street , 45342",
+    "phone": "+966 543191982",
+    "email": "azooz.f.f@hotmail.com",
+    "domain": "linkedin.com",
+    "outlet": "free_posting",
+    "common_source": "linkedin.com free",
+    "common_source_category": "Job boards",
+    "created_at": "2021-09-26T19:13:07Z",
+    "updated_at": "2022-11-02T04:59:20Z",
+    "resume_metadata": {
+      "filename": "Resume.pdf",
+      "filetype": "pdf",
+      "created_at": "2021-09-26T19:13:07Z",
+      "updated_at": "2022-11-02T04:59:20Z"
+    }
+  },
+  {
+    "id": "8cf9983",
+    "name": "Mohammed Alam",
+    "firstname": "Mohammed",
+    "lastname": "Alam",
+    "headline": "Project Management Specialist at QaderoonSA",
+    "account": {
+      "subdomain": "lucidya",
+      "name": "Lucidya"
+    },
+    "job": {
+      "shortcode": "EA389D5257",
+      "title": "Senior Backend Software Engineer - Remote"
+    },
+    "stage": "Applied",
+    "stage_kind": "applied",
+    "disqualified": true,
+    "disqualification_reason": null,
+    "hired_at": null,
+    "moved_to_offer_at": null,
+    "sourced": false,
+    "profile_url": "https://lucidya.workable.com/backend/jobs/1954392/candidates/147821745",
+    "address": "Mecca Rusifa st, 23532",
+    "phone": "+966 0567637293",
+    "email": "mohammed-alam85@outlook.sa",
+    "domain": "linkedin.com",
+    "outlet": "free_posting",
+    "common_source": "linkedin.com free",
+    "common_source_category": "Job boards",
+    "created_at": "2021-09-26T19:15:41Z",
+    "updated_at": "2022-11-02T04:59:20Z",
+    "resume_metadata": {
+      "filename": "Resume.pdf",
+      "filetype": "pdf",
+      "created_at": "2021-09-26T19:15:41Z",
+      "updated_at": "2022-11-02T04:59:20Z"
+    }
+  }
+]

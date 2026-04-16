@@ -1,0 +1,107 @@
+{
+  "id": "1dd72a",
+  "title": "Senior Backend Software Engineer - Remote",
+  "full_title": "Senior Backend Software Engineer - Remote - ENG-251225-049/ENG-251225-042/ENG-251225-037/ENG-251225-043/AAI-251225-002/ENG-110126-002/ENG-251225-045/ENG-261025-002",
+  "shortcode": "EA389D5257",
+  "code": "ENG-251225-049/ENG-251225-042/ENG-251225-037/ENG-251225-043/AAI-251225-002/ENG-110126-002/ENG-251225-045/ENG-261025-002",
+  "state": "published",
+  "confidential": false,
+  "department": "Engineering",
+  "department_hierarchy": [
+    {
+      "id": 214581,
+      "name": "Engineering"
+    }
+  ],
+  "url": "https://lucidya.workable.com/jobs/1954392",
+  "application_url": "https://lucidya.workable.com/jobs/1954392/candidates/new",
+  "shortlink": "https://apply.workable.com/j/EA389D5257",
+  "workplace_type": "remote",
+  "location": {
+    "country": "Egypt",
+    "country_code": "EG",
+    "region": null,
+    "region_code": null,
+    "city": null,
+    "zip_code": null,
+    "telecommuting": true,
+    "workplace_type": "remote"
+  },
+  "locations": [
+    {
+      "shortcode": "J569693958F",
+      "country_code": "EG",
+      "country_name": "Egypt",
+      "state_code": "",
+      "subregion": null,
+      "zip_code": null,
+      "city": "",
+      "coords": "38.9927953,-94.6487551",
+      "hidden": false
+    },
+    {
+      "shortcode": "JDA4D5DBDE4",
+      "country_code": "PL",
+      "country_name": "Poland",
+      "state_code": "",
+      "subregion": null,
+      "zip_code": null,
+      "city": "",
+      "coords": "51.919438, 19.145136",
+      "hidden": false
+    },
+    {
+      "shortcode": "J7D6730BCFA",
+      "country_code": "JO",
+      "country_name": "Jordan",
+      "state_code": "",
+      "subregion": null,
+      "zip_code": null,
+      "city": "",
+      "coords": "30.585164, 36.238414",
+      "hidden": false
+    },
+    {
+      "shortcode": "J1D8315C883",
+      "country_code": "MA",
+      "country_name": "Morocco",
+      "state_code": "",
+      "subregion": null,
+      "zip_code": null,
+      "city": "",
+      "coords": "31.791702, -7.092619999999999",
+      "hidden": false
+    },
+    {
+      "shortcode": "JD6A0EAEDE4",
+      "country_code": "PH",
+      "country_name": "Philippines",
+      "state_code": "",
+      "subregion": null,
+      "zip_code": null,
+      "city": "",
+      "coords": "12.879721, 121.774017",
+      "hidden": false
+    }
+  ],
+  "created_at": "2021-09-20T17:45:29Z",
+  "updated_at": "2026-03-19T12:52:02Z",
+  "full_description": "<p>Lucidya is an AI-native company transforming how brands understand and engage with their customers through cutting-edge technologies purpose-built for Customer Experience (CX). With AI at the core of our platform and operations, we are redefining how businesses drive growth, loyalty, and insight at scale.</p><p>We are looking for Sr Backend Engineers to join our team. You will join a team of highly qualified team engineers to continue the innovation and development of our product which uses Machine Learning &amp; Big Data technologies to analyze content from several data sources.</p><p>As a developer, you will be working on the backend of our product Lucidya which is built using industry’s latest technologies such as Redis, Postgres and Cassandra and developing APIs using Python and Ruby on Rails. The job also includes DevOps tasks from server setup to maintenance and recovery.</p><p>You will work directly under the Engineering Manager in an agile yet demanding environment. We expect you to be a fast learner to adapt those technologies mentioned above fast. </p><p>Lucidya offers a result-driven, fun, and dynamic environment full of challenges, We look for very talented candidates with strong programming skills.</p><p><strong>Key Tasks &amp; Responsibilities</strong></p><ul> <li>Rapidly develop next-generation scalable, flexible, and high-performance systems.</li> <li>Design, develop, test, deploy, maintain and improve software (backend and databases in particular)</li> <li>Manage individual project priorities, deadlines and deliverables.</li> <li>DevOps tasks</li> <li>Contribute to the growth of Lucidya through interviewing, on-boarding, or other recruitment efforts</li> </ul><p><strong>Requirements</strong></p><ul> <li>BA/BS or or Masters degree in Computer Science, Software Engineering, IT or equivalent practical experience</li> <li>+6 years of experience </li> <li>Strong knowledge in SQL and noSQL databases such as (Redis , Postgress or Cassandra)</li> <li>Fluency in Python and Ruby on Rails.</li> <li>Knowledge in Web servers and Web application servers (e.g., Apache, Jetty, Tomcat, IIS)</li> <li>Knowledge in code repository like Git</li> <li>Ability to multi-task and adapt to shifting priorities, demands, and tight timelines</li> <li>Database design skills</li> <li>Perfect quality code</li> <li>Excellent organizational skills and proven analytical, planning, problem solving skills</li> <li>Full stack with background in ReactJS is a plus</li> </ul>",
+  "description": "<p>Lucidya is an AI-native company transforming how brands understand and engage with their customers through cutting-edge technologies purpose-built for Customer Experience (CX). With AI at the core of our platform and operations, we are redefining how businesses drive growth, loyalty, and insight at scale.</p><p>We are looking for Sr Backend Engineers to join our team. You will join a team of highly qualified team engineers to continue the innovation and development of our product which uses Machine Learning &amp; Big Data technologies to analyze content from several data sources.</p><p>As a developer, you will be working on the backend of our product Lucidya which is built using industry’s latest technologies such as Redis, Postgres and Cassandra and developing APIs using Python and Ruby on Rails. The job also includes DevOps tasks from server setup to maintenance and recovery.</p><p>You will work directly under the Engineering Manager in an agile yet demanding environment. We expect you to be a fast learner to adapt those technologies mentioned above fast. </p><p>Lucidya offers a result-driven, fun, and dynamic environment full of challenges, We look for very talented candidates with strong programming skills.</p><p><strong>Key Tasks &amp; Responsibilities</strong></p><ul> <li>Rapidly develop next-generation scalable, flexible, and high-performance systems.</li> <li>Design, develop, test, deploy, maintain and improve software (backend and databases in particular)</li> <li>Manage individual project priorities, deadlines and deliverables.</li> <li>DevOps tasks</li> <li>Contribute to the growth of Lucidya through interviewing, on-boarding, or other recruitment efforts</li> </ul>",
+  "requirements": "<ul> <li>BA/BS or or Masters degree in Computer Science, Software Engineering, IT or equivalent practical experience</li> <li>+6 years of experience </li> <li>Strong knowledge in SQL and noSQL databases such as (Redis , Postgress or Cassandra)</li> <li>Fluency in Python and Ruby on Rails.</li> <li>Knowledge in Web servers and Web application servers (e.g., Apache, Jetty, Tomcat, IIS)</li> <li>Knowledge in code repository like Git</li> <li>Ability to multi-task and adapt to shifting priorities, demands, and tight timelines</li> <li>Database design skills</li> <li>Perfect quality code</li> <li>Excellent organizational skills and proven analytical, planning, problem solving skills</li> <li>Full stack with background in ReactJS is a plus</li> </ul>",
+  "benefits": null,
+  "employment_type": "Full-time",
+  "industry": "Information Technology and Services",
+  "function": "Information Technology",
+  "experience": "Mid-Senior level",
+  "education": "Bachelor's Degree",
+  "keywords": [
+    "Python",
+    "Ruby on Rails",
+    "apache",
+    "jetty"
+  ],
+  "salary": {
+    "salary_currency": "sar"
+  }
+}

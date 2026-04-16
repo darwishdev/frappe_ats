@@ -2,6 +2,7 @@ from google.genai.client import Client
 from mawhub.agent.document_parser.document_parser_agent import DocumentParserWorkflow
 from mawhub.agent.file_text_parser.file_text_parser_agent import FileTextParserWorkflow
 from mawhub.agent.job_opening_parser.job_opening_parser_agent import JobOpeningParserWorkflow
+from mawhub.agent.question_bank_maker.question_bank_maker_agent import QuestionBankMakerAgent
 from mawhub.agent.question_bank_personalizer.question_bank_personlaizer_agent import QuestionBankPersonalizerAgent
 from mawhub.agent.resume_parser.resume_parser_agent import ResumeWorkflow
 from mawhub.app.applicant.repo.applicant_repo import ApplicantRepo
@@ -10,6 +11,7 @@ from mawhub.app.interview.repo.interview_repo import InterviewRepo
 from mawhub.app.interview.usecase.interview_usecase import InterviewUsecase, InterviewUsecaseInterface
 from mawhub.app.job.repo.job_repo import JobRepo
 from mawhub.app.job.usecase.job_usecase import JobUseCase, JobUseCaseInterface
+from mawhub.pkg.workable.workable_client import WorkableApiClient
 
 
 class AppContainer:
@@ -21,22 +23,34 @@ class AppContainer:
     applicant_usecase: ApplicantUsecaseInterface
     interview_usecase: InterviewUsecaseInterface
 
-    def __init__(self,gemini_api_key:str):
+    def __init__(
+            self,
+            gemini_api_key:str,
+            workable_subdomain:str,
+            workable_api_key:str
+    ):
         model_name = 'gemini-2.5-flash-lite'
         job_repo = JobRepo()
         applicant_repo = ApplicantRepo()
         interview_repo = InterviewRepo()
+
+        workable_client = WorkableApiClient(subdomain=workable_subdomain, api_token=workable_api_key)
         gemini_api_client = Client(api_key=gemini_api_key)
         resume_parser_agent = ResumeWorkflow(client=gemini_api_client,model_name=model_name)
         job_opening_parser_agent = JobOpeningParserWorkflow(client=gemini_api_client,model_name=model_name)
         document_parser_agent = DocumentParserWorkflow(client=gemini_api_client,model_name=model_name)
         file_text_parser_agent = FileTextParserWorkflow(client=gemini_api_client,model_name=model_name)
         question_bank_personalizer_agent = QuestionBankPersonalizerAgent(client=gemini_api_client,model_name="gemini-3.1-pro-preview")
+        question_bank_maker_agent = QuestionBankMakerAgent(client=gemini_api_client,model_name=model_name)
         job_usecase = JobUseCase(
             job_repo=job_repo,
             file_text_parser_agent=file_text_parser_agent,
             job_opening_parser_agent=job_opening_parser_agent,
             document_parser_agent=document_parser_agent,
+            workable_client=workable_client,
+            question_bank_maker_agent=question_bank_maker_agent,
+            applicant_repo=applicant_repo,
+            interview_repo=interview_repo,
         )
         applicant_usecase = ApplicantUsecase(
             repo=applicant_repo,

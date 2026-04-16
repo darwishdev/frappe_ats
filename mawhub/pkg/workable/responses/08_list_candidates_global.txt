@@ -1,0 +1,162 @@
+[
+  {
+    "id": "8a9a489",
+    "name": "Daniel Orsho",
+    "firstname": "Daniel",
+    "lastname": "Orsho",
+    "headline": "Business Development Manager at Circuit Cells Co",
+    "account": {
+      "subdomain": "lucidya",
+      "name": "Lucidya"
+    },
+    "job": {
+      "shortcode": "D371F4B71C",
+      "title": "Account Manager"
+    },
+    "stage": "Sourced",
+    "stage_kind": "sourced",
+    "disqualified": false,
+    "disqualification_reason": null,
+    "hired_at": null,
+    "moved_to_offer_at": null,
+    "sourced": true,
+    "profile_url": "https://lucidya.workable.com/backend/jobs/1929610/candidates/145334199",
+    "address": "Riyadh, Riyadh Province, Saudi Arabia",
+    "phone": null,
+    "email": "dorsho@gmail.com",
+    "domain": null,
+    "outlet": "suggested_candidates",
+    "common_source": "Search with AI",
+    "common_source_category": "Sourced",
+    "created_at": "2021-09-08T08:55:12Z",
+    "updated_at": "2021-09-08T08:56:01Z"
+  },
+  {
+    "id": "8a9a48a",
+    "name": "Mohamed Ouda",
+    "firstname": "Mohamed",
+    "lastname": "Ouda",
+    "headline": "Sr.Field Sales Account Manager",
+    "account": {
+      "subdomain": "lucidya",
+      "name": "Lucidya"
+    },
+    "job": {
+      "shortcode": "D371F4B71C",
+      "title": "Account Manager"
+    },
+    "stage": "Sourced",
+    "stage_kind": "sourced",
+    "disqualified": false,
+    "disqualification_reason": null,
+    "hired_at": null,
+    "moved_to_offer_at": null,
+    "sourced": true,
+    "profile_url": "https://lucidya.workable.com/backend/jobs/1929610/candidates/145334200",
+    "address": "Riyadh, Riyadh Province, Saudi Arabia",
+    "phone": null,
+    "email": "moh_atif_ouda@yahoo.com",
+    "domain": null,
+    "outlet": "suggested_candidates",
+    "common_source": "Search with AI",
+    "common_source_category": "Sourced",
+    "created_at": "2021-09-08T08:55:12Z",
+    "updated_at": "2021-09-08T08:56:01Z"
+  },
+  {
+    "id": "8a9a48b",
+    "name": "Hussain Obada",
+    "firstname": "Hussain",
+    "lastname": "Obada",
+    "headline": "Projects Sales Manager at Marcom Arabia compnay, KSA office",
+    "account": {
+      "subdomain": "lucidya",
+      "name": "Lucidya"
+    },
+    "job": {
+      "shortcode": "D371F4B71C",
+      "title": "Account Manager"
+    },
+    "stage": "Sourced",
+    "stage_kind": "sourced",
+    "disqualified": false,
+    "disqualification_reason": null,
+    "hired_at": null,
+    "moved_to_offer_at": null,
+    "sourced": true,
+    "profile_url": "https://lucidya.workable.com/backend/jobs/1929610/candidates/145334201",
+    "address": "Riyadh, Riyadh Province, Saudi Arabia",
+    "phone": null,
+    "email": "obada.hussain@hotmail.com",
+    "domain": null,
+    "outlet": "suggested_candidates",
+    "common_source": "Search with AI",
+    "common_source_category": "Sourced",
+    "created_at": "2021-09-08T08:55:12Z",
+    "updated_at": "2021-09-08T08:56:00Z"
+  },
+  {
+    "id": "8a9a48c",
+    "name": "Niyas Palliyath",
+    "firstname": "Niyas",
+    "lastname": "Palliyath",
+    "headline": "Senior Sales Account Manager at RITsol allied",
+    "account": {
+      "subdomain": "lucidya",
+      "name": "Lucidya"
+    },
+    "job": {
+      "shortcode": "D371F4B71C",
+      "title": "Account Manager"
+    },
+    "stage": "Sourced",
+    "stage_kind": "sourced",
+    "disqualified": false,
+    "disqualification_reason": null,
+    "hired_at": null,
+    "moved_to_offer_at": null,
+    "sourced": true,
+    "profile_url": "https://lucidya.workable.com/backend/jobs/1929610/candidates/145334202",
+    "address": "Riyadh, Riyadh Province, Saudi Arabia",
+    "phone": null,
+    "email": "niyaspalliyath@gmail.com",
+    "domain": null,
+    "outlet": "suggested_candidates",
+    "common_source": "Search with AI",
+    "common_source_category": "Sourced",
+    "created_at": "2021-09-08T08:55:13Z",
+    "updated_at": "2021-09-08T08:56:00Z"
+  },
+  {
+    "id": "8a9a490",
+    "name": "Hammoudah Salameh",
+    "firstname": "Hammoudah",
+    "lastname": "Salameh",
+    "headline": "Sales Manager at Arkan Sport KSA",
+    "account": {
+      "subdomain": "lucidya",
+      "name": "Lucidya"
+    },
+    "job": {
+      "shortcode": "D371F4B71C",
+      "title": "Account Manager"
+    },
+    "stage": "Sourced",
+    "stage_kind": "sourced",
+    "disqualified": false,
+    "disqualification_reason": null,
+    "hired_at": null,
+    "moved_to_offer_at": null,
+    "sourced": true,
+    "profile_url": "https://lucidya.workable.com/backend/jobs/1929610/candidates/145334206",
+    "address": "Riyadh, Riyadh Province, Saudi Arabia",
+    "phone": null,
+    "email": "s_hammoudah@yahoo.com",
+    "domain": null,
+    "outlet": "suggested_candidates",
+    "common_source": "Search with AI",
+    "common_source_category": "Sourced",
+    "created_at": "2021-09-08T08:55:13Z",
+    "updated_at": "2021-09-08T08:55:59Z"
+  }
+]

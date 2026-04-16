@@ -1,0 +1,347 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "prompt",
+ "creation": "2026-04-13 14:32:32.735699",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "firstname",
+  "lastname",
+  "column_break_wk4a",
+  "email",
+  "phone",
+  "section_break_wk4b",
+  "headline",
+  "address",
+  "column_break_wk4c",
+  "country",
+  "country_code",
+  "city",
+  "region",
+  "section_break_wk4d",
+  "stage",
+  "stage_kind",
+  "column_break_wk4e",
+  "disqualified",
+  "disqualified_at",
+  "disqualification_reason",
+  "withdrew",
+  "section_break_wk4f",
+  "hired_at",
+  "moved_to_offer_at",
+  "sourced",
+  "column_break_wk4g",
+  "domain",
+  "outlet",
+  "common_source",
+  "common_source_category",
+  "section_break_wk4h",
+  "profile_url",
+  "resume_url",
+  "resume_filename",
+  "linkedin_url",
+  "section_break_wk4i",
+  "cover_letter",
+  "section_break_wk4j",
+  "summary",
+  "section_break_wk4k",
+  "education_entries",
+  "section_break_wk4l",
+  "experience_entries",
+  "section_break_wk4m",
+  "skills",
+  "section_break_wk4n",
+  "workable_created_at",
+  "column_break_wk4o",
+  "workable_updated_at"
+ ],
+ "fields": [
+  {
+   "fieldname": "firstname",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "First Name",
+   "reqd": 0
+  },
+  {
+   "fieldname": "lastname",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Last Name"
+  },
+  {
+   "fieldname": "column_break_wk4a",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "email",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Email",
+   "options": "Email"
+  },
+  {
+   "fieldname": "phone",
+   "fieldtype": "Data",
+   "label": "Phone"
+  },
+  {
+   "fieldname": "section_break_wk4b",
+   "fieldtype": "Section Break",
+   "label": "Profile"
+  },
+  {
+   "fieldname": "headline",
+   "fieldtype": "Small Text",
+   "label": "Headline"
+  },
+  {
+   "fieldname": "address",
+   "fieldtype": "Small Text",
+   "label": "Address"
+  },
+  {
+   "fieldname": "column_break_wk4c",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "country",
+   "fieldtype": "Data",
+   "label": "Country"
+  },
+  {
+   "fieldname": "country_code",
+   "fieldtype": "Data",
+   "label": "Country Code"
+  },
+  {
+   "fieldname": "city",
+   "fieldtype": "Data",
+   "label": "City"
+  },
+  {
+   "fieldname": "region",
+   "fieldtype": "Data",
+   "label": "Region"
+  },
+  {
+   "fieldname": "section_break_wk4d",
+   "fieldtype": "Section Break",
+   "label": "Pipeline Status"
+  },
+  {
+   "fieldname": "stage",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Current Stage",
+   "options": "Workable Stage"
+  },
+  {
+   "fieldname": "stage_kind",
+   "fieldtype": "Data",
+   "fetch_from": "stage.kind",
+   "label": "Stage Kind",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_wk4e",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "disqualified",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Disqualified"
+  },
+  {
+   "fieldname": "disqualified_at",
+   "fieldtype": "Datetime",
+   "label": "Disqualified At"
+  },
+  {
+   "fieldname": "disqualification_reason",
+   "fieldtype": "Small Text",
+   "label": "Disqualification Reason"
+  },
+  {
+   "fieldname": "withdrew",
+   "fieldtype": "Check",
+   "label": "Withdrew"
+  },
+  {
+   "fieldname": "section_break_wk4f",
+   "fieldtype": "Section Break",
+   "label": "Outcome"
+  },
+  {
+   "fieldname": "hired_at",
+   "fieldtype": "Datetime",
+   "label": "Hired At"
+  },
+  {
+   "fieldname": "moved_to_offer_at",
+   "fieldtype": "Datetime",
+   "label": "Moved to Offer At"
+  },
+  {
+   "fieldname": "sourced",
+   "fieldtype": "Check",
+   "label": "Sourced"
+  },
+  {
+   "fieldname": "column_break_wk4g",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "domain",
+   "fieldtype": "Data",
+   "label": "Source Domain"
+  },
+  {
+   "fieldname": "outlet",
+   "fieldtype": "Data",
+   "label": "Outlet"
+  },
+  {
+   "fieldname": "common_source",
+   "fieldtype": "Data",
+   "in_standard_filter": 1,
+   "label": "Common Source"
+  },
+  {
+   "fieldname": "common_source_category",
+   "fieldtype": "Data",
+   "in_standard_filter": 1,
+   "label": "Source Category"
+  },
+  {
+   "fieldname": "section_break_wk4h",
+   "fieldtype": "Section Break",
+   "label": "Links"
+  },
+  {
+   "fieldname": "profile_url",
+   "fieldtype": "Small Text",
+   "label": "Workable Profile URL"
+  },
+  {
+   "fieldname": "resume_url",
+   "fieldtype": "Small Text",
+   "label": "Resume URL"
+  },
+  {
+   "fieldname": "resume_filename",
+   "fieldtype": "Data",
+   "label": "Resume Filename"
+  },
+  {
+   "fieldname": "linkedin_url",
+   "fieldtype": "Data",
+   "label": "LinkedIn URL",
+   "options": "URL"
+  },
+  {
+   "fieldname": "section_break_wk4i",
+   "fieldtype": "Section Break",
+   "label": "Cover Letter"
+  },
+  {
+   "fieldname": "cover_letter",
+   "fieldtype": "Long Text",
+   "label": "Cover Letter"
+  },
+  {
+   "fieldname": "section_break_wk4j",
+   "fieldtype": "Section Break",
+   "label": "Summary"
+  },
+  {
+   "fieldname": "summary",
+   "fieldtype": "Long Text",
+   "label": "Summary"
+  },
+  {
+   "fieldname": "section_break_wk4k",
+   "fieldtype": "Section Break",
+   "label": "Education"
+  },
+  {
+   "fieldname": "education_entries",
+   "fieldtype": "Long Text",
+   "label": "Education Entries (JSON)"
+  },
+  {
+   "fieldname": "section_break_wk4l",
+   "fieldtype": "Section Break",
+   "label": "Experience"
+  },
+  {
+   "fieldname": "experience_entries",
+   "fieldtype": "Long Text",
+   "label": "Experience Entries (JSON)"
+  },
+  {
+   "fieldname": "section_break_wk4m",
+   "fieldtype": "Section Break",
+   "label": "Skills"
+  },
+  {
+   "fieldname": "skills",
+   "fieldtype": "Small Text",
+   "label": "Skills (JSON)"
+  },
+  {
+   "fieldname": "section_break_wk4n",
+   "fieldtype": "Section Break",
+   "label": "Sync Metadata"
+  },
+  {
+   "fieldname": "workable_created_at",
+   "fieldtype": "Datetime",
+   "label": "Workable Created At",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_wk4o",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "workable_updated_at",
+   "fieldtype": "Datetime",
+   "label": "Workable Updated At",
+   "read_only": 1
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-04-13 15:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Mawhub",
+ "name": "Workable Candidate",
+ "naming_rule": "Set by user",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

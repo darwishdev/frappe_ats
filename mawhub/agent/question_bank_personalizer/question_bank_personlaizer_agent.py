@@ -1,5 +1,4 @@
 import json
-from typing import cast
 from google import genai
 from google.genai import types
 
@@ -47,5 +46,10 @@ class QuestionBankPersonalizerAgent:
             ),
         )
 
-        result = cast(PersonalizedQuestionBankModel, response.parsed)
+        if response.parsed is not None:
+            result = PersonalizedQuestionBankModel.model_validate(response.parsed)
+        else:
+            raw = response.text or ""
+            result = PersonalizedQuestionBankModel.model_validate(json.loads(raw))
+
         return result.questions

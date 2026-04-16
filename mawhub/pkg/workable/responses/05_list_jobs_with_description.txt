@@ -1,0 +1,258 @@
+[
+  {
+    "id": "1dd72a",
+    "title": "Senior Backend Software Engineer - Remote",
+    "full_title": "Senior Backend Software Engineer - Remote - ENG-251225-049/ENG-251225-042/ENG-251225-037/ENG-251225-043/AAI-251225-002/ENG-110126-002/ENG-251225-045/ENG-261025-002",
+    "shortcode": "EA389D5257",
+    "code": "ENG-251225-049/ENG-251225-042/ENG-251225-037/ENG-251225-043/AAI-251225-002/ENG-110126-002/ENG-251225-045/ENG-261025-002",
+    "state": "published",
+    "sample": false,
+    "confidential": false,
+    "department": "Engineering",
+    "department_hierarchy": [
+      {
+        "id": 214581,
+        "name": "Engineering"
+      }
+    ],
+    "url": "https://lucidya.workable.com/jobs/1954392",
+    "application_url": "https://lucidya.workable.com/jobs/1954392/candidates/new",
+    "shortlink": "https://apply.workable.com/j/EA389D5257",
+    "workplace_type": "remote",
+    "location": {
+      "location_str": "Egypt",
+      "country": "Egypt",
+      "country_code": "EG",
+      "region": null,
+      "region_code": null,
+      "city": null,
+      "zip_code": null,
+      "telecommuting": true,
+      "workplace_type": "remote"
+    },
+    "locations": [
+      {
+        "shortcode": "J569693958F",
+        "country_code": "EG",
+        "country_name": "Egypt",
+        "state_code": "",
+        "subregion": null,
+        "zip_code": null,
+        "city": "",
+        "coords": "38.9927953,-94.6487551",
+        "hidden": false
+      },
+      {
+        "shortcode": "JDA4D5DBDE4",
+        "country_code": "PL",
+        "country_name": "Poland",
+        "state_code": "",
+        "subregion": null,
+        "zip_code": null,
+        "city": "",
+        "coords": "51.919438, 19.145136",
+        "hidden": false
+      },
+      {
+        "shortcode": "J7D6730BCFA",
+        "country_code": "JO",
+        "country_name": "Jordan",
+        "state_code": "",
+        "subregion": null,
+        "zip_code": null,
+        "city": "",
+        "coords": "30.585164, 36.238414",
+        "hidden": false
+      },
+      {
+        "shortcode": "J1D8315C883",
+        "country_code": "MA",
+        "country_name": "Morocco",
+        "state_code": "",
+        "subregion": null,
+        "zip_code": null,
+        "city": "",
+        "coords": "31.791702, -7.092619999999999",
+        "hidden": false
+      },
+      {
+        "shortcode": "JD6A0EAEDE4",
+        "country_code": "PH",
+        "country_name": "Philippines",
+        "state_code": "",
+        "subregion": null,
+        "zip_code": null,
+        "city": "",
+        "coords": "12.879721, 121.774017",
+        "hidden": false
+      }
+    ],
+    "salary": {
+      "salary_currency": "sar"
+    },
+    "created_at": "2021-09-20T17:45:29Z",
+    "updated_at": "2026-03-19T12:52:02Z",
+    "full_description": "<p>Lucidya is an AI-native company transforming how brands understand and engage with their customers through cutting-edge technologies purpose-built for Customer Experience (CX). With AI at the core of our platform and operations, we are redefining how businesses drive growth, loyalty, and insight at scale.</p><p>We are looking for Sr Backend Engineers to join our team. You will join a team of highly qualified team engineers to continue the innovation and development of our product which uses Machine Learning &amp; Big Data technologies to analyze content from several data sources.</p><p>As a developer, you will be working on the backend of our product Lucidya which is built using industry’s latest technologies such as Redis, Postgres and Cassandra and developing APIs using Python and Ruby on Rails. The job also includes DevOps tasks from server setup to maintenance and recovery.</p><p>You will work directly under the Engineering Manager in an agile yet demanding environment. We expect you to be a fast learner to adapt those technologies mentioned above fast. </p><p>Lucidya offers a result-driven, fun, and dynamic environment full of challenges, We look for very talented candidates with strong programming skills.</p><p><strong>Key Tasks &amp; Responsibilities</strong></p><ul> <li>Rapidly develop next-generation scalable, flexible, and high-performance systems.</li> <li>Design, develop, test, deploy, maintain and improve software (backend and databases in particular)</li> <li>Manage individual project priorities, deadlines and deliverables.</li> <li>DevOps tasks</li> <li>Contribute to the growth of Lucidya through interviewing, on-boarding, or other recruitment efforts</li> </ul><p><strong>Requirements</strong></p><ul> <li>BA/BS or or Masters degree in Computer Science, Software Engineering, IT or equivalent practical experience</li> <li>+6 years of experience </li> <li>Strong knowledge in SQL and noSQL databases such as (Redis , Postgress or Cassandra)</li> <li>Fluency in Python and Ruby on Rails.</li> <li>Knowledge in Web servers and Web application servers (e.g., Apache, Jetty, Tomcat, IIS)</li> <li>Knowledge in code repository like Git</li> <li>Ability to multi-task and adapt to shifting priorities, demands, and tight timelines</li> <li>Database design skills</li> <li>Perfect quality code</li> <li>Excellent organizational skills and proven analytical, planning, problem solving skills</li> <li>Full stack with background in ReactJS is a plus</li> </ul>",
+    "description": "<p>Lucidya is an AI-native company transforming how brands understand and engage with their customers through cutting-edge technologies purpose-built for Customer Experience (CX). With AI at the core of our platform and operations, we are redefining how businesses drive growth, loyalty, and insight at scale.</p><p>We are looking for Sr Backend Engineers to join our team. You will join a team of highly qualified team engineers to continue the innovation and development of our product which uses Machine Learning &amp; Big Data technologies to analyze content from several data sources.</p><p>As a developer, you will be working on the backend of our product Lucidya which is built using industry’s latest technologies such as Redis, Postgres and Cassandra and developing APIs using Python and Ruby on Rails. The job also includes DevOps tasks from server setup to maintenance and recovery.</p><p>You will work directly under the Engineering Manager in an agile yet demanding environment. We expect you to be a fast learner to adapt those technologies mentioned above fast. </p><p>Lucidya offers a result-driven, fun, and dynamic environment full of challenges, We look for very talented candidates with strong programming skills.</p><p><strong>Key Tasks &amp; Responsibilities</strong></p><ul> <li>Rapidly develop next-generation scalable, flexible, and high-performance systems.</li> <li>Design, develop, test, deploy, maintain and improve software (backend and databases in particular)</li> <li>Manage individual project priorities, deadlines and deliverables.</li> <li>DevOps tasks</li> <li>Contribute to the growth of Lucidya through interviewing, on-boarding, or other recruitment efforts</li> </ul>",
+    "requirements": "<ul> <li>BA/BS or or Masters degree in Computer Science, Software Engineering, IT or equivalent practical experience</li> <li>+6 years of experience </li> <li>Strong knowledge in SQL and noSQL databases such as (Redis , Postgress or Cassandra)</li> <li>Fluency in Python and Ruby on Rails.</li> <li>Knowledge in Web servers and Web application servers (e.g., Apache, Jetty, Tomcat, IIS)</li> <li>Knowledge in code repository like Git</li> <li>Ability to multi-task and adapt to shifting priorities, demands, and tight timelines</li> <li>Database design skills</li> <li>Perfect quality code</li> <li>Excellent organizational skills and proven analytical, planning, problem solving skills</li> <li>Full stack with background in ReactJS is a plus</li> </ul>",
+    "benefits": null,
+    "keywords": [
+      "Python",
+      "Ruby on Rails",
+      "apache",
+      "jetty"
+    ]
+  },
+  {
+    "id": "3c35c0",
+    "title": "Executive Assistant",
+    "full_title": "Executive Assistant - Riyadh",
+    "shortcode": "A8AC9B8C89",
+    "code": null,
+    "state": "published",
+    "sample": false,
+    "confidential": false,
+    "department": "Management",
+    "department_hierarchy": [
+      {
+        "id": 346185,
+        "name": "Management"
+      }
+    ],
+    "url": "https://lucidya.workable.com/jobs/3944686",
+    "application_url": "https://lucidya.workable.com/jobs/3944686/candidates/new",
+    "shortlink": "https://apply.workable.com/j/A8AC9B8C89",
+    "workplace_type": "on_site",
+    "location": {
+      "location_str": "Riyadh, Riyadh Province, Saudi Arabia",
+      "country": "Saudi Arabia",
+      "country_code": "SA",
+      "region": "Riyadh Province",
+      "region_code": "Riyadh Province",
+      "city": "Riyadh",
+      "zip_code": null,
+      "telecommuting": false,
+      "workplace_type": "on_site"
+    },
+    "locations": [
+      {
+        "shortcode": "J6E6E697F73",
+        "country_code": "SA",
+        "country_name": "Saudi Arabia",
+        "state_code": "Riyadh Province",
+        "subregion": "Riyadh Province",
+        "zip_code": null,
+        "city": "Riyadh",
+        "coords": "24.7135517, 46.67529569999999",
+        "hidden": false
+      }
+    ],
+    "salary": {
+      "salary_currency": "sar"
+    },
+    "created_at": "2024-04-22T11:02:18Z",
+    "updated_at": "2026-04-08T09:15:23Z",
+    "full_description": "<h3>About Lucidya</h3><p>Lucidya is an AI-native platform for Customer Experience (CX) Intelligence that enables organizations to truly understand, engage, and retain their customers at scale.</p><p>We don’t just surface insights, we act on them. Our proprietary AI, built in-house and trained on millions of multilingual interactions, helps businesses close the loop between customer feedback and real business outcomes.</p><p>As we scale globally, we’re building a team that thrives on ownership, speed, and impact.</p><h3>Why this role matters</h3><p>This is not a traditional Executive Assistant role.</p><p>At Lucidya, the CEO operates at high velocity, across investors, government stakeholders, enterprise clients, and internal teams. To sustain and accelerate that pace, we need someone who can act as a force multiplier.</p><p>You won’t just manage a calendar - you’ll bring order to chaos, ensure nothing falls through the cracks, and step into high-stakes situations with confidence and sound judgment.</p><p>This role is critical to how effectively the CEO operates, how decisions are executed, and ultimately, how fast Lucidya moves.</p><h3>What You’ll Do</h3><p><strong>Own the CEO’s time and priorities</strong></p><p>You’ll ruthlessly optimize the CEO’s calendar - ensuring every meeting has a clear purpose, the right attendees, and a defined outcome. You’ll anticipate conflicts before they happen and protect time for deep work and strategic thinking.</p><p><strong>Turn meetings into action</strong></p><p>You’ll sit in key meetings, capture what actually matters, and drive follow-ups to completion. Nothing gets lost. You’ll ensure decisions translate into execution.</p><p><strong>Act as a bridge across the business</strong></p><p>You’ll work closely with internal teams, investors, board members, and external partners - ensuring communication is clear, timely, and aligned with priorities.</p><p><strong>Handle sensitive and high-stakes matters</strong></p><p>From legal coordination to investor materials, you’ll review, organise, and prepare critical documents before they reach the CEO- ensuring quality and accuracy at all times.</p><p><strong>Run operations behind the scenes</strong></p><p>You’ll manage office operations, vendor relationships, and logistics to ensure a smooth and efficient working environment.</p><p><strong>Take ownership beyond the office</strong></p><p>This role extends into personal support - handling errands, travel, reservations, and time-sensitive requests with discretion and efficiency.</p><p><strong>Drive things forward</strong></p><p>You’ll proactively follow up on projects, push stakeholders when needed, and ensure deadlines are met - without waiting to be asked.</p><p><strong>Requirements</strong></p><h3>Who You Are</h3><p>You’re the kind of person who brings structure where others see chaos.</p><ul><li>You have 3+ years of experience supporting senior executives in fast-paced environments</li><li>You’re fluent in English and Arabic, both written and spoken</li><li>You don’t wait for instructions - you anticipate needs before they arise</li><li>You’re highly organized, but more importantly - you prioritize what actually matters</li><li>You’re comfortable operating with ambiguity, urgency, and high expectations</li><li>You’re someone people trust with sensitive information - you handle everything with absolute discretion and integrity</li><li>You’re resourceful - you figure things out quickly, even when there’s no clear playbook</li><li>You’re not afraid to push back or follow up persistently to get things done</li><li>You’re tech-savvy, comfortable with tools like Google Workspace, Microsoft Office, and productivity platforms</li><li>You’re willing to be flexible with your time, including handling urgent matters outside standard working hours</li></ul><p>Practical requirements:</p><ul><li>Valid driver’s license and access to a car</li><li>Willingness to handle in-person tasks and errands as needed</li></ul><h3>What success looks like</h3><ul><li>The CEO’s time is consistently optimized and focused on high-impact work</li><li>Meetings result in clear actions and timely execution</li><li>Nothing falls through the cracks…ever</li><li>Internal and external stakeholders experience seamless communication</li><li>The CEO is able to operate faster and more effectively because of you</li></ul><h3>What the hiring process will look like</h3><p>We aim to move fast and keep things transparent:</p><ol><li>Intro Call with our TA team – A conversation to understand your background and motivations</li><li>Deep Dive Interview – Focused on real scenarios, problem-solving, and how you operate under pressure</li><li>Final Interview – With the CEO to assess fit and alignment</li></ol>",
+    "description": "<h3>About Lucidya</h3><p>Lucidya is an AI-native platform for Customer Experience (CX) Intelligence that enables organizations to truly understand, engage, and retain their customers at scale.</p><p>We don’t just surface insights, we act on them. Our proprietary AI, built in-house and trained on millions of multilingual interactions, helps businesses close the loop between customer feedback and real business outcomes.</p><p>As we scale globally, we’re building a team that thrives on ownership, speed, and impact.</p><h3>Why this role matters</h3><p>This is not a traditional Executive Assistant role.</p><p>At Lucidya, the CEO operates at high velocity, across investors, government stakeholders, enterprise clients, and internal teams. To sustain and accelerate that pace, we need someone who can act as a force multiplier.</p><p>You won’t just manage a calendar - you’ll bring order to chaos, ensure nothing falls through the cracks, and step into high-stakes situations with confidence and sound judgment.</p><p>This role is critical to how effectively the CEO operates, how decisions are executed, and ultimately, how fast Lucidya moves.</p><h3>What You’ll Do</h3><p><strong>Own the CEO’s time and priorities</strong></p><p>You’ll ruthlessly optimize the CEO’s calendar - ensuring every meeting has a clear purpose, the right attendees, and a defined outcome. You’ll anticipate conflicts before they happen and protect time for deep work and strategic thinking.</p><p><strong>Turn meetings into action</strong></p><p>You’ll sit in key meetings, capture what actually matters, and drive follow-ups to completion. Nothing gets lost. You’ll ensure decisions translate into execution.</p><p><strong>Act as a bridge across the business</strong></p><p>You’ll work closely with internal teams, investors, board members, and external partners - ensuring communication is clear, timely, and aligned with priorities.</p><p><strong>Handle sensitive and high-stakes matters</strong></p><p>From legal coordination to investor materials, you’ll review, organise, and prepare critical documents before they reach the CEO- ensuring quality and accuracy at all times.</p><p><strong>Run operations behind the scenes</strong></p><p>You’ll manage office operations, vendor relationships, and logistics to ensure a smooth and efficient working environment.</p><p><strong>Take ownership beyond the office</strong></p><p>This role extends into personal support - handling errands, travel, reservations, and time-sensitive requests with discretion and efficiency.</p><p><strong>Drive things forward</strong></p><p>You’ll proactively follow up on projects, push stakeholders when needed, and ensure deadlines are met - without waiting to be asked.</p>",
+    "requirements": "<h3>Who You Are</h3><p>You’re the kind of person who brings structure where others see chaos.</p><ul><li>You have 3+ years of experience supporting senior executives in fast-paced environments</li><li>You’re fluent in English and Arabic, both written and spoken</li><li>You don’t wait for instructions - you anticipate needs before they arise</li><li>You’re highly organized, but more importantly - you prioritize what actually matters</li><li>You’re comfortable operating with ambiguity, urgency, and high expectations</li><li>You’re someone people trust with sensitive information - you handle everything with absolute discretion and integrity</li><li>You’re resourceful - you figure things out quickly, even when there’s no clear playbook</li><li>You’re not afraid to push back or follow up persistently to get things done</li><li>You’re tech-savvy, comfortable with tools like Google Workspace, Microsoft Office, and productivity platforms</li><li>You’re willing to be flexible with your time, including handling urgent matters outside standard working hours</li></ul><p>Practical requirements:</p><ul><li>Valid driver’s license and access to a car</li><li>Willingness to handle in-person tasks and errands as needed</li></ul><h3>What success looks like</h3><ul><li>The CEO’s time is consistently optimized and focused on high-impact work</li><li>Meetings result in clear actions and timely execution</li><li>Nothing falls through the cracks…ever</li><li>Internal and external stakeholders experience seamless communication</li><li>The CEO is able to operate faster and more effectively because of you</li></ul><h3>What the hiring process will look like</h3><p>We aim to move fast and keep things transparent:</p><ol><li>Intro Call with our TA team – A conversation to understand your background and motivations</li><li>Deep Dive Interview – Focused on real scenarios, problem-solving, and how you operate under pressure</li><li>Final Interview – With the CEO to assess fit and alignment</li></ol>",
+    "benefits": null,
+    "keywords": [
+      "Executive Secretary",
+      "Executive assistant",
+      "Secretary"
+    ]
+  },
+  {
+    "id": "49b423",
+    "title": "Staff Engineer",
+    "full_title": "Staff Engineer - ENG-100925-002",
+    "shortcode": "690AC776A2",
+    "code": "ENG-100925-002",
+    "state": "published",
+    "sample": false,
+    "confidential": false,
+    "department": "Engineering",
+    "department_hierarchy": [
+      {
+        "id": 214581,
+        "name": "Engineering"
+      }
+    ],
+    "url": "https://lucidya.workable.com/jobs/4829009",
+    "application_url": "https://lucidya.workable.com/jobs/4829009/candidates/new",
+    "shortlink": "https://apply.workable.com/j/690AC776A2",
+    "workplace_type": "remote",
+    "location": {
+      "location_str": "Riyadh, Riyadh Province, Saudi Arabia",
+      "country": "Saudi Arabia",
+      "country_code": "SA",
+      "region": "Riyadh Province",
+      "region_code": "Riyadh Province",
+      "city": "Riyadh",
+      "zip_code": null,
+      "telecommuting": true,
+      "workplace_type": "remote"
+    },
+    "locations": [
+      {
+        "shortcode": "J79B2484856",
+        "country_code": "SA",
+        "country_name": "Saudi Arabia",
+        "state_code": "Riyadh Province",
+        "subregion": "Riyadh Province",
+        "zip_code": null,
+        "city": "Riyadh",
+        "coords": "24.7135517, 46.67529569999999",
+        "hidden": false
+      },
+      {
+        "shortcode": "J8B0CF4C96D",
+        "country_code": "SA",
+        "country_name": "Saudi Arabia",
+        "state_code": "Makkah Province",
+        "subregion": "Makkah Province",
+        "zip_code": null,
+        "city": "Jeddah",
+        "coords": "21.485811, 39.19250480000005",
+        "hidden": false
+      },
+      {
+        "shortcode": "J9F4F6C594E",
+        "country_code": "EG",
+        "country_name": "Egypt",
+        "state_code": "Cairo Governorate",
+        "subregion": "Cairo Governorate",
+        "zip_code": null,
+        "city": "Cairo",
+        "coords": "30.0444196, 31.23571160000006",
+        "hidden": false
+      },
+      {
+        "shortcode": "JD81470C023",
+        "country_code": "EG",
+        "country_name": "Egypt",
+        "state_code": "Alexandria Governorate",
+        "subregion": "Alexandria Governorate",
+        "zip_code": null,
+        "city": "Alexandria",
+        "coords": "31.2000924, 29.9187387",
+        "hidden": false
+      }
+    ],
+    "salary": {
+      "salary_currency": "usd"
+    },
+    "created_at": "2025-04-30T20:49:35Z",
+    "updated_at": "2026-03-25T14:36:10Z",
+    "full_description": "<p></p><h3>About Lucidya</h3><p>At Lucidya, we leverage Machine Learning and Big Data to help enterprises understand and serve their customers at scale. Our CX Intelligence platform powers social listening, customer engagement, and advanced analytics for leading brands across the region.</p><p>We operate in a high-ownership engineering culture that values technical excellence, architectural rigor, and measurable business impact.</p><h3>Role Overview</h3><p>We are hiring a Staff Backend Engineer to act as a technical authority across Lucidya’s CX platform.</p><p>This is not a senior IC role.</p><p>You will:</p><ul><li>Own and drive architecture integrity</li><li>Lead final design and code reviews</li><li>Influence cross-team technical direction</li><li>Ensure systems meet scale, reliability, and security standards</li></ul><p>The ideal candidate combines deep hands-on backend expertise with strong architectural judgment and mentorship capability.</p><h3>What You Will Own</h3><ul><li>Drive architectural decisions for high-scale CX SaaS systems</li><li>Conduct and sign off on final design and implementation reviews</li><li>Build and evolve production-grade backend services using Python or Ruby on Rails</li><li>Ensure platform reliability, performance, and security at scale</li><li>Partner closely with Product and AI teams to translate product vision into robust systems</li><li>Mentor senior and mid-level engineers and elevate engineering standards</li><li>Identify and resolve systemic technical risks proactively</li><li>Champion engineering best practices across teams</li><li>Leverage GenAI developer tools to accelerate delivery and code quality.</li></ul><h3>Key Responsibilities</h3><ul><li>Design and deliver scalable, distributed backend systems</li><li>Review and approve architecture proposals and critical PRs</li><li>Guide teams on microservices and event-driven patterns</li><li>Optimize system performance, cost, and reliability</li><li>Drive improvements in CI/CD, observability, and DevOps maturity</li><li>Support secure, compliant deployments (enterprise-grade expectations)</li><li>Collaborate cross-functionally to unblock complex initiatives</li><li>Raise the technical bar through coaching and technical leadership</li></ul><p><strong>Requirements</strong></p><h3>Qualifications</h3><ul><li>10+ years backend engineering experience in production SaaS environments</li><li>Proven hands-on expertise in Python or Ruby on Rails at scale</li><li>Demonstrated ownership of large-scale distributed systems</li><li>Strong experience with microservices and event-driven architectures</li><li>Deep familiarity with AWS (or equivalent cloud platforms)</li><li>Solid experience with Docker and Kubernetes in production</li><li>Strong command of PostgreSQL and at least one of Redis / Elasticsearch</li><li>Proven record of technical leadership and mentorship</li><li>Excellent communication and stakeholder influence skills</li><li>Practical experience using GenAI coding tools (Copilot, ChatGPT, etc.) to improve engineering velocity</li></ul><h3>Preferred (Strong Plus)</h3><ul><li>Experience building CX, social listening, or real-time engagement platforms</li><li>Background in high-growth startup environments</li><li>Experience improving DevOps maturity and CI/CD pipelines</li><li>Exposure to observability stacks (Prometheus, Grafana, OpenTelemetry, etc.)</li><li>Public technical writing or open-source contributions</li><li>Experience working in AI-enabled product environments</li></ul><h3>What Success Looks Like</h3><p>In the first 6 months, you will:</p><ul><li>Raise the bar on backend architecture quality</li><li>Reduce technical risk across critical services</li><li>Improve system scalability and reliability</li><li>Elevate team engineering standards through mentorship</li><li>Influence cross-team technical decisions with clarity and authority</li></ul>",
+    "description": "<p></p><h3>About Lucidya</h3><p>At Lucidya, we leverage Machine Learning and Big Data to help enterprises understand and serve their customers at scale. Our CX Intelligence platform powers social listening, customer engagement, and advanced analytics for leading brands across the region.</p><p>We operate in a high-ownership engineering culture that values technical excellence, architectural rigor, and measurable business impact.</p><h3>Role Overview</h3><p>We are hiring a Staff Backend Engineer to act as a technical authority across Lucidya’s CX platform.</p><p>This is not a senior IC role.</p><p>You will:</p><ul><li>Own and drive architecture integrity</li><li>Lead final design and code reviews</li><li>Influence cross-team technical direction</li><li>Ensure systems meet scale, reliability, and security standards</li></ul><p>The ideal candidate combines deep hands-on backend expertise with strong architectural judgment and mentorship capability.</p><h3>What You Will Own</h3><ul><li>Drive architectural decisions for high-scale CX SaaS systems</li><li>Conduct and sign off on final design and implementation reviews</li><li>Build and evolve production-grade backend services using Python or Ruby on Rails</li><li>Ensure platform reliability, performance, and security at scale</li><li>Partner closely with Product and AI teams to translate product vision into robust systems</li><li>Mentor senior and mid-level engineers and elevate engineering standards</li><li>Identify and resolve systemic technical risks proactively</li><li>Champion engineering best practices across teams</li><li>Leverage GenAI developer tools to accelerate delivery and code quality.</li></ul><h3>Key Responsibilities</h3><ul><li>Design and deliver scalable, distributed backend systems</li><li>Review and approve architecture proposals and critical PRs</li><li>Guide teams on microservices and event-driven patterns</li><li>Optimize system performance, cost, and reliability</li><li>Drive improvements in CI/CD, observability, and DevOps maturity</li><li>Support secure, compliant deployments (enterprise-grade expectations)</li><li>Collaborate cross-functionally to unblock complex initiatives</li><li>Raise the technical bar through coaching and technical leadership</li></ul>",
+    "requirements": "<h3>Qualifications</h3><ul><li>10+ years backend engineering experience in production SaaS environments</li><li>Proven hands-on expertise in Python or Ruby on Rails at scale</li><li>Demonstrated ownership of large-scale distributed systems</li><li>Strong experience with microservices and event-driven architectures</li><li>Deep familiarity with AWS (or equivalent cloud platforms)</li><li>Solid experience with Docker and Kubernetes in production</li><li>Strong command of PostgreSQL and at least one of Redis / Elasticsearch</li><li>Proven record of technical leadership and mentorship</li><li>Excellent communication and stakeholder influence skills</li><li>Practical experience using GenAI coding tools (Copilot, ChatGPT, etc.) to improve engineering velocity</li></ul><h3>Preferred (Strong Plus)</h3><ul><li>Experience building CX, social listening, or real-time engagement platforms</li><li>Background in high-growth startup environments</li><li>Experience improving DevOps maturity and CI/CD pipelines</li><li>Exposure to observability stacks (Prometheus, Grafana, OpenTelemetry, etc.)</li><li>Public technical writing or open-source contributions</li><li>Experience working in AI-enabled product environments</li></ul><h3>What Success Looks Like</h3><p>In the first 6 months, you will:</p><ul><li>Raise the bar on backend architecture quality</li><li>Reduce technical risk across critical services</li><li>Improve system scalability and reliability</li><li>Elevate team engineering standards through mentorship</li><li>Influence cross-team technical decisions with clarity and authority</li></ul>",
+    "benefits": null,
+    "keywords": [
+      "Python",
+      "ReactJS",
+      "Ruby",
+      "Ruby on Rails"
+    ]
+  }
+]

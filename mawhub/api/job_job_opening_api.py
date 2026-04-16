@@ -22,3 +22,7 @@ def job_opening_parse(file_path:str,document_text:str,request_id : str,user:str)
         document_text = extract_text_from_pdf(file_path)
     parsed = app_container.job_usecase.job_opening.job_opening_parse(document_text,user,request_id)
     return parsed
+
+@frappe.whitelist(methods=["POST"])
+def job_opening_make_question_bank(job_opening_id: str):
+    return app_container.job_usecase.job_opening.make_question_bank(job_opening_id)

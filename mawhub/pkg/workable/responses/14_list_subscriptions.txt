@@ -1,0 +1,11 @@
+[
+  {
+    "id": 98891,
+    "event": "candidate_moved",
+    "target": "https://api.fra.e1.enboarder.com/workable/lucidya/a8c5ec7ebec63134b1c8496908b652caf",
+    "valid_until": null,
+    "created_at": "2026-03-31T13:20:30.438Z",
+    "stage_slug": "hired",
+    "job_shortcode": null
+  }
+]

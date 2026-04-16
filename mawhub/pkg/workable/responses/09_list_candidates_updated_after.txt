@@ -1,0 +1,376 @@
+[
+  {
+    "id": "8ce2405",
+    "name": "Matar Alzahrani",
+    "firstname": "Matar",
+    "lastname": "Alzahrani",
+    "headline": "Business Account Manager | Customer success Professional",
+    "account": {
+      "subdomain": "lucidya",
+      "name": "Lucidya"
+    },
+    "job": {
+      "shortcode": "EB388C56A2",
+      "title": "Channel Sales Manager (Partnerships)"
+    },
+    "stage": "Applied",
+    "stage_kind": "applied",
+    "disqualified": true,
+    "disqualification_reason": null,
+    "hired_at": null,
+    "moved_to_offer_at": null,
+    "sourced": false,
+    "profile_url": "https://lucidya.workable.com/backend/jobs/1953933/candidates/147726131",
+    "address": "Alnaseem, 23234",
+    "phone": "+966 542030904",
+    "email": "ms.alzhrani@gmail.com",
+    "domain": "linkedin.com",
+    "outlet": "free_posting",
+    "common_source": "linkedin.com free",
+    "common_source_category": "Job boards",
+    "created_at": "2021-09-25T11:32:33Z",
+    "updated_at": "2026-02-09T12:42:49Z",
+    "resume_metadata": {
+      "filename": "Resume.pdf",
+      "filetype": "pdf",
+      "created_at": "2021-09-25T11:32:33Z",
+      "updated_at": "2026-02-09T12:42:49Z"
+    }
+  },
+  {
+    "id": "8dd8e3e",
+    "name": "Jebryl Albeshi",
+    "firstname": "Jebryl",
+    "lastname": "Albeshi",
+    "headline": "B2B sales and operation executives STC partner | Accounts Manager | Operation | Customer Care",
+    "account": {
+      "subdomain": "lucidya",
+      "name": "Lucidya"
+    },
+    "job": {
+      "shortcode": "D371F4B71C",
+      "title": "Account Manager"
+    },
+    "stage": "Applied",
+    "stage_kind": "applied",
+    "disqualified": false,
+    "disqualification_reason": null,
+    "hired_at": null,
+    "moved_to_offer_at": null,
+    "sourced": false,
+    "profile_url": "https://lucidya.workable.com/backend/jobs/1929610/candidates/148736364",
+    "address": "Kharg st, Riyadh, Saudi Arabia, 12211, Saudi Arabia",
+    "phone": "+966 501653323",
+    "email": "albeshi1000@gmail.com",
+    "domain": "linkedin.com",
+    "outlet": "free_posting",
+    "common_source": "linkedin.com free",
+    "common_source_category": "Job boards",
+    "created_at": "2021-10-03T12:55:23Z",
+    "updated_at": "2026-02-04T10:45:14Z",
+    "resume_metadata": {
+      "filename": "Resume.pdf",
+      "filetype": "pdf",
+      "created_at": "2021-10-03T12:55:23Z",
+      "updated_at": "2026-02-04T10:45:14Z"
+    }
+  },
+  {
+    "id": "8dfe03c",
+    "name": "Sarah Alsaif",
+    "firstname": "Sarah",
+    "lastname": "Alsaif",
+    "headline": "Software Engineer - OutSystems Developer at CodeLab",
+    "account": {
+      "subdomain": "lucidya",
+      "name": "Lucidya"
+    },
+    "job": {
+      "shortcode": "B84302F438",
+      "title": "Software Engineer"
+    },
+    "stage": "Applied",
+    "stage_kind": "applied",
+    "disqualified": false,
+    "disqualification_reason": null,
+    "hired_at": null,
+    "moved_to_offer_at": null,
+    "sourced": false,
+    "profile_url": "https://lucidya.workable.com/backend/jobs/1954387/candidates/148888426",
+    "address": "King saud University, 12372",
+    "phone": "+966 533813501",
+    "email": "saraoalsaif@gmail.com",
+    "domain": "linkedin.com",
+    "outlet": "free_posting",
+    "common_source": "linkedin.com free",
+    "common_source_category": "Job boards",
+    "created_at": "2021-10-04T17:45:34Z",
+    "updated_at": "2026-02-17T12:02:01Z",
+    "resume_metadata": {
+      "filename": "Resume.pdf",
+      "filetype": "pdf",
+      "created_at": "2021-10-04T17:45:34Z",
+      "updated_at": "2026-02-17T12:02:01Z"
+    }
+  },
+  {
+    "id": "8e5f70c",
+    "name": "Roaa Almiskey",
+    "firstname": "Roaa",
+    "lastname": "Almiskey",
+    "headline": "Information Technology",
+    "account": {
+      "subdomain": "lucidya",
+      "name": "Lucidya"
+    },
+    "job": {
+      "shortcode": "35526E568D",
+      "title": "System Administrator"
+    },
+    "stage": "Applied",
+    "stage_kind": "applied",
+    "disqualified": false,
+    "disqualification_reason": null,
+    "hired_at": null,
+    "moved_to_offer_at": null,
+    "sourced": false,
+    "profile_url": "https://lucidya.workable.com/backend/jobs/1967921/candidates/149287482",
+    "address": null,
+    "phone": "+966 0561414999",
+    "email": "rorita.1@hotmail.com",
+    "domain": "linkedin.com",
+    "outlet": "free_posting",
+    "common_source": "linkedin.com free",
+    "common_source_category": "Job boards",
+    "created_at": "2021-10-07T08:25:46Z",
+    "updated_at": "2026-02-11T09:25:43Z",
+    "resume_metadata": {
+      "filename": "Resume.pdf",
+      "filetype": "pdf",
+      "created_at": "2021-10-07T08:25:46Z",
+      "updated_at": "2026-02-11T09:25:43Z"
+    }
+  },
+  {
+    "id": "8e638e7",
+    "name": "Roaa Almiskey",
+    "firstname": "Roaa",
+    "lastname": "Almiskey",
+    "headline": "Information Technology",
+    "account": {
+      "subdomain": "lucidya",
+      "name": "Lucidya"
+    },
+    "job": {
+      "shortcode": "BF324C5A83",
+      "title": "Sales Development Representative (SDR)"
+    },
+    "stage": "Applied",
+    "stage_kind": "applied",
+    "disqualified": false,
+    "disqualification_reason": null,
+    "hired_at": null,
+    "moved_to_offer_at": null,
+    "sourced": false,
+    "profile_url": "https://lucidya.workable.com/backend/jobs/1953922/candidates/149304341",
+    "address": null,
+    "phone": "+966 0561414999",
+    "email": "rorita.1@hotmail.com",
+    "domain": "linkedin.com",
+    "outlet": "free_posting",
+    "common_source": "linkedin.com free",
+    "common_source_category": "Job boards",
+    "created_at": "2021-10-07T10:56:53Z",
+    "updated_at": "2026-02-11T09:25:42Z",
+    "resume_metadata": {
+      "filename": "Resume.pdf",
+      "filetype": "pdf",
+      "created_at": "2021-10-07T10:56:53Z",
+      "updated_at": "2026-02-11T09:25:42Z"
+    }
+  },
+  {
+    "id": "8f95928",
+    "name": "Murad Bawazeer",
+    "firstname": "Murad",
+    "lastname": "Bawazeer",
+    "headline": "Tech AM, Expert Business developer",
+    "account": {
+      "subdomain": "lucidya",
+      "name": "Lucidya"
+    },
+    "job": {
+      "shortcode": "BF324C5A83",
+      "title": "Sales Development Representative (SDR)"
+    },
+    "stage": "Applied",
+    "stage_kind": "applied",
+    "disqualified": false,
+    "disqualification_reason": null,
+    "hired_at": null,
+    "moved_to_offer_at": null,
+    "sourced": false,
+    "profile_url": "https://lucidya.workable.com/backend/jobs/1953922/candidates/150557782",
+    "address": "KFR, 123456",
+    "phone": "+966 0580005720",
+    "email": "mrdbwr@gmail.com",
+    "domain": "linkedin.com",
+    "outlet": "free_posting",
+    "common_source": "linkedin.com free",
+    "common_source_category": "Job boards",
+    "created_at": "2021-10-17T04:15:15Z",
+    "updated_at": "2026-02-23T10:42:15Z",
+    "resume_metadata": {
+      "filename": "Resume.pdf",
+      "filetype": "pdf",
+      "created_at": "2021-10-17T04:15:15Z",
+      "updated_at": "2026-02-23T10:42:15Z"
+    }
+  },
+  {
+    "id": "8fa3baf",
+    "name": "Roaa Almiskey",
+    "firstname": "Roaa",
+    "lastname": "Almiskey",
+    "headline": "Information Technology",
+    "account": {
+      "subdomain": "lucidya",
+      "name": "Lucidya"
+    },
+    "job": {
+      "shortcode": "B84302F438",
+      "title": "Software Engineer"
+    },
+    "stage": "Applied",
+    "stage_kind": "applied",
+    "disqualified": false,
+    "disqualification_reason": null,
+    "hired_at": null,
+    "moved_to_offer_at": null,
+    "sourced": false,
+    "profile_url": "https://lucidya.workable.com/backend/jobs/1954387/candidates/150615773",
+    "address": null,
+    "phone": "+966 0561414999",
+    "email": "rorita.1@hotmail.com",
+    "domain": "linkedin.com",
+    "outlet": "free_posting",
+    "common_source": "linkedin.com free",
+    "common_source_category": "Job boards",
+    "created_at": "2021-10-17T21:24:19Z",
+    "updated_at": "2026-02-11T09:25:43Z",
+    "resume_metadata": {
+      "filename": "Resume.pdf",
+      "filetype": "pdf",
+      "created_at": "2021-10-17T21:24:19Z",
+      "updated_at": "2026-02-11T09:25:43Z"
+    }
+  },
+  {
+    "id": "912c764",
+    "name": "Maha Aldossari",
+    "firstname": "Maha",
+    "lastname": "Aldossari",
+    "headline": "Software Engineer at SITE سايت",
+    "account": {
+      "subdomain": "lucidya",
+      "name": "Lucidya"
+    },
+    "job": {
+      "shortcode": "B84302F438",
+      "title": "Software Engineer"
+    },
+    "stage": "Applied",
+    "stage_kind": "applied",
+    "disqualified": false,
+    "disqualification_reason": null,
+    "hired_at": null,
+    "moved_to_offer_at": null,
+    "sourced": false,
+    "profile_url": "https://lucidya.workable.com/backend/jobs/1954387/candidates/152224402",
+    "address": null,
+    "phone": "+966 540811083",
+    "email": "mmfn11@gmail.com",
+    "domain": "linkedin.com",
+    "outlet": "free_posting",
+    "common_source": "linkedin.com free",
+    "common_source_category": "Job boards",
+    "created_at": "2021-10-28T18:31:32Z",
+    "updated_at": "2026-02-08T13:03:47Z"
+  },
+  {
+    "id": "92974a9",
+    "name": "Murad Bawazeer",
+    "firstname": "Murad",
+    "lastname": "Bawazeer",
+    "headline": "Senior Account Manager",
+    "account": {
+      "subdomain": "lucidya",
+      "name": "Lucidya"
+    },
+    "job": {
+      "shortcode": "C745103111",
+      "title": "Customer Success Manager"
+    },
+    "stage": "Applied",
+    "stage_kind": "applied",
+    "disqualified": false,
+    "disqualification_reason": null,
+    "hired_at": null,
+    "moved_to_offer_at": null,
+    "sourced": false,
+    "profile_url": "https://lucidya.workable.com/backend/jobs/1953985/candidates/153710551",
+    "address": "Riyadh, Olaya, king Fahad road, 123456",
+    "phone": "+966 0580005720",
+    "email": "mrdbwr@gmail.com",
+    "domain": "linkedin.com",
+    "outlet": "free_posting",
+    "common_source": "linkedin.com free",
+    "common_source_category": "Job boards",
+    "created_at": "2021-11-08T12:30:57Z",
+    "updated_at": "2026-02-23T10:42:15Z",
+    "resume_metadata": {
+      "filename": "Resume.pdf",
+      "filetype": "pdf",
+      "created_at": "2021-11-08T12:30:57Z",
+      "updated_at": "2026-02-23T10:42:15Z"
+    }
+  },
+  {
+    "id": "947c2f4",
+    "name": "Sulaiman Alnughaimshi",
+    "firstname": "Sulaiman",
+    "lastname": "Alnughaimshi",
+    "headline": "Bachelor degree on business management",
+    "account": {
+      "subdomain": "lucidya",
+      "name": "Lucidya"
+    },
+    "job": {
+      "shortcode": "BF324C5A83",
+      "title": "Sales Development Representative (SDR)"
+    },
+    "stage": "Applied",
+    "stage_kind": "applied",
+    "disqualified": false,
+    "disqualification_reason": null,
+    "hired_at": null,
+    "moved_to_offer_at": null,
+    "sourced": false,
+    "profile_url": "https://lucidya.workable.com/backend/jobs/1953922/candidates/155696674",
+    "address": ".",
+    "phone": "+966 566263551",
+    "email": "sulaiman730727@hotmail.com",
+    "domain": "linkedin.com",
+    "outlet": "free_posting",
+    "common_source": "linkedin.com free",
+    "common_source_category": "Job boards",
+    "created_at": "2021-11-22T18:52:55Z",
+    "updated_at": "2026-03-03T10:49:57Z",
+    "resume_metadata": {
+      "filename": "Resume.pdf",
+      "filetype": "pdf",
+      "created_at": "2021-11-22T18:52:55Z",
+      "updated_at": "2026-03-03T10:49:57Z"
+    }
+  }
+]

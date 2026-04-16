@@ -49,5 +49,22 @@
   "in_list_view": 1,
   "in_standard_filter": 1,
   "reqd": 0
+ },
+ {
+  "fieldname": "custom_question_bank",
+  "label": "Question Bank",
+  "fieldtype": "Link",
+  "insert_after": "custom_success_criteria",
+  "options": "Question Bank",
+  "read_only": 0,
+  "reqd": 0
+ },
+ {
+  "fieldname": "custom_workable_shortcode",
+  "label": "Workable Shortcode",
+  "fieldtype": "Data",
+  "insert_after": "custom_question_bank",
+  "read_only": 1,
+  "reqd": 0
  }
 ]

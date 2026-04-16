@@ -10,12 +10,19 @@ def get_app_container() -> AppContainer:
     if _app_container is None:
         site_conf = frappe.get_site_config()
         gemini_key = site_conf.get("gemini_api_key")
+        workable_subdomain = site_conf.get("workable_subdomain")
+        workable_api_key = site_conf.get("workable_api_key")
+        print(f"workable {workable_subdomain} : workable_api_key {workable_api_key}")
 
         if not gemini_key:
             # Better to log or raise a specific error than frappe.throw
             # if you want to avoid UI-style breaks in CLI
             raise ValueError(f"Gemini API Key is missing for  in common_site_config.json")
-        _app_container = AppContainer(gemini_api_key=str(gemini_key))
+        _app_container = AppContainer(
+                gemini_api_key=str(gemini_key),
+                workable_subdomain=str(workable_subdomain),
+                workable_api_key=str(workable_api_key),
+                )
 
     return _app_container
 

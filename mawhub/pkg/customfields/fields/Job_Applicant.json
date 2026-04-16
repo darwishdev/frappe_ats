@@ -1,2 +1,18 @@
 [
+ {
+  "fieldname": "custom_workable_candidate_id",
+  "label": "Workable Candidate ID",
+  "fieldtype": "Data",
+  "insert_after": "resume_link",
+  "read_only": 1,
+  "reqd": 0
+ },
+ {
+  "fieldname": "custom_workable_shortcode",
+  "label": "Workable Job Shortcode",
+  "fieldtype": "Data",
+  "insert_after": "custom_workable_candidate_id",
+  "read_only": 1,
+  "reqd": 0
+ }
 ]

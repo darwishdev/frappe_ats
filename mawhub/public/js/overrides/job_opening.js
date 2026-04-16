@@ -34,6 +34,14 @@ frappe.ui.form.on("Job Opening", {
                 console.log("res is" , res)
             })
         })
+
+        if (frm.doc.name && !frm.doc.name.includes("new-job-opening")) {
+            frm.add_custom_button(
+                __("Generate Question Bank"),
+                () => make_question_bank(frm),
+                __("AI")
+            );
+        }
     },
 });
 function ensure_vue_root(frm) {
@@ -129,6 +137,27 @@ function toggle_custom_view(frm) {
         toggle_button.text(__("View Job"));
     }
 }
+function make_question_bank(frm) {
+    frappe.confirm(
+        __("Generate a new question bank for this job opening? This may take a few seconds."),
+        () => {
+            frappe.show_alert({ message: __("Generating question bank…"), indicator: "blue" });
+            frappe.call({
+                method: "mawhub.api.job_job_opening_api.job_opening_make_question_bank",
+                args: { job_opening_id: frm.doc.name },
+                callback(r) {
+                    if (r.message) {
+                        frappe.show_alert({
+                            message: __("Question bank created: {0}", [r.message]),
+                            indicator: "green"
+                        });
+                    }
+                }
+            });
+        }
+    );
+}
+
 function attachment_uploaded(frm,attachment) {
     if (!attachment.file_url.toLowerCase().endsWith(".pdf")) {
         frappe.show_alert({
