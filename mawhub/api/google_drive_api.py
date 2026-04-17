@@ -1,6 +1,7 @@
 import io
 import os
 import json
+import mimetypes
 import frappe
 from frappe import _
 from requests import post as http_post
@@ -225,3 +226,105 @@ def upload_file(service, local_path, parent_id):
     file_metadata = {"name": os.path.basename(local_path), "parents": [parent_id]}
     media = MediaFileUpload(local_path, resumable=True)
     service.files().create(body=file_metadata, media_body=media, fields="id").execute()
+
+
+@frappe.whitelist()
+def check_google_drive_authorization():
+    """Return authorization status for the current user."""
+    service = get_drive_service()
+    if not service:
+        return {"status": "unauthorized", "auth_url": authorize_google_drive().get("url")}
+    return {"status": "authorized"}
+
+
+@frappe.whitelist()
+def upload_folder_to_drive():
+    """
+    Accept a folder uploaded from the browser (multipart/form-data with
+    webkitRelativePath preserved as the filename) and mirror the full
+    directory tree under the shared 'tal_assistant' Drive folder.
+
+    Returns {"status": "unauthorized"} if the user has not yet authorised
+    Google Drive — the caller should redirect to check_google_drive_authorization
+    first rather than expecting an inline auth prompt.
+
+    JS example:
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.webkitdirectory = true;
+        input.onchange = () => {
+            const fd = new FormData();
+            for (const f of input.files)
+                fd.append('files', f, f.webkitRelativePath || f.name);
+            fetch('/api/method/mawhub.api.google_drive_api.upload_folder_to_drive', {
+                method: 'POST',
+                headers: { 'X-Frappe-CSRF-Token': frappe.csrf_token },
+                body: fd,
+            }).then(r => r.json()).then(console.log);
+        };
+        input.click();
+    """
+    service = get_drive_service()
+    if not service:
+        return {"status": "unauthorized", "auth_url": authorize_google_drive().get("url")}
+
+    uploaded_files = frappe.request.files
+    if not uploaded_files:
+        frappe.throw(_("No files provided."))
+
+    tal_folder_id = _get_or_create_tal_folder(service)
+    # Cache dir-path → Drive folder ID so we never create the same folder twice.
+    folder_id_cache: dict[str, str] = {"": tal_folder_id}
+
+    def _ensure_dir(rel_dir: str) -> str:
+        """Return the Drive folder ID for rel_dir, creating missing segments."""
+        if rel_dir in folder_id_cache:
+            return folder_id_cache[rel_dir]
+        parts = rel_dir.replace("\\", "/").split("/")
+        current = ""
+        parent_id = tal_folder_id
+        for part in parts:
+            current = f"{current}/{part}" if current else part
+            if current not in folder_id_cache:
+                folder = service.files().create(
+                    body={
+                        "name": part,
+                        "mimeType": "application/vnd.google-apps.folder",
+                        "parents": [parent_id],
+                    },
+                    fields="id",
+                ).execute()
+                folder_id_cache[current] = folder["id"]
+            parent_id = folder_id_cache[current]
+        return parent_id
+
+    uploaded = []
+    for _key in uploaded_files:
+        file_obj = uploaded_files[_key]
+        # webkitRelativePath is sent as the filename, e.g. "myFolder/sub/file.txt"
+        rel_path = (file_obj.filename or _key).replace("\\", "/")
+        parts = rel_path.split("/")
+        file_name = parts[-1]
+        rel_dir = "/".join(parts[:-1])
+
+        parent_id = _ensure_dir(rel_dir) if rel_dir else tal_folder_id
+        content = file_obj.read()
+        mime_type = mimetypes.guess_type(file_name)[0] or "application/octet-stream"
+        media = MediaIoBaseUpload(io.BytesIO(content), mimetype=mime_type, resumable=True)
+        result = service.files().create(
+            body={"name": file_name, "parents": [parent_id]},
+            media_body=media,
+            fields="id,webViewLink",
+        ).execute()
+        uploaded.append({
+            "path": rel_path,
+            "file_id": result.get("id"),
+            "file_url": result.get("webViewLink"),
+        })
+
+    return {
+        "status": "success",
+        "tal_folder_id": tal_folder_id,
+        "uploaded_count": len(uploaded),
+        "uploaded": uploaded,
+    }

@@ -40,6 +40,8 @@ from mawhub.api.job_workable_api import (
 from mawhub.api.google_drive_api import (
     authorize_google_drive,
     upload_folder,
+    check_google_drive_authorization,
+    upload_folder_to_drive,
 )
 
 __all__ = [
@@ -53,6 +55,8 @@ __all__ = [
     "parsed_document_create_update",
     "authorize_google_drive",
     "upload_folder",
+    "check_google_drive_authorization",
+    "upload_folder_to_drive",
     "parsed_document_parse",
     "parsed_document_parse_bg",
     "job_opening_step_list",
