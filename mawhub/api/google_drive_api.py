@@ -299,6 +299,8 @@ def upload_folder_to_drive():
         return parent_id
 
     uploaded = []
+    session_root_key = None  # first-level folder name inside tal_assistant
+
     for _key in uploaded_files:
         file_obj = uploaded_files[_key]
         # webkitRelativePath is sent as the filename, e.g. "myFolder/sub/file.txt"
@@ -308,6 +310,10 @@ def upload_folder_to_drive():
         rel_dir = "/".join(parts[:-1])
 
         parent_id = _ensure_dir(rel_dir) if rel_dir else tal_folder_id
+        # Track the top-level folder of this upload session
+        if session_root_key is None and parts[0] != file_name:
+            session_root_key = parts[0]
+
         content = file_obj.read()
         mime_type = mimetypes.guess_type(file_name)[0] or "application/octet-stream"
         media = MediaIoBaseUpload(io.BytesIO(content), mimetype=mime_type, resumable=True)
@@ -322,9 +328,19 @@ def upload_folder_to_drive():
             "file_url": result.get("webViewLink"),
         })
 
+    # Fetch the shareable URL for the session root folder
+    session_folder_url = None
+    if session_root_key and session_root_key in folder_id_cache:
+        session_folder = service.files().get(
+            fileId=folder_id_cache[session_root_key],
+            fields="webViewLink",
+        ).execute()
+        session_folder_url = session_folder.get("webViewLink")
+
     return {
         "status": "success",
         "tal_folder_id": tal_folder_id,
+        "session_folder_url": session_folder_url,
         "uploaded_count": len(uploaded),
         "uploaded": uploaded,
     }
